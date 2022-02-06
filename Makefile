@@ -46,7 +46,7 @@ compile:
 	go build -a -o /main .
 
 env-setup:
-	docker compose up -d jukebox-mysql
+	docker-compose up -d jukebox-mysql
 
 prepare:
 	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest

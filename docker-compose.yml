@@ -27,8 +27,8 @@ services:
     restart: always
     container_name: jukebox-mysql
     ports:
-      - "3308:3306"
-      - "33080:33060"
+      - "3307:3306"
+      - "33070:33060"
     volumes:
       - jukebox-db_data:/var/lib/mysql
     environment:
