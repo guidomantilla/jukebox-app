@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+option go_package = "./src/pkg/core/endpoint/grpc";
+
+message Song {
+  string code = 1;
+  string name = 2;
+  Artist artist = 3;
+}
+
+message Artist {
+  string code = 1;
+  string name = 2;
+}
+
+message Agent{
+  string code = 1;
+  string name = 2;
+  string email = 3;
+}
+
+message User {
+  string code = 1;
+  string name = 2;
+  string email = 3;
+}
+
+message Result {
+  string message = 1;
+  string error = 2;
+  string code = 3;
+}
+
+message SongRequest {
+  User user = 1;
+  string name = 2;
+}
+
+message SongResponse {
+  User user = 1;
+  repeated Song songs = 2;
+  Result result = 3;
+}
+
+service Jukebox {
+  rpc QuerySongsByName(SongRequest) returns (SongResponse);
+  rpc ScheduleSong(SongRequest) returns (SongResponse);
+}

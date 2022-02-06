@@ -1,0 +1,49 @@
+version: "3.9"  # optional since v1.27.0
+services:
+  jukebox-app:
+    build:
+      context: .
+    image: jukebox-app
+    container_name: jukebox-app
+    ports:
+      - '8080:8080'
+    depends_on:
+      - jukebox-mysql
+    environment:
+      HOST_POST: :8080
+      LOG_LEVEL: ERROR
+      DATASOURCE_USERNAME: jukebox
+      DATASOURCE_PASSWORD: 'jukebox+'
+      DATASOURCE_URL: ':username::password@tcp(localhost:3308)/jukebox?charset=utf8&multiStatements=true'
+      SENTRY_DSN: ''
+      SENTRY_ENVIRONMENT: dev
+      SENTRY_RELEASE: sample
+    networks:
+      - jukebox-network
+
+  jukebox-mysql:
+    image: mysql
+    platform: linux/x86_64
+    restart: always
+    container_name: jukebox-mysql
+    ports:
+      - "3308:3306"
+      - "33080:33060"
+    volumes:
+      - jukebox-db_data:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: 'jukebox'
+      MYSQL_ROOT_HOST: '%'
+      MYSQL_ROOT_PASSWORD: 'jukebox*'
+      MYSQL_USER: 'jukebox'
+      MYSQL_PASSWORD: 'jukebox+'
+    networks:
+      - jukebox-network
+volumes:
+  jukebox-db_data:
+    name: jukebox-db_data
+
+networks:
+  jukebox-network:
+    name: jukebox-network
+    driver: bridge
