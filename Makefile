@@ -2,7 +2,7 @@
 phony-goal: ; @echo $@
 
 build: validate
-	docker-compose -f container/docker-compose.yml up --build --remove-orphans --force-recreate --detach
+	docker-compose -f containerd/docker-compose.yml up --build --remove-orphans --force-recreate --detach
 
 validate: format vet lint test
 
@@ -48,9 +48,10 @@ compile:
 	go build -a -o main.bin .
 
 env-setup:
-	docker-compose -f container/docker-compose.yml up --build --remove-orphans --force-recreate --detach jukebox-mysql
+	docker-compose -f containerd/docker-compose.yml up --build --remove-orphans --force-recreate --detach jukebox-mysql
 	sleep 2
-	docker-compose -f container/docker-compose.yml up --build --remove-orphans --force-recreate --detach jukebox-redis
+	docker-compose -f containerd/docker-compose.yml up --build --remove-orphans --force-recreate --detach jukebox-redis
+	docker-compose -f containerd/docker-compose.yml up --build --remove-orphans --force-recreate --detach jukebox-nats
 	sleep 2
 	go run . migrate up
 
