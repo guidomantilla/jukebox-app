@@ -2,20 +2,22 @@ version: "3.9"  # optional since v1.27.0
 services:
   jukebox-app:
     build:
-      context: .
+      context: ..
+      dockerfile: ./container/docker.yml
     image: jukebox-app
     container_name: jukebox-app
     ports:
-      - '8080:8080'
+      - "8080:8080"
     depends_on:
       - jukebox-mysql
+      - jukebox-redis
     environment:
       HOST_POST: :8080
       LOG_LEVEL: ERROR
       DATASOURCE_USERNAME: jukebox
-      DATASOURCE_PASSWORD: 'jukebox+'
-      DATASOURCE_URL: ':username::password@tcp(localhost:3308)/jukebox?charset=utf8&multiStatements=true'
-      SENTRY_DSN: ''
+      DATASOURCE_PASSWORD: "jukebox+"
+      DATASOURCE_URL: ":username::password@tcp(jukebox-mysql:3307)/jukebox?charset=utf8&multiStatements=true"
+      SENTRY_DSN: ""
       SENTRY_ENVIRONMENT: dev
       SENTRY_RELEASE: sample
     networks:
@@ -30,7 +32,7 @@ services:
       - "3307:3306"
       - "33070:33060"
     volumes:
-      - jukebox-db_data:/var/lib/mysql
+      - jukebox-mysql_data:/var/lib/mysql
     environment:
       MYSQL_DATABASE: 'jukebox'
       MYSQL_ROOT_HOST: '%'
@@ -39,9 +41,28 @@ services:
       MYSQL_PASSWORD: 'jukebox+'
     networks:
       - jukebox-network
+
+  jukebox-redis:
+    image: redis
+    platform: linux/x86_64
+    restart: always
+    container_name: jukebox-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - jukebox-redis_data:/var/lib/redis
+      - jukebox-redis_config:/usr/local/etc/redis/redis.conf
+    #environment:
+    networks:
+      - jukebox-network
+
 volumes:
-  jukebox-db_data:
-    name: jukebox-db_data
+  jukebox-mysql_data:
+    name: jukebox-mysql_data
+  jukebox-redis_data:
+    name: jukebox-redis_data
+  jukebox-redis_config:
+    name: jukebox-redis_config
 
 networks:
   jukebox-network:
