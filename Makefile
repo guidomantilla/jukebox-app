@@ -7,7 +7,7 @@ build: validate
 validate: format vet lint test
 
 generate:
-	protoc --go_out=. ./api/jukebox-app.proto
+	protoc --go_out=. --go-grpc_out=. ./api/jukebox-app.proto
 
 format:
 	go fmt ./...
@@ -56,9 +56,9 @@ env-setup:
 	go run . migrate up
 
 prepare:
+	go install github.com/golang/mock/mockgen@latest
 	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 	go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
 	go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
-	go install github.com/golang/mock/mockgen@latest
 	go mod download
 	go mod tidy

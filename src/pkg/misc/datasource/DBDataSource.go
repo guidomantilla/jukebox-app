@@ -13,10 +13,11 @@ type DBDataSource interface {
 }
 
 type MysqlDataSource struct {
-	username string
-	password string
-	url      string
-	database *sql.DB
+	driverName string
+	username   string
+	password   string
+	url        string
+	database   *sql.DB
 }
 
 func NewMysqlDataSource(username string, password string, url string) *MysqlDataSource {
@@ -25,10 +26,11 @@ func NewMysqlDataSource(username string, password string, url string) *MysqlData
 	url = strings.Replace(url, ":password", password, 1)
 
 	return &MysqlDataSource{
-		username: username,
-		password: password,
-		url:      url,
-		database: nil,
+		driverName: "mysql",
+		username:   username,
+		password:   password,
+		url:        url,
+		database:   nil,
 	}
 }
 
@@ -37,13 +39,13 @@ func (mysqlDataSource *MysqlDataSource) GetDatabase() *sql.DB {
 	var err error
 
 	if mysqlDataSource.database == nil {
-		if mysqlDataSource.database, err = open(mysqlDataSource.url); err != nil {
+		if mysqlDataSource.database, err = open(mysqlDataSource.driverName, mysqlDataSource.url); err != nil {
 			zap.L().Error(err.Error())
 		}
 	}
 
 	if err = mysqlDataSource.database.Ping(); err != nil {
-		if mysqlDataSource.database, err = open(mysqlDataSource.url); err != nil {
+		if mysqlDataSource.database, err = open(mysqlDataSource.driverName, mysqlDataSource.url); err != nil {
 			zap.L().Error(err.Error())
 		}
 
@@ -55,12 +57,12 @@ func (mysqlDataSource *MysqlDataSource) GetDatabase() *sql.DB {
 	return mysqlDataSource.database
 }
 
-func open(url string) (*sql.DB, error) {
+func open(driverName string, url string) (*sql.DB, error) {
 
 	var err error
 	var database *sql.DB
 
-	if database, err = sql.Open("mysql", url); err != nil {
+	if database, err = sql.Open(driverName, url); err != nil {
 		return nil, err
 	}
 
