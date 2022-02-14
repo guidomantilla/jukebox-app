@@ -47,9 +47,6 @@ clean:
 compile:
 	go build -a -o main.bin .
 
-generate-stubs:
-	protoc --go_out=. --go-grpc_out=. ./api/jukebox-app.proto
-
 env-setup:
 	docker compose -f containerd/docker-compose.yml up --build --remove-orphans --force-recreate --detach jukebox-mysql jukebox-redis
 	sleep 10

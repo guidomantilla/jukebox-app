@@ -1,3 +1,3 @@
 package tools
 
-//go:generate protoc --go_out=. --go-grpc_out=. --proto_path=$PROJECT_HOME $PROJECT_HOME/api/jukebox-app.proto
+//go:generate protoc --go_out=$PROJECT_HOME --go-grpc_out=$PROJECT_HOME --proto_path=$PROJECT_HOME api/jukebox-app.proto
