@@ -48,7 +48,7 @@ generate-stubs:
 	protoc --go_out=. --go-grpc_out=. ./api/jukebox-app.proto
 
 generate-mocks:
-	go generate ./src/tests/mocks
+	mockgen -package properties -destination ./src/tests/mocks/properties/PropertiesMock.go jukebox-app/src/pkg/misc/properties Properties
 
 env-setup:
 	docker compose -f containerd/docker-compose.yml up --build --remove-orphans --force-recreate --detach jukebox-mysql jukebox-redis
