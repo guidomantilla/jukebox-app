@@ -6,9 +6,6 @@ build: validate
 
 validate: format vet lint test
 
-generate:
-	protoc --go_out=. --go-grpc_out=. ./api/jukebox-app.proto
-
 format:
 	go fmt ./...
 
@@ -46,6 +43,12 @@ clean:
 
 compile:
 	go build -a -o main.bin .
+
+generate-stubs:
+	protoc --go_out=. --go-grpc_out=. ./api/jukebox-app.proto
+
+generate-mocks:
+	go generate ./src/tests/mock
 
 env-setup:
 	docker-compose -f containerd/docker-compose.yml up --build --remove-orphans --force-recreate --detach jukebox-mysql
