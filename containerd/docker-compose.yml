@@ -56,23 +56,6 @@ services:
     networks:
       - jukebox-network
 
-  jukebox-nats:
-    image: nats
-    platform: linux/x86_64
-    restart: always
-    container_name: jukebox-nats
-    command:
-      - "-js"
-    ports:
-      - "4222:4222"
-      - "8222:8222"
-      - "6222:6222"
-    volumes:
-      - jukebox-nats_data
-    #environment:
-    networks:
-      - jukebox-network
-
 volumes:
   jukebox-mysql_data:
     name: jukebox-mysql_data
@@ -80,8 +63,6 @@ volumes:
     name: jukebox-redis_data
   jukebox-redis_config:
     name: jukebox-redis_config
-  jukebox-nats_data:
-    name: jukebox-nats_data
 
 networks:
   jukebox-network:

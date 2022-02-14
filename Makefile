@@ -2,7 +2,7 @@
 phony-goal: ; @echo $@
 
 build: validate
-	docker-compose -f containerd/docker-compose.yml up --build --remove-orphans --force-recreate --detach
+	docker compose -f containerd/docker-compose.yml up --build --remove-orphans --force-recreate --detach
 
 validate: format vet lint test
 
@@ -48,14 +48,11 @@ generate-stubs:
 	protoc --go_out=. --go-grpc_out=. ./api/jukebox-app.proto
 
 generate-mocks:
-	go generate ./src/tests/mock
+	go generate ./src/tests/mocks
 
 env-setup:
-	docker-compose -f containerd/docker-compose.yml up --build --remove-orphans --force-recreate --detach jukebox-mysql
-	sleep 2
-	docker-compose -f containerd/docker-compose.yml up --build --remove-orphans --force-recreate --detach jukebox-redis
-	docker-compose -f containerd/docker-compose.yml up --build --remove-orphans --force-recreate --detach jukebox-nats
-	sleep 2
+	docker compose -f containerd/docker-compose.yml up --build --remove-orphans --force-recreate --detach jukebox-mysql jukebox-redis
+	sleep 10
 	go run . migrate up
 
 prepare:
