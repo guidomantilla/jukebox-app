@@ -47,6 +47,9 @@ run-test-server-streaming:
 run-test-client-streaming:
 	go run . test client-streaming
 
+run-test-bidi-streaming:
+	go run . test bidi-streaming
+
 clean:
 	rm -f coverage.* main.bin
 

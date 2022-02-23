@@ -34,8 +34,9 @@ func ExecuteCmdFn(_ *cobra.Command, args []string) {
 		doServerStreaming(c)
 	case "client-streaming":
 		doClientStreaming(c)
+	case "bidi-streaming":
+		doBiDiStreaming(c)
 	}
-
 }
 
 func doUnary(c rpc.GreetServiceClient) {
@@ -129,4 +130,74 @@ func doClientStreaming(c rpc.GreetServiceClient) {
 	}
 	fmt.Printf("LongGreet Response: %v\n", res)
 
+}
+
+func doBiDiStreaming(c rpc.GreetServiceClient) {
+	fmt.Println("Starting to do a BiDi Streaming RPC...")
+
+	// we create a stream by invoking the client
+	stream, err := c.GreetEveryone(context.Background())
+	if err != nil {
+		log.Fatalf("Error while creating stream: %v", err)
+		return
+	}
+
+	requests := []*rpc.GreetEveryoneRequest{
+		&rpc.GreetEveryoneRequest{
+			Greeting: &rpc.Greeting{
+				FirstName: "Stephane",
+			},
+		},
+		&rpc.GreetEveryoneRequest{
+			Greeting: &rpc.Greeting{
+				FirstName: "John",
+			},
+		},
+		&rpc.GreetEveryoneRequest{
+			Greeting: &rpc.Greeting{
+				FirstName: "Lucy",
+			},
+		},
+		&rpc.GreetEveryoneRequest{
+			Greeting: &rpc.Greeting{
+				FirstName: "Mark",
+			},
+		},
+		&rpc.GreetEveryoneRequest{
+			Greeting: &rpc.Greeting{
+				FirstName: "Piper",
+			},
+		},
+	}
+
+	waitc := make(chan struct{})
+	// we send a bunch of messages to the client (go routine)
+	go func() {
+		// function to send a bunch of messages
+		for _, req := range requests {
+			fmt.Printf("Sending message: %v\n", req)
+			stream.Send(req)
+			time.Sleep(1000 * time.Millisecond)
+		}
+		stream.CloseSend()
+	}()
+	// we receive a bunch of messages from the client (go routine)
+	go func() {
+		// function to receive a bunch of messages
+		for {
+			res, err := stream.Recv()
+			if err == io.EOF {
+				break
+			}
+			if err != nil {
+				log.Fatalf("Error while receiving: %v", err)
+				break
+			}
+			fmt.Printf("Received: %v\n", res.GetResult())
+		}
+		close(waitc)
+	}()
+
+	// block until everything is done
+	<-waitc
 }

@@ -59,4 +59,29 @@ func (server *GreetServiceGrpcServer) LongGreet(stream GreetService_LongGreetSer
 	}
 }
 
+func (server *GreetServiceGrpcServer) GreetEveryone(stream GreetService_GreetEveryoneServer) error {
+	fmt.Printf("GreetEveryone function was invoked with a streaming request\n")
+
+	for {
+		req, err := stream.Recv()
+		if err == io.EOF {
+			return nil
+		}
+		if err != nil {
+			log.Printf("Error while reading client stream: %v", err)
+			return err
+		}
+		firstName := req.GetGreeting().GetFirstName()
+		result := "Hello " + firstName + "! "
+
+		sendErr := stream.Send(&GreetEveryoneResponse{
+			Result: result,
+		})
+		if sendErr != nil {
+			log.Printf("Error while sending data to client: %v", sendErr)
+			return sendErr
+		}
+	}
+}
+
 func (server *GreetServiceGrpcServer) mustEmbedUnimplementedGreetServiceServer() {}
