@@ -3,7 +3,7 @@ package test
 import (
 	"context"
 	"fmt"
-	"jukebox-app/src/pkg/core/endpoint/rpc"
+	rpc2 "jukebox-app/src/pkg/endpoint/rpc"
 	"log"
 
 	"github.com/spf13/cobra"
@@ -22,14 +22,14 @@ func ExecuteCmdFn(_ *cobra.Command, args []string) {
 	}
 	defer cc.Close()
 
-	c := rpc.NewGreetServiceClient(cc)
+	c := rpc2.NewGreetServiceClient(cc)
 	doUnary(c)
 }
 
-func doUnary(c rpc.GreetServiceClient) {
+func doUnary(c rpc2.GreetServiceClient) {
 	fmt.Println("Starting to do a Unary RPC...")
-	req := &rpc.GreetRequest{
-		Greeting: &rpc.Greeting{
+	req := &rpc2.GreetRequest{
+		Greeting: &rpc2.Greeting{
 			FirstName: "Stephane",
 			LastName:  "Maarek",
 		},

@@ -1,7 +1,7 @@
 package config
 
 import (
-	"jukebox-app/src/pkg/misc/environment"
+	"jukebox-app/src/misc/environment"
 
 	"github.com/gin-gonic/gin"
 )

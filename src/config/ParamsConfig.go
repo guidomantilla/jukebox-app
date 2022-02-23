@@ -2,7 +2,7 @@ package config
 
 import (
 	"fmt"
-	"jukebox-app/src/pkg/misc/environment"
+	"jukebox-app/src/misc/environment"
 
 	"go.uber.org/zap"
 )

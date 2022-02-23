@@ -1,8 +1,8 @@
 package config
 
 import (
-	"jukebox-app/src/pkg/misc/datasource"
-	"jukebox-app/src/pkg/misc/environment"
+	"jukebox-app/src/misc/datasource"
+	"jukebox-app/src/misc/environment"
 
 	"go.uber.org/zap"
 )

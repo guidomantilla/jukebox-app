@@ -2,7 +2,7 @@ package serve
 
 import (
 	"fmt"
-	"jukebox-app/src/pkg/core/endpoint/rpc"
+	"jukebox-app/src/endpoint/rpc"
 	"log"
 	"net"
 
@@ -22,7 +22,7 @@ func ExecuteCmdFn(_ *cobra.Command, _ []string) {
 	opts := make([]grpc.ServerOption, 0)
 	server := grpc.NewServer(opts...)
 
-	rpc.RegisterGreetServiceServer(server, &rpc.DefaultGreetServiceServer{})
+	rpc.RegisterGreetServiceServer(server, &rpc.GreetServiceGrpcServer{})
 	if err = server.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}

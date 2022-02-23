@@ -5,10 +5,10 @@ import (
 	"fmt"
 )
 
-type DefaultGreetServiceServer struct {
+type GreetServiceGrpcServer struct {
 }
 
-func (server *DefaultGreetServiceServer) Greet(_ context.Context, request *GreetRequest) (*GreetResponse, error) {
+func (server *GreetServiceGrpcServer) Greet(_ context.Context, request *GreetRequest) (*GreetResponse, error) {
 	fmt.Printf("Greet function was invoked with %v\n", request)
 	firstName := request.GetGreeting().GetFirstName()
 	result := "Hello " + firstName
@@ -17,4 +17,4 @@ func (server *DefaultGreetServiceServer) Greet(_ context.Context, request *Greet
 	}
 	return res, nil
 }
-func (server *DefaultGreetServiceServer) mustEmbedUnimplementedGreetServiceServer() {}
+func (server *GreetServiceGrpcServer) mustEmbedUnimplementedGreetServiceServer() {}
