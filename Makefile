@@ -44,6 +44,9 @@ run-test-unary:
 run-test-server-streaming:
 	go run . test server-streaming
 
+run-test-client-streaming:
+	go run . test client-streaming
+
 clean:
 	rm -f coverage.* main.bin
 

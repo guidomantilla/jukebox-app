@@ -3,6 +3,8 @@ package rpc
 import (
 	"context"
 	"fmt"
+	"io"
+	"log"
 	"strconv"
 	"time"
 )
@@ -25,15 +27,36 @@ func (server *GreetServiceGrpcServer) GreetManyTimes(request *GreetManyTimesRequ
 	firstName := request.GetGreeting().GetFirstName()
 	for i := 0; i < 10; i++ {
 		result := "Hello " + firstName + " number " + strconv.Itoa(i)
-		res := &GreetManytimesResponse{
+		res := &GreetManyTimesResponse{
 			Result: result,
 		}
 		if err := stream.Send(res); err != nil {
 			return err
 		}
+		fmt.Println(res)
 		time.Sleep(1000 * time.Millisecond)
 	}
 	return nil
+}
+
+func (server *GreetServiceGrpcServer) LongGreet(stream GreetService_LongGreetServer) error {
+	fmt.Printf("LongGreet function was invoked with a streaming request\n")
+	result := ""
+	for {
+		req, err := stream.Recv()
+		if err == io.EOF {
+			// we have finished reading the client stream
+			return stream.SendAndClose(&LongGreetResponse{
+				Result: result,
+			})
+		}
+		if err != nil {
+			log.Fatalf("Error while reading client stream: %v", err)
+		}
+
+		firstName := req.GetGreeting().GetFirstName()
+		result += "Hello " + firstName + "! "
+	}
 }
 
 func (server *GreetServiceGrpcServer) mustEmbedUnimplementedGreetServiceServer() {}

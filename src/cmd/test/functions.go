@@ -6,6 +6,7 @@ import (
 	"io"
 	"jukebox-app/src/endpoint/rpc"
 	"log"
+	"time"
 
 	"github.com/spf13/cobra"
 	"google.golang.org/grpc"
@@ -31,6 +32,8 @@ func ExecuteCmdFn(_ *cobra.Command, args []string) {
 		doUnary(c)
 	case "server-streaming":
 		doServerStreaming(c)
+	case "client-streaming":
+		doClientStreaming(c)
 	}
 
 }
@@ -75,4 +78,55 @@ func doServerStreaming(c rpc.GreetServiceClient) {
 		}
 		log.Printf("Response from GreetManyTimes: %v", msg.GetResult())
 	}
+}
+
+func doClientStreaming(c rpc.GreetServiceClient) {
+	fmt.Println("Starting to do a Client Streaming RPC...")
+
+	requests := []*rpc.LongGreetRequest{
+		&rpc.LongGreetRequest{
+			Greeting: &rpc.Greeting{
+				FirstName: "Stephane",
+			},
+		},
+		&rpc.LongGreetRequest{
+			Greeting: &rpc.Greeting{
+				FirstName: "John",
+			},
+		},
+		&rpc.LongGreetRequest{
+			Greeting: &rpc.Greeting{
+				FirstName: "Lucy",
+			},
+		},
+		&rpc.LongGreetRequest{
+			Greeting: &rpc.Greeting{
+				FirstName: "Mark",
+			},
+		},
+		&rpc.LongGreetRequest{
+			Greeting: &rpc.Greeting{
+				FirstName: "Piper",
+			},
+		},
+	}
+
+	stream, err := c.LongGreet(context.Background())
+	if err != nil {
+		log.Fatalf("error while calling LongGreet: %v", err)
+	}
+
+	// we iterate over our slice and send each message individually
+	for _, req := range requests {
+		fmt.Printf("Sending req: %v\n", req)
+		stream.Send(req)
+		time.Sleep(1000 * time.Millisecond)
+	}
+
+	res, err := stream.CloseAndRecv()
+	if err != nil {
+		log.Fatalf("error while receiving response from LongGreet: %v", err)
+	}
+	fmt.Printf("LongGreet Response: %v\n", res)
+
 }
