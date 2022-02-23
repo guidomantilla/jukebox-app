@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option go_package = "./src/pkg/core/endpoint/grpc";
+option go_package = "./src/pkg/core/endpoint/rpc";
 
 message Song {
   string code = 1;
