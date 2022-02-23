@@ -38,8 +38,11 @@ run-migrate-drop:
 run-serve:
 	go run . serve
 
-run-test:
-	go run . test
+run-test-unary:
+	go run . test unary
+
+run-test-server-streaming:
+	go run . test server-streaming
 
 clean:
 	rm -f coverage.* main.bin

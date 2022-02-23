@@ -3,6 +3,7 @@ package test
 import (
 	"context"
 	"fmt"
+	"io"
 	"jukebox-app/src/endpoint/rpc"
 	"log"
 
@@ -23,7 +24,15 @@ func ExecuteCmdFn(_ *cobra.Command, args []string) {
 	defer cc.Close()
 
 	c := rpc.NewGreetServiceClient(cc)
-	doUnary(c)
+
+	mode := args[0]
+	switch mode {
+	case "unary":
+		doUnary(c)
+	case "server-streaming":
+		doServerStreaming(c)
+	}
+
 }
 
 func doUnary(c rpc.GreetServiceClient) {
@@ -39,4 +48,31 @@ func doUnary(c rpc.GreetServiceClient) {
 		log.Fatalf("error while calling Greet RPC: %v", err)
 	}
 	log.Printf("Response from Greet: %v", res.Result)
+}
+
+func doServerStreaming(c rpc.GreetServiceClient) {
+	fmt.Println("Starting to do a Server Streaming RPC...")
+
+	req := &rpc.GreetManyTimesRequest{
+		Greeting: &rpc.Greeting{
+			FirstName: "Stephane",
+			LastName:  "Maarek",
+		},
+	}
+
+	resStream, err := c.GreetManyTimes(context.Background(), req)
+	if err != nil {
+		log.Fatalf("error while calling GreetManyTimes RPC: %v", err)
+	}
+	for {
+		msg, err := resStream.Recv()
+		if err == io.EOF {
+			// we've reached the end of the stream
+			break
+		}
+		if err != nil {
+			log.Fatalf("error while reading stream: %v", err)
+		}
+		log.Printf("Response from GreetManyTimes: %v", msg.GetResult())
+	}
 }
