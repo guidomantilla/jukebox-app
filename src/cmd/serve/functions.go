@@ -9,6 +9,7 @@ import (
 	"github.com/spf13/cobra"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
+	"google.golang.org/grpc/reflection"
 )
 
 func ExecuteCmdFn(_ *cobra.Command, args []string) {
@@ -34,6 +35,7 @@ func ExecuteCmdFn(_ *cobra.Command, args []string) {
 
 	server := grpc.NewServer(opts...)
 	rpc.RegisterGreetServiceServer(server, &rpc.GreetServiceGrpcServer{})
+	reflection.Register(server)
 	if err = server.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
