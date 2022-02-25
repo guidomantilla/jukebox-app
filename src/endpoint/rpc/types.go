@@ -7,6 +7,9 @@ import (
 	"log"
 	"strconv"
 	"time"
+
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 type GreetServiceGrpcServer struct {
@@ -82,6 +85,24 @@ func (server *GreetServiceGrpcServer) GreetEveryone(stream GreetService_GreetEve
 			return sendErr
 		}
 	}
+}
+
+func (server *GreetServiceGrpcServer) GreetWithDeadline(ctx context.Context, request *GreetWithDeadlineRequest) (*GreetWithDeadlineResponse, error) {
+	fmt.Printf("GreetWithDeadline function was invoked with %v\n", request)
+	for i := 0; i < 3; i++ {
+		if ctx.Err() == context.DeadlineExceeded {
+			// the client canceled the request
+			fmt.Println("The client canceled the request!")
+			return nil, status.Error(codes.Canceled, "the client canceled the request")
+		}
+		time.Sleep(1 * time.Second)
+	}
+	firstName := request.GetGreeting().GetFirstName()
+	result := "Hello " + firstName
+	res := &GreetWithDeadlineResponse{
+		Result: result,
+	}
+	return res, nil
 }
 
 func (server *GreetServiceGrpcServer) mustEmbedUnimplementedGreetServiceServer() {}

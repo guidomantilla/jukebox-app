@@ -50,6 +50,12 @@ run-test-client-streaming:
 run-test-bidi-streaming:
 	go run . test bidi-streaming
 
+run-test-unary-deadline-ok:
+	go run . test unary-deadline-ok
+
+run-test-unary-deadline-bad:
+	go run . test unary-deadline-bad
+
 clean:
 	rm -f coverage.* main.bin
 
