@@ -36,10 +36,25 @@ run-migrate-drop:
 	go run . migrate drop
 
 run-serve:
-	go run . serve
+	go run . serve tls
 
-run-test:
-	go run . test
+run-test-unary:
+	go run . test tls unary
+
+run-test-server-streaming:
+	go run . test tls server-streaming
+
+run-test-client-streaming:
+	go run . test tls client-streaming
+
+run-test-bidi-streaming:
+	go run . test tls bidi-streaming
+
+run-test-unary-deadline-ok:
+	go run . test tls unary-deadline-ok
+
+run-test-unary-deadline-bad:
+	go run . test tls unary-deadline-bad
 
 clean:
 	rm -f coverage.* main.bin
@@ -57,5 +72,6 @@ prepare:
 	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 	go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
 	go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+	go install github.com/ktr0731/evans@latest
 	go mod download
 	go mod tidy

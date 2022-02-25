@@ -4,7 +4,7 @@
 // - protoc             v3.6.1
 // source: api/jukebox-app.proto
 
-package grpc
+package rpc
 
 import (
 	context "context"

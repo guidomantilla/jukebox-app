@@ -1,7 +1,7 @@
 package environment
 
 import (
-	"jukebox-app/src/pkg/misc/properties"
+	"jukebox-app/src/misc/properties"
 )
 
 type Environment interface {

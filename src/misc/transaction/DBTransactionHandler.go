@@ -2,7 +2,7 @@ package transaction
 
 import (
 	"database/sql"
-	"jukebox-app/src/pkg/misc/datasource"
+	"jukebox-app/src/misc/datasource"
 	"log"
 )
 

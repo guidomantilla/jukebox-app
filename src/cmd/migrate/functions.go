@@ -1,7 +1,7 @@
 package migrate
 
 import (
-	"jukebox-app/src/pkg/config"
+	"jukebox-app/src/config"
 	"log"
 	"os"
 	"path/filepath"
