@@ -8,9 +8,10 @@ import (
 
 	"github.com/spf13/cobra"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 )
 
-func ExecuteCmdFn(_ *cobra.Command, _ []string) {
+func ExecuteCmdFn(_ *cobra.Command, args []string) {
 	fmt.Println("Hello World")
 
 	var err error
@@ -20,8 +21,18 @@ func ExecuteCmdFn(_ *cobra.Command, _ []string) {
 	}
 
 	opts := make([]grpc.ServerOption, 0)
-	server := grpc.NewServer(opts...)
+	if len(args) != 0 && args[0] == "tls" {
+		certFile := "ssl/server.crt"
+		keyFile := "ssl/server.pem"
+		var cred credentials.TransportCredentials
+		if cred, err = credentials.NewServerTLSFromFile(certFile, keyFile); err != nil {
+			log.Fatalf("Failed loading certificates: %v", err)
+			return
+		}
+		opts = append(opts, grpc.Creds(cred))
+	}
 
+	server := grpc.NewServer(opts...)
 	rpc.RegisterGreetServiceServer(server, &rpc.GreetServiceGrpcServer{})
 	if err = server.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)

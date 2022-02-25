@@ -11,6 +11,7 @@ import (
 	"github.com/spf13/cobra"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/status"
 )
 
@@ -19,16 +20,42 @@ func ExecuteCmdFn(_ *cobra.Command, args []string) {
 
 	var err error
 	var cc *grpc.ClientConn
+	var mode string
 
 	opts := grpc.WithInsecure()
+
+	if len(args) == 1 && args[0] == "tls" {
+		log.Fatal("missing parameters")
+	}
+
+	if len(args) == 1 && args[0] != "tls" {
+		mode = args[0]
+	}
+
+	if len(args) == 2 && args[0] != "tls" {
+		log.Fatal("tls parameter should be first")
+	}
+
+	if len(args) == 2 && args[0] == "tls" {
+		mode = args[1]
+		certFile := "ssl/ca.crt" // Certificate Authority Trust certificate
+		cred, sslErr := credentials.NewClientTLSFromFile(certFile, "")
+		if sslErr != nil {
+			log.Fatalf("Error while loading CA trust certificate: %v", sslErr)
+			return
+		}
+		opts = grpc.WithTransportCredentials(cred)
+	}
+
 	if cc, err = grpc.Dial("localhost:50051", opts); err != nil {
 		log.Fatalf("could not connect: %v", err)
 	}
 	defer cc.Close()
-
 	c := rpc.NewGreetServiceClient(cc)
+	doMode(mode, c)
+}
 
-	mode := args[0]
+func doMode(mode string, c rpc.GreetServiceClient) {
 	switch mode {
 	case "unary":
 		doUnary(c)

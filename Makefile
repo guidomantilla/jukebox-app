@@ -36,25 +36,25 @@ run-migrate-drop:
 	go run . migrate drop
 
 run-serve:
-	go run . serve
+	go run . serve tls
 
 run-test-unary:
-	go run . test unary
+	go run . test tls unary
 
 run-test-server-streaming:
-	go run . test server-streaming
+	go run . test tls server-streaming
 
 run-test-client-streaming:
-	go run . test client-streaming
+	go run . test tls client-streaming
 
 run-test-bidi-streaming:
-	go run . test bidi-streaming
+	go run . test tls bidi-streaming
 
 run-test-unary-deadline-ok:
-	go run . test unary-deadline-ok
+	go run . test tls unary-deadline-ok
 
 run-test-unary-deadline-bad:
-	go run . test unary-deadline-bad
+	go run . test tls unary-deadline-bad
 
 clean:
 	rm -f coverage.* main.bin
