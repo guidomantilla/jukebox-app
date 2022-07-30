@@ -11,10 +11,10 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
+var singletonEnvironment environment.Environment
 var singletonLogger *zap.Logger
 
-func StopMonitoring() {
-
+func StopConfig() {
 	// Stop Zap
 	_ = singletonLogger.Sync()
 
@@ -22,13 +22,16 @@ func StopMonitoring() {
 	sentry.Flush(2 * time.Second)
 }
 
-func InitMonitoring(environment environment.Environment) {
+func InitConfig(cmdArgs *[]string) environment.Environment {
+
+	// Load CMD and OS variables
+	singletonEnvironment = environment.LoadEnvironment(cmdArgs)
 
 	// Setup & Init Sentry
 	sentryOptions := sentry.ClientOptions{
-		Dsn:         environment.GetValue("SENTRY_DSN").AsString(),
-		Environment: environment.GetValue("SENTRY_ENVIRONMENT").AsString(),
-		Release:     environment.GetValue("SENTRY_RELEASE").AsString(),
+		Dsn:         singletonEnvironment.GetValue("SENTRY_DSN").AsString(),
+		Environment: singletonEnvironment.GetValue("SENTRY_ENVIRONMENT").AsString(),
+		Release:     singletonEnvironment.GetValue("SENTRY_RELEASE").AsString(),
 		Debug:       true,
 	}
 
@@ -38,7 +41,7 @@ func InitMonitoring(environment environment.Environment) {
 
 	// Setup Zap
 	level := zapcore.Level(0)
-	if err := level.UnmarshalText([]byte(environment.GetValue("LOG_LEVEL").AsString())); err != nil {
+	if err := level.UnmarshalText([]byte(singletonEnvironment.GetValue("LOG_LEVEL").AsString())); err != nil {
 		log.Fatalln(fmt.Sprintf("invalid zap log level: %s", err))
 	}
 
@@ -57,6 +60,16 @@ func InitMonitoring(environment environment.Environment) {
 		log.Fatalln(err)
 	}
 	zap.ReplaceGlobals(singletonLogger)
+
+	for _, source := range singletonEnvironment.GetPropertySources() {
+		sourceMap := source.AsMap()
+		name, internalMap := sourceMap["name"], sourceMap["value"].(map[string]string)
+		for key, value := range internalMap {
+			zap.L().Debug(fmt.Sprintf("source name: %s, key: %s, value: %s", name, key, value))
+		}
+	}
+
+	return singletonEnvironment
 }
 
 func sentryHook(entry zapcore.Entry) error {

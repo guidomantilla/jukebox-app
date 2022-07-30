@@ -3,7 +3,8 @@ package transaction
 import (
 	"database/sql"
 	"jukebox-app/src/misc/datasource"
-	"log"
+
+	"go.uber.org/zap"
 )
 
 type DBTransactionContext struct{}
@@ -34,7 +35,7 @@ func (handler *DefaultDBTransactionHandler) HandleTransaction(fn DBTransactionHa
 	defer func() {
 		if p := recover(); p != nil {
 			handleError(tx.Rollback())
-			log.Println(err)
+			zap.L().Error(err.Error())
 		} else if err != nil {
 			// something went wrong, rollback
 			handleError(tx.Rollback())
@@ -51,6 +52,6 @@ func (handler *DefaultDBTransactionHandler) HandleTransaction(fn DBTransactionHa
 
 func handleError(err error) {
 	if err != nil {
-		log.Println(err)
+		zap.L().Error(err.Error())
 	}
 }

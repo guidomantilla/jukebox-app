@@ -18,8 +18,8 @@ type MigrationFunction func(migration *migrate.Migrate) error
 
 func handleMigration(args []string, fn MigrationFunction) error {
 
-	env := config.InitParams(&args)
-	defer config.StopParams()
+	env := config.InitConfig(&args)
+	defer config.StopConfig()
 
 	dataSource := config.InitDB(env)
 	defer config.StopDB()
