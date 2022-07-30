@@ -47,6 +47,11 @@ clean:
 compile:
 	go build -a -o main.bin .
 
+update-dependencies:
+	go get -u ./...
+	go get -t -u ./...
+	go mod tidy
+
 env-setup:
 	docker compose -f containerd/docker-compose.yml up --build --remove-orphans --force-recreate --detach jukebox-mysql jukebox-redis
 	sleep 10

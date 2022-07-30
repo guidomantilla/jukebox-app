@@ -3,7 +3,7 @@ services:
   jukebox-app:
     build:
       context: ..
-      dockerfile: /docker.yml
+      dockerfile: /Dockerfile
     image: jukebox-app
     container_name: jukebox-app
     ports:
