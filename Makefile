@@ -2,7 +2,7 @@
 phony-goal: ; @echo $@
 
 build: validate
-	docker compose -f containerd/docker-compose.yml up --build --remove-orphans --force-recreate --detach
+	docker compose -f docker/docker-compose.yml up --build --remove-orphans --force-recreate --detach
 
 validate: format vet lint test
 
