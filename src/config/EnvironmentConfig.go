@@ -11,12 +11,12 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-var singletonEnvironment environment.Environment
-var singletonLogger *zap.Logger
+var _singletonEnvironment environment.Environment
+var _singletonLogger *zap.Logger
 
 func StopConfig() {
 	// Stop Zap
-	_ = singletonLogger.Sync()
+	_ = _singletonLogger.Sync()
 
 	// Stop Sentry
 	sentry.Flush(2 * time.Second)
@@ -25,13 +25,13 @@ func StopConfig() {
 func InitConfig(cmdArgs *[]string) environment.Environment {
 
 	// Load CMD and OS variables
-	singletonEnvironment = environment.LoadEnvironment(cmdArgs)
+	_singletonEnvironment = environment.LoadEnvironment(cmdArgs)
 
 	// Setup & Init Sentry
 	sentryOptions := sentry.ClientOptions{
-		Dsn:         singletonEnvironment.GetValue("SENTRY_DSN").AsString(),
-		Environment: singletonEnvironment.GetValue("SENTRY_ENVIRONMENT").AsString(),
-		Release:     singletonEnvironment.GetValue("SENTRY_RELEASE").AsString(),
+		Dsn:         _singletonEnvironment.GetValue("SENTRY_DSN").AsString(),
+		Environment: _singletonEnvironment.GetValue("SENTRY_ENVIRONMENT").AsString(),
+		Release:     _singletonEnvironment.GetValue("SENTRY_RELEASE").AsString(),
 		Debug:       true,
 	}
 
@@ -41,7 +41,7 @@ func InitConfig(cmdArgs *[]string) environment.Environment {
 
 	// Setup Zap
 	level := zapcore.Level(0)
-	if err := level.UnmarshalText([]byte(singletonEnvironment.GetValue("LOG_LEVEL").AsString())); err != nil {
+	if err := level.UnmarshalText([]byte(_singletonEnvironment.GetValue("LOG_LEVEL").AsString())); err != nil {
 		log.Fatalln(fmt.Sprintf("invalid zap log level: %s", err))
 	}
 
@@ -56,12 +56,12 @@ func InitConfig(cmdArgs *[]string) environment.Environment {
 
 	// Init Zap with Sentry Hooks for error level logs
 	var err error
-	if singletonLogger, err = loggerConfig.Build(zap.Hooks(sentryHook)); err != nil {
+	if _singletonLogger, err = loggerConfig.Build(zap.Hooks(sentryHook)); err != nil {
 		log.Fatalln(err)
 	}
-	zap.ReplaceGlobals(singletonLogger)
+	zap.ReplaceGlobals(_singletonLogger)
 
-	for _, source := range singletonEnvironment.GetPropertySources() {
+	for _, source := range _singletonEnvironment.GetPropertySources() {
 		sourceMap := source.AsMap()
 		name, internalMap := sourceMap["name"], sourceMap["value"].(map[string]string)
 		for key, value := range internalMap {
@@ -69,7 +69,7 @@ func InitConfig(cmdArgs *[]string) environment.Environment {
 		}
 	}
 
-	return singletonEnvironment
+	return _singletonEnvironment
 }
 
 func sentryHook(entry zapcore.Entry) error {

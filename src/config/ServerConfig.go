@@ -11,7 +11,7 @@ const (
 	HOST_POST_DEFAULT_VALUE = ":8080"
 )
 
-var singletonEngine *gin.Engine
+var _singletonEngine *gin.Engine
 
 func StopWebServer() {
 	//Nothing to do here yet
@@ -19,17 +19,17 @@ func StopWebServer() {
 
 func InitWebServer(environment environment.Environment) error {
 
-	singletonEngine = gin.Default()
+	_singletonEngine = gin.Default()
 
 	loadApiRoutes(nil)
 
 	hostAddress := environment.GetValueOrDefault(HOST_POST, HOST_POST_DEFAULT_VALUE).AsString()
-	return singletonEngine.Run(hostAddress)
+	return _singletonEngine.Run(hostAddress)
 }
 
 func loadApiRoutes(something interface{}) {
 
-	group := singletonEngine.Group("/api")
+	group := _singletonEngine.Group("/api")
 	group.GET("/songs", nil)
 	group.GET("/songs/:id", nil)
 	group.POST("/songs", nil)
