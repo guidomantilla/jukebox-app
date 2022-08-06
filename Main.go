@@ -1,7 +1,7 @@
 package main
 
 import (
-	"jukebox-app/src/cmd"
+	"jukebox-app/internal/cmd"
 )
 
 func main() {
