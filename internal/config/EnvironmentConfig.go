@@ -36,13 +36,13 @@ func InitConfig(cmdArgs *[]string) environment2.Environment {
 	}
 
 	if err := sentry.Init(sentryOptions); err != nil {
-		log.Fatalln(fmt.Sprintf("sentry.Init: %s", err))
+		log.Fatalf("sentry.Init: %s", err)
 	}
 
 	// Setup Zap
 	level := zapcore.Level(0)
 	if err := level.UnmarshalText([]byte(_singletonEnvironment.GetValue("LOG_LEVEL").AsString())); err != nil {
-		log.Fatalln(fmt.Sprintf("invalid zap log level: %s", err))
+		log.Fatalf("invalid zap log level: %s", err)
 	}
 
 	loggerConfig := zap.Config{

@@ -29,7 +29,9 @@ func handleMigration(args []string, fn MigrationFunction) error {
 	var db *sql.DB
 	var driver database.Driver
 
-	db, err = dataSource.GetDatabase()
+	if db, err = dataSource.GetDatabase(); err != nil {
+		return err
+	}
 
 	if driver, err = mysql.WithInstance(db, &mysql.Config{}); err != nil {
 		return err

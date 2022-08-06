@@ -1,6 +1,7 @@
 package config
 
 import (
+	"database/sql"
 	"jukebox-app/pkg/datasource"
 	"jukebox-app/pkg/environment"
 
@@ -17,7 +18,14 @@ var singletonDataSource datasource.DBDataSource
 
 func StopDB() {
 
-	database, err := singletonDataSource.GetDatabase()
+	var err error
+	var database *sql.DB
+
+	if database, err = singletonDataSource.GetDatabase(); err != nil {
+		zap.L().Error("Error closing DB: " + err.Error())
+		return
+	}
+
 	if err = database.Close(); err != nil {
 		zap.L().Error("Error closing DB")
 		return
