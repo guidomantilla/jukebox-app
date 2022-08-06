@@ -36,7 +36,7 @@ run-migrate-drop:
 	go run . migrate drop
 
 run-serve:
-	go run . serve tls
+	go run . serve
 
 run-test:
 	go run . test
