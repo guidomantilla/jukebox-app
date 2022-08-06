@@ -4,6 +4,8 @@ import (
 	"jukebox-app/pkg/properties"
 )
 
+var _ Environment = (*DefaultEnvironment)(nil)
+
 type Environment interface {
 	GetValue(property string) EnvVar
 	GetValueOrDefault(property string, defaultValue string) EnvVar

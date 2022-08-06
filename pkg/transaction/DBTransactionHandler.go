@@ -7,6 +7,9 @@ import (
 	"go.uber.org/zap"
 )
 
+var _ DBTransactionHandler = (*DefaultDBTransactionHandler)(nil)
+var _ datasource.DBDataSource = (*DefaultDBTransactionHandler)(nil)
+
 type DBTransactionContext struct{}
 
 type DBTransactionHandlerFunction func(tx *sql.Tx) error
@@ -29,27 +32,25 @@ func (handler *DefaultDBTransactionHandler) HandleTransaction(fn DBTransactionHa
 
 	db, err := handler.GetDatabase()
 	if err != nil {
-		handleError(err)
+		zap.L().Error(err.Error())
 		return err
 	}
 
 	tx, err := db.Begin()
 	if err != nil {
-		handleError(err)
+		zap.L().Error(err.Error())
 		return err
 	}
 
 	defer func() {
 		if p := recover(); p != nil {
 			handleError(tx.Rollback())
-			zap.L().Error(err.Error())
 		} else if err != nil {
 			// something went wrong, rollback
 			handleError(tx.Rollback())
 		} else {
 			// all good, commit
-			err = tx.Commit()
-			handleError(err)
+			handleError(tx.Commit())
 		}
 	}()
 
