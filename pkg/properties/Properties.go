@@ -2,9 +2,12 @@ package properties
 
 import (
 	"fmt"
-	"log"
 	"strings"
+
+	"go.uber.org/zap"
 )
+
+var _ Properties = (*DefaultProperties)(nil)
 
 type Properties interface {
 	Add(property string, value string)
@@ -56,7 +59,8 @@ func (builder *DefaultPropertiesBuilder) FromArray(array *[]string) *DefaultProp
 		for _, env := range *array {
 			pair := strings.SplitN(env, "=", 2)
 			if len(pair) != 2 {
-				log.Fatalln(fmt.Sprintf("[%s=??] not a key value parameter. expected [key=value]", pair[0]))
+				zap.L().Error(fmt.Sprintf("[%s=??] not a key value parameter. expected [key=value]", pair[0]))
+				continue
 			}
 			builder.defaultProperties.Add(pair[0], pair[1])
 		}

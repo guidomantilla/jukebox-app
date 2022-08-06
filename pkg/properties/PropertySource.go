@@ -1,5 +1,7 @@
 package properties
 
+var _ PropertySource = (*DefaultPropertySource)(nil)
+
 type PropertySource interface {
 	Get(property string) string
 	AsMap() map[string]interface{}

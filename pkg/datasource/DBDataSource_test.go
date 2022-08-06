@@ -14,10 +14,10 @@ func TestNewMysqlDataSource(t *testing.T) {
 	mysqlDataSource := NewMysqlDataSource("some_username", "some_password", ":username_:password")
 
 	assert.NotNil(t, mysqlDataSource)
-	assert.Equal(t, mysqlDataSource.driverName, "mysql")
-	assert.Equal(t, mysqlDataSource.username, "some_username")
-	assert.Equal(t, mysqlDataSource.password, "some_password")
-	assert.Equal(t, mysqlDataSource.url, "some_username_some_password")
+	assert.Equal(t, "mysql", mysqlDataSource.driverName)
+	assert.Equal(t, "some_username", mysqlDataSource.username)
+	assert.Equal(t, "some_password", mysqlDataSource.password)
+	assert.Equal(t, "some_username_some_password", mysqlDataSource.url)
 	assert.Nil(t, mysqlDataSource.database)
 }
 
@@ -37,7 +37,7 @@ func TestGetDatabase_WhenDBIsNil_Ok(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, database)
 	assert.NotNil(t, mysqlDataSource.database)
-	assert.Equal(t, mysqlDataSource.database, database)
+	assert.Equal(t, database, mysqlDataSource.database)
 }
 
 func TestGetDatabase_WhenDBIsNil_Error(t *testing.T) {
@@ -76,7 +76,7 @@ func TestGetDatabase_WhenDBIsNotNil_Ok(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, database)
 	assert.NotNil(t, mysqlDataSource.database)
-	assert.Equal(t, mysqlDataSource.database, database)
+	assert.Equal(t, database, mysqlDataSource.database)
 }
 
 func TestGetDatabase_WhenDBIsNotNil_Error(t *testing.T) {
