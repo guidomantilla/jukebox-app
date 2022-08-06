@@ -24,7 +24,7 @@ test:
 coverage: test
 	go tool cover -func=coverage.out
 	go tool cover -html=coverage.out -o coverage.html
-	open coverage.html
+	#open coverage.html
 
 run-migrate-up:
 	go run . migrate up

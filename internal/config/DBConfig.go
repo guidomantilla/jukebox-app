@@ -17,7 +17,8 @@ var singletonDataSource datasource.DBDataSource
 
 func StopDB() {
 
-	if err := singletonDataSource.GetDatabase().Close(); err != nil {
+	database, err := singletonDataSource.GetDatabase()
+	if err = database.Close(); err != nil {
 		zap.L().Error("Error closing DB")
 		return
 	}

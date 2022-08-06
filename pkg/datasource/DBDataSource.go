@@ -8,8 +8,10 @@ import (
 	"go.uber.org/zap"
 )
 
+var _ DBDataSource = (*MysqlDataSource)(nil)
+
 type DBDataSource interface {
-	GetDatabase() *sql.DB
+	GetDatabase() (*sql.DB, error)
 }
 
 type MysqlDataSource struct {
@@ -18,6 +20,7 @@ type MysqlDataSource struct {
 	password   string
 	url        string
 	database   *sql.DB
+	openFunc   func(driverName, dataSourceName string) (*sql.DB, error)
 }
 
 func NewMysqlDataSource(username string, password string, url string) *MysqlDataSource {
@@ -31,44 +34,27 @@ func NewMysqlDataSource(username string, password string, url string) *MysqlData
 		password:   password,
 		url:        url,
 		database:   nil,
+		openFunc:   sql.Open,
 	}
 }
 
-func (mysqlDataSource *MysqlDataSource) GetDatabase() *sql.DB {
+func (mysqlDataSource *MysqlDataSource) GetDatabase() (*sql.DB, error) {
 
 	var err error
 
 	if mysqlDataSource.database == nil {
-		if mysqlDataSource.database, err = open(mysqlDataSource.driverName, mysqlDataSource.url); err != nil {
+		if mysqlDataSource.database, err = mysqlDataSource.openFunc(mysqlDataSource.driverName, mysqlDataSource.url); err != nil {
 			zap.L().Error(err.Error())
+			return nil, err
 		}
 	}
 
 	if err = mysqlDataSource.database.Ping(); err != nil {
-		if mysqlDataSource.database, err = open(mysqlDataSource.driverName, mysqlDataSource.url); err != nil {
+		if mysqlDataSource.database, err = mysqlDataSource.openFunc(mysqlDataSource.driverName, mysqlDataSource.url); err != nil {
 			zap.L().Error(err.Error())
-		}
-
-		if err = mysqlDataSource.database.Ping(); err != nil {
-			zap.L().Error(err.Error())
+			return nil, err
 		}
 	}
 
-	return mysqlDataSource.database
-}
-
-func open(driverName string, url string) (*sql.DB, error) {
-
-	var err error
-	var database *sql.DB
-
-	if database, err = sql.Open(driverName, url); err != nil {
-		return nil, err
-	}
-
-	if err = database.Ping(); err != nil {
-		return nil, err
-	}
-
-	return database, nil
+	return mysqlDataSource.database, nil
 }

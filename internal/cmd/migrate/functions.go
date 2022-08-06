@@ -1,6 +1,7 @@
 package migrate
 
 import (
+	"database/sql"
 	"jukebox-app/internal/config"
 	"log"
 	"os"
@@ -25,8 +26,12 @@ func handleMigration(args []string, fn MigrationFunction) error {
 	defer config.StopDB()
 
 	var err error
+	var db *sql.DB
 	var driver database.Driver
-	if driver, err = mysql.WithInstance(dataSource.GetDatabase(), &mysql.Config{}); err != nil {
+
+	db, err = dataSource.GetDatabase()
+
+	if driver, err = mysql.WithInstance(db, &mysql.Config{}); err != nil {
 		return err
 	}
 

@@ -26,7 +26,14 @@ func NewDefaultDBTransactionHandler(dbDatasource datasource.DBDataSource) *Defau
 }
 
 func (handler *DefaultDBTransactionHandler) HandleTransaction(fn DBTransactionHandlerFunction) error {
-	tx, err := handler.GetDatabase().Begin()
+
+	db, err := handler.GetDatabase()
+	if err != nil {
+		handleError(err)
+		return err
+	}
+
+	tx, err := db.Begin()
 	if err != nil {
 		handleError(err)
 		return err
