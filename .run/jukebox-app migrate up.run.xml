@@ -1,0 +1,15 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="jukebox-app migrate up" type="GoApplicationRunConfiguration" factoryName="Go Application">
+    <module name="jukebox-app" />
+    <working_directory value="$PROJECT_DIR$" />
+    <parameters value="migrate up" />
+    <EXTENSION ID="com.fapiko.jetbrains.plugins.better_direnv.runconfigs.GolandRunConfigurationExtension">
+      <option name="DIRENV_ENABLED" value="true" />
+      <option name="DIRENV_TRUSTED" value="true" />
+    </EXTENSION>
+    <kind value="PACKAGE" />
+    <package value="jukebox-app" />
+    <directory value="$PROJECT_DIR$" />
+    <method v="2" />
+  </configuration>
+</component>

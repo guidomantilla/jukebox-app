@@ -39,22 +39,6 @@ type DefaultUserRepository struct {
 	statementFindByEmail string
 }
 
-/* TYPES CONSTRUCTOR */
-
-func NewDefaultUserRepository() *DefaultUserRepository {
-	return &DefaultUserRepository{
-		statementCreate:   "insert user account (code, name, email) values (?, ?, ?)",
-		statementUpdate:   "update user set code = ?, name = ?, email = ? where id = ?",
-		statementDelete:   "delete from user where id = ?",
-		statementFindById: "select id, code, name, email from user where id = ?",
-		statementFind:     "select id, code, name, email from user",
-
-		statementFindByCode:  "select id, code, name, email from user where code = ?",
-		statementFindByName:  "select id, code, name, email from user where name = ?",
-		statementFindByEmail: "select id, code, name, email from user where email = ?",
-	}
-}
-
 /* DefaultUserRepository METHODS */
 
 func (repository *DefaultUserRepository) Create(ctx context.Context, user *model.User) error {
@@ -294,4 +278,20 @@ func (repository *DefaultUserRepository) FindByEmail(ctx context.Context, email 
 	}
 
 	return &user, nil
+}
+
+/* TYPES CONSTRUCTOR */
+
+func NewDefaultUserRepository() *DefaultUserRepository {
+	return &DefaultUserRepository{
+		statementCreate:   "insert user account (code, name, email) values (?, ?, ?)",
+		statementUpdate:   "update user set code = ?, name = ?, email = ? where id = ?",
+		statementDelete:   "delete from user where id = ?",
+		statementFindById: "select id, code, name, email from user where id = ?",
+		statementFind:     "select id, code, name, email from user",
+
+		statementFindByCode:  "select id, code, name, email from user where code = ?",
+		statementFindByName:  "select id, code, name, email from user where name = ?",
+		statementFindByEmail: "select id, code, name, email from user where email = ?",
+	}
 }

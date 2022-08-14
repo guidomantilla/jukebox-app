@@ -27,6 +27,8 @@ type ArtistRepository interface {
 	FindByName(_ context.Context, name string) (*model.Artist, error)
 }
 
+//
+
 type DefaultArtistRepository struct {
 	statementCreate     string
 	statementUpdate     string
@@ -35,21 +37,6 @@ type DefaultArtistRepository struct {
 	statementFind       string
 	statementFindByCode string
 	statementFindByName string
-}
-
-/* TYPES CONSTRUCTOR */
-
-func NewDefaultArtistRepository() *DefaultArtistRepository {
-	return &DefaultArtistRepository{
-		statementCreate:   "insert artist account (code, name) values (?, ?)",
-		statementUpdate:   "update artist set code = ?, name = ? where id = ?",
-		statementDelete:   "delete from artist where id = ?",
-		statementFindById: "select id, code, name from artist where id = ?",
-		statementFind:     "select id, code, name from artist",
-
-		statementFindByCode: "select id, code, name from artist where code = ?",
-		statementFindByName: "select id, code, name from artist where name = ?",
-	}
 }
 
 /* DefaultUserRepository METHODS */
@@ -261,4 +248,19 @@ func (repository *DefaultArtistRepository) FindByName(ctx context.Context, name 
 	}
 
 	return &artist, nil
+}
+
+/* TYPES CONSTRUCTOR */
+
+func NewDefaultArtistRepository() *DefaultArtistRepository {
+	return &DefaultArtistRepository{
+		statementCreate:   "insert artist account (code, name) values (?, ?)",
+		statementUpdate:   "update artist set code = ?, name = ? where id = ?",
+		statementDelete:   "delete from artist where id = ?",
+		statementFindById: "select id, code, name from artist where id = ?",
+		statementFind:     "select id, code, name from artist",
+
+		statementFindByCode: "select id, code, name from artist where code = ?",
+		statementFindByName: "select id, code, name from artist where name = ?",
+	}
 }

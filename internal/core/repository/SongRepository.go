@@ -39,22 +39,6 @@ type DefaultSongRepository struct {
 	statementFindByArtistId string
 }
 
-/* TYPES CONSTRUCTOR */
-
-func NewDefaultSongRepository() *DefaultSongRepository {
-	return &DefaultSongRepository{
-		statementCreate:   "insert song account (code, name, artistId) values (?, ?, ?)",
-		statementUpdate:   "update song set code = ?, name = ?, artistId = ? where id = ?",
-		statementDelete:   "delete from song where id = ?",
-		statementFindById: "select id, code, name, artistId from song where id = ?",
-		statementFind:     "select id, code, name, artistId from song",
-
-		statementFindByCode:     "select id, code, name, artistId from song where code = ?",
-		statementFindByName:     "select id, code, name, artistId from song where name = ?",
-		statementFindByArtistId: "select id, code, name, artistId from song where artistId = ?",
-	}
-}
-
 /* DefaultUserRepository METHODS */
 
 func (repository *DefaultSongRepository) Create(ctx context.Context, song *model.Song) error {
@@ -306,4 +290,20 @@ func (repository *DefaultSongRepository) FindByArtistId(ctx context.Context, id 
 	}
 
 	return &songs, nil
+}
+
+/* TYPES CONSTRUCTOR */
+
+func NewDefaultSongRepository() *DefaultSongRepository {
+	return &DefaultSongRepository{
+		statementCreate:   "insert song account (code, name, artistId) values (?, ?, ?)",
+		statementUpdate:   "update song set code = ?, name = ?, artistId = ? where id = ?",
+		statementDelete:   "delete from song where id = ?",
+		statementFindById: "select id, code, name, artistId from song where id = ?",
+		statementFind:     "select id, code, name, artistId from song",
+
+		statementFindByCode:     "select id, code, name, artistId from song where code = ?",
+		statementFindByName:     "select id, code, name, artistId from song where name = ?",
+		statementFindByArtistId: "select id, code, name, artistId from song where artistId = ?",
+	}
 }
