@@ -19,20 +19,20 @@ type MigrationFunction func(migration *migrate.Migrate) error
 
 func handleMigration(args []string, fn MigrationFunction) error {
 
+	var err error
+
 	env := config.InitConfig(&args)
 	defer config.StopConfig()
 
 	dataSource := config.InitDB(env)
 	defer config.StopDB()
 
-	var err error
 	var db *sql.DB
-	var driver database.Driver
-
 	if db, err = dataSource.GetDatabase(); err != nil {
 		return err
 	}
 
+	var driver database.Driver
 	if driver, err = mysql.WithInstance(db, &mysql.Config{}); err != nil {
 		return err
 	}

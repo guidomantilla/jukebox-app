@@ -2,7 +2,7 @@ package config
 
 import (
 	"fmt"
-	environment2 "jukebox-app/pkg/environment"
+	"jukebox-app/pkg/environment"
 	"log"
 	"time"
 
@@ -11,7 +11,7 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-var _singletonEnvironment environment2.Environment
+var _singletonEnvironment environment.Environment
 var _singletonLogger *zap.Logger
 
 func StopConfig() {
@@ -22,10 +22,10 @@ func StopConfig() {
 	sentry.Flush(2 * time.Second)
 }
 
-func InitConfig(cmdArgs *[]string) environment2.Environment {
+func InitConfig(cmdArgs *[]string) environment.Environment {
 
 	// Load CMD and OS variables
-	_singletonEnvironment = environment2.LoadEnvironment(cmdArgs)
+	_singletonEnvironment = environment.LoadEnvironment(cmdArgs)
 
 	// Setup & Init Sentry
 	sentryOptions := sentry.ClientOptions{
@@ -35,13 +35,14 @@ func InitConfig(cmdArgs *[]string) environment2.Environment {
 		Debug:       true,
 	}
 
-	if err := sentry.Init(sentryOptions); err != nil {
+	var err error
+	if err = sentry.Init(sentryOptions); err != nil {
 		log.Fatalf("sentry.Init: %s", err)
 	}
 
 	// Setup Zap
 	level := zapcore.Level(0)
-	if err := level.UnmarshalText([]byte(_singletonEnvironment.GetValue("LOG_LEVEL").AsString())); err != nil {
+	if err = level.UnmarshalText([]byte(_singletonEnvironment.GetValue("LOG_LEVEL").AsString())); err != nil {
 		log.Fatalf("invalid zap log level: %s", err)
 	}
 
@@ -55,17 +56,18 @@ func InitConfig(cmdArgs *[]string) environment2.Environment {
 	}
 
 	// Init Zap with Sentry Hooks for error level logs
-	var err error
 	if _singletonLogger, err = loggerConfig.Build(zap.Hooks(sentryHook)); err != nil {
 		log.Fatalln(err)
 	}
 	zap.ReplaceGlobals(_singletonLogger)
 
-	for _, source := range _singletonEnvironment.GetPropertySources() {
-		sourceMap := source.AsMap()
-		name, internalMap := sourceMap["name"], sourceMap["value"].(map[string]string)
-		for key, value := range internalMap {
-			zap.L().Debug(fmt.Sprintf("source name: %s, key: %s, value: %s", name, key, value))
+	if loggerConfig.Level.String() == "debug" {
+		for _, source := range _singletonEnvironment.GetPropertySources() {
+			sourceMap := source.AsMap()
+			name, internalMap := sourceMap["name"], sourceMap["value"].(map[string]string)
+			for key, value := range internalMap {
+				zap.L().Debug(fmt.Sprintf("source name: %s, key: %s, value: %s", name, key, value))
+			}
 		}
 	}
 
