@@ -7,8 +7,6 @@ import (
 	"go.uber.org/zap"
 )
 
-var _ DBDataSource = (*MysqlDataSource)(nil)
-
 type MysqlDataSource struct {
 	driverName string
 	username   string

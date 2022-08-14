@@ -35,36 +35,33 @@ func (p *DefaultProperties) AsMap() map[string]string {
 	return p.internalMap
 }
 
-// DefaultPropertiesBuilder
+//
 
-type DefaultPropertiesBuilder struct {
-	defaultProperties *DefaultProperties
-}
+type DefaultPropertiesOption = func(properties *DefaultProperties)
 
-func NewDefaultProperties() *DefaultPropertiesBuilder {
-	return &DefaultPropertiesBuilder{
-		defaultProperties: &DefaultProperties{
-			internalMap: make(map[string]string),
-		},
+func NewDefaultProperties(options ...DefaultPropertiesOption) *DefaultProperties {
+	properties := &DefaultProperties{
+		internalMap: make(map[string]string),
 	}
+
+	for _, opt := range options {
+		opt(properties)
+	}
+
+	return properties
 }
 
-func (builder *DefaultPropertiesBuilder) Build() *DefaultProperties {
-	return builder.defaultProperties
-}
-
-func (builder *DefaultPropertiesBuilder) FromArray(array *[]string) *DefaultPropertiesBuilder {
-
-	if array != nil {
-		for _, env := range *array {
-			pair := strings.SplitN(env, "=", 2)
-			if len(pair) != 2 {
-				zap.L().Error(fmt.Sprintf("[%s=??] not a key value parameter. expected [key=value]", pair[0]))
-				continue
+func FromArray(array *[]string) DefaultPropertiesOption {
+	return func(properties *DefaultProperties) {
+		if array != nil {
+			for _, env := range *array {
+				pair := strings.SplitN(env, "=", 2)
+				if len(pair) != 2 {
+					zap.L().Error(fmt.Sprintf("[%s=??] not a key value parameter. expected [key=value]", pair[0]))
+					continue
+				}
+				properties.Add(pair[0], pair[1])
 			}
-			builder.defaultProperties.Add(pair[0], pair[1])
 		}
 	}
-
-	return builder
 }

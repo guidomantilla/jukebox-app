@@ -49,25 +49,23 @@ func (environment *DefaultEnvironment) AppendPropertySources(propertySources ...
 	environment.propertySources = append(environment.propertySources, propertySources...)
 }
 
-// DefaultEnvironmentBuilder
+//
 
-type DefaultEnvironmentBuilder struct {
-	defaultEnvironment *DefaultEnvironment
-}
+type DefaultEnvironmentOption = func(environment *DefaultEnvironment)
 
-func NewDefaultEnvironment() *DefaultEnvironmentBuilder {
-	return &DefaultEnvironmentBuilder{
-		defaultEnvironment: &DefaultEnvironment{
-			propertySources: make([]properties.PropertySource, 0),
-		},
+func NewDefaultEnvironment(options ...DefaultEnvironmentOption) *DefaultEnvironment {
+	environment := &DefaultEnvironment{
+		propertySources: make([]properties.PropertySource, 0),
 	}
+	for _, opt := range options {
+		opt(environment)
+	}
+
+	return environment
 }
 
-func (builder *DefaultEnvironmentBuilder) Build() *DefaultEnvironment {
-	return builder.defaultEnvironment
-}
-
-func (builder *DefaultEnvironmentBuilder) WithPropertySources(propertySources ...properties.PropertySource) *DefaultEnvironmentBuilder {
-	builder.defaultEnvironment.propertySources = propertySources
-	return builder
+func WithPropertySources(propertySources ...properties.PropertySource) DefaultEnvironmentOption {
+	return func(environment *DefaultEnvironment) {
+		environment.propertySources = propertySources
+	}
 }

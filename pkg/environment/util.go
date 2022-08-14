@@ -1,7 +1,7 @@
 package environment
 
 import (
-	properties2 "jukebox-app/pkg/properties"
+	"jukebox-app/pkg/properties"
 	"os"
 )
 
@@ -12,12 +12,12 @@ const (
 
 func LoadEnvironment(cmdArgs *[]string) Environment {
 
-	cmdSource := properties2.NewDefaultPropertySource(CMD_PROPERTY_SOURCE_NAME, properties2.NewDefaultProperties().FromArray(cmdArgs).Build())
-	env := NewDefaultEnvironment().WithPropertySources(cmdSource).Build()
-
 	osArgs := os.Environ()
-	osSource := properties2.NewDefaultPropertySource(OS_PROPERTY_SOURCE_NAME, properties2.NewDefaultProperties().FromArray(&osArgs).Build())
-	env.AppendPropertySources(osSource)
+	osSource := properties.NewDefaultPropertySource(OS_PROPERTY_SOURCE_NAME,
+		properties.NewDefaultProperties(properties.FromArray(&osArgs)))
 
-	return env
+	cmdSource := properties.NewDefaultPropertySource(CMD_PROPERTY_SOURCE_NAME,
+		properties.NewDefaultProperties(properties.FromArray(cmdArgs)))
+
+	return NewDefaultEnvironment(WithPropertySources(osSource, cmdSource))
 }

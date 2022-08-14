@@ -11,6 +11,8 @@ const (
 	MYSQL_DRIVER_NAME = "mysql"
 )
 
+var _ DBDataSource = (*MysqlDataSource)(nil)
+
 type DBDataSource interface {
 	GetDatabase() (*sql.DB, error)
 }

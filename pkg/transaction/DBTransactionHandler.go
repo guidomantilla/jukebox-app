@@ -22,12 +22,6 @@ type DefaultDBTransactionHandler struct {
 	datasource.DBDataSource
 }
 
-func NewDefaultDBTransactionHandler(dbDatasource datasource.DBDataSource) *DefaultDBTransactionHandler {
-	return &DefaultDBTransactionHandler{
-		DBDataSource: dbDatasource,
-	}
-}
-
 func (handler *DefaultDBTransactionHandler) HandleTransaction(fn DBTransactionHandlerFunction) error {
 
 	db, err := handler.GetDatabase()
@@ -46,16 +40,22 @@ func (handler *DefaultDBTransactionHandler) HandleTransaction(fn DBTransactionHa
 		if p := recover(); p != nil {
 			handleError(tx.Rollback())
 		} else if err != nil {
-			// something went wrong, rollback
 			handleError(tx.Rollback())
 		} else {
-			// all good, commit
 			handleError(tx.Commit())
 		}
 	}()
 
 	err = fn(tx)
 	return err
+}
+
+//
+
+func NewDefaultDBTransactionHandler(dbDatasource datasource.DBDataSource) *DefaultDBTransactionHandler {
+	return &DefaultDBTransactionHandler{
+		DBDataSource: dbDatasource,
+	}
 }
 
 func handleError(err error) {

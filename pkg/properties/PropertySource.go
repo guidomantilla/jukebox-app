@@ -7,16 +7,11 @@ type PropertySource interface {
 	AsMap() map[string]interface{}
 }
 
+// DefaultPropertySource
+
 type DefaultPropertySource struct {
 	name       string
 	properties Properties
-}
-
-func NewDefaultPropertySource(name string, properties Properties) *DefaultPropertySource {
-	return &DefaultPropertySource{
-		name:       name,
-		properties: properties,
-	}
 }
 
 func (source *DefaultPropertySource) Get(property string) string {
@@ -28,4 +23,13 @@ func (source *DefaultPropertySource) AsMap() map[string]interface{} {
 	internalMap := make(map[string]interface{})
 	internalMap["name"], internalMap["value"] = source.name, source.properties.AsMap()
 	return internalMap
+}
+
+//
+
+func NewDefaultPropertySource(name string, properties Properties) *DefaultPropertySource {
+	return &DefaultPropertySource{
+		name:       name,
+		properties: properties,
+	}
 }

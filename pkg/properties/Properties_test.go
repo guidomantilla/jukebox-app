@@ -54,36 +54,31 @@ func TestNewDefaultProperties(t *testing.T) {
 	propertiesBuilder := NewDefaultProperties()
 
 	assert.NotNil(t, propertiesBuilder)
-	assert.NotNil(t, propertiesBuilder.defaultProperties)
+	assert.NotNil(t, propertiesBuilder.internalMap)
 }
 
 func TestPropertiesBuilderFromArray_Ok(t *testing.T) {
 
 	osArgs := os.Environ()
-	propertiesBuilder := NewDefaultProperties()
-	propertiesBuilder.FromArray(&osArgs)
+	propertiesBuilder := NewDefaultProperties(FromArray(&osArgs))
 
 	assert.NotNil(t, propertiesBuilder)
-	assert.NotNil(t, propertiesBuilder.defaultProperties)
-	assert.Equal(t, len(osArgs), len(propertiesBuilder.defaultProperties.internalMap))
+	assert.Equal(t, len(osArgs), len(propertiesBuilder.internalMap))
 }
 
 func TestPropertiesBuilderFromArray_Error(t *testing.T) {
 
 	args := []string{"ola", "adios"}
-	propertiesBuilder := NewDefaultProperties()
-	propertiesBuilder.FromArray(&args)
+	propertiesBuilder := NewDefaultProperties(FromArray(&args))
 
 	assert.NotNil(t, propertiesBuilder)
-	assert.NotNil(t, propertiesBuilder.defaultProperties)
-	assert.Equal(t, 0, len(propertiesBuilder.defaultProperties.internalMap))
+	assert.Equal(t, 0, len(propertiesBuilder.internalMap))
 }
 
 func TestPropertiesBuilderBuild(t *testing.T) {
 
 	osArgs := os.Environ()
-	propertiesBuilder := NewDefaultProperties()
-	properties := propertiesBuilder.FromArray(&osArgs).Build()
+	properties := NewDefaultProperties(FromArray(&osArgs))
 
 	assert.NotNil(t, properties)
 }
