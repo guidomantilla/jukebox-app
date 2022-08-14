@@ -16,6 +16,18 @@ const (
 
 var singletonDataSource datasource.DBDataSource
 
+func InitDB(environment environment.Environment) datasource.DBDataSource {
+	username := environment.GetValue(DATASOURCE_USERNAME).AsString()
+	password := environment.GetValue(DATASOURCE_PASSWORD).AsString()
+	url := environment.GetValue(DATASOURCE_URL).AsString()
+
+	var err error
+	if singletonDataSource, err = datasource.GetDBDataSourceFromDriverName("mysql", username, password, url); err != nil {
+		zap.L().Fatal(err.Error())
+	}
+	return singletonDataSource
+}
+
 func StopDB() {
 
 	var err error
@@ -30,12 +42,4 @@ func StopDB() {
 		zap.L().Error("Error closing DB")
 		return
 	}
-}
-
-func InitDB(environment environment.Environment) datasource.DBDataSource {
-	username := environment.GetValue(DATASOURCE_USERNAME).AsString()
-	password := environment.GetValue(DATASOURCE_PASSWORD).AsString()
-	url := environment.GetValue(DATASOURCE_URL).AsString()
-	singletonDataSource = datasource.NewMysqlDataSource(username, password, url)
-	return singletonDataSource
 }
