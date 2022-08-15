@@ -3,6 +3,7 @@ package migrate
 import (
 	"database/sql"
 	"jukebox-app/internal/config"
+	"jukebox-app/pkg/datasource"
 	"log"
 	"os"
 	"path/filepath"
@@ -11,11 +12,37 @@ import (
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database"
 	"github.com/golang-migrate/migrate/v4/database/mysql"
+	"github.com/golang-migrate/migrate/v4/database/pgx"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/spf13/cobra"
 )
 
 type MigrationFunction func(migration *migrate.Migrate) error
+
+func createMigrateDriver(dataSource datasource.DBDataSource) (database.Driver, error) {
+
+	var err error
+	var db *sql.DB
+	if db, err = dataSource.GetDatabase(); err != nil {
+		return nil, err
+	}
+
+	var driver database.Driver
+
+	if dataSource.GetDriverName() == datasource.MYSQL_DRIVER_NAME {
+		if driver, err = mysql.WithInstance(db, &mysql.Config{}); err != nil {
+			return nil, err
+		}
+	}
+
+	if dataSource.GetDriverName() == datasource.POSTGRES_DRIVER_NAME {
+		if driver, err = pgx.WithInstance(db, &pgx.Config{}); err != nil {
+			return nil, err
+		}
+	}
+
+	return driver, nil
+}
 
 func handleMigration(args []string, fn MigrationFunction) error {
 
@@ -27,21 +54,16 @@ func handleMigration(args []string, fn MigrationFunction) error {
 	dataSource := config.InitDB(env)
 	defer config.StopDB()
 
-	var db *sql.DB
-	if db, err = dataSource.GetDatabase(); err != nil {
-		return err
-	}
-
 	var driver database.Driver
-	if driver, err = mysql.WithInstance(db, &mysql.Config{}); err != nil {
+	if driver, err = createMigrateDriver(dataSource); err != nil {
 		return err
 	}
 
 	workingDirectory, _ := os.Getwd()
-	migrationsDirectory := filepath.Join(workingDirectory, "db/migrations")
+	migrationsDirectory := filepath.Join(workingDirectory, "db/migrations/"+dataSource.GetDriverName())
 
 	var migration *migrate.Migrate
-	if migration, err = migrate.NewWithDatabaseInstance("file:///"+migrationsDirectory, "mysql", driver); err != nil {
+	if migration, err = migrate.NewWithDatabaseInstance("file:///"+migrationsDirectory, dataSource.GetDriverName(), driver); err != nil {
 		return err
 	}
 

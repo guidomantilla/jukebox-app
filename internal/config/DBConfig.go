@@ -9,6 +9,7 @@ import (
 )
 
 const (
+	DATASOURCE_DRIVER   = "DATASOURCE_DRIVER"
 	DATASOURCE_USERNAME = "DATASOURCE_USERNAME"
 	DATASOURCE_PASSWORD = "DATASOURCE_PASSWORD"
 	DATASOURCE_URL      = "DATASOURCE_URL"
@@ -17,12 +18,18 @@ const (
 var singletonDataSource datasource.DBDataSource
 
 func InitDB(environment environment.Environment) datasource.DBDataSource {
+
+	driver := environment.GetValue(DATASOURCE_DRIVER).AsString()
+	if driver != datasource.POSTGRES_DRIVER_NAME && driver != datasource.MYSQL_DRIVER_NAME {
+		zap.L().Fatal("invalid driver name")
+	}
+
 	username := environment.GetValue(DATASOURCE_USERNAME).AsString()
 	password := environment.GetValue(DATASOURCE_PASSWORD).AsString()
 	url := environment.GetValue(DATASOURCE_URL).AsString()
 
 	var err error
-	if singletonDataSource, err = datasource.GetDBDataSourceFromDriverName("mysql", username, password, url); err != nil {
+	if singletonDataSource, err = datasource.GetDBDataSourceFromDriverName(driver, username, password, url); err != nil {
 		zap.L().Fatal(err.Error())
 	}
 	return singletonDataSource

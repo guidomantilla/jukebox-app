@@ -1,5 +1,6 @@
 version: "3.9"  # optional since v1.27.0
 services:
+
   jukebox-app:
     build:
       context: ..
@@ -10,6 +11,7 @@ services:
       - "8080:8080"
     depends_on:
       - jukebox-mysql
+      - jukebox-postgres
       - jukebox-redis
     environment:
       HOST_POST: :8080
@@ -42,6 +44,22 @@ services:
     networks:
       - jukebox-network
 
+  jukebox-postgres:
+    image: postgres
+    platform: linux/x86_64
+    restart: always
+    container_name: jukebox-postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - jukebox-postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: 'jukebox'
+      POSTGRES_USER: 'jukebox'
+      POSTGRES_PASSWORD: 'jukebox+'
+    networks:
+      - jukebox-network
+
   jukebox-redis:
     image: redis
     platform: linux/x86_64
@@ -59,6 +77,8 @@ services:
 volumes:
   jukebox-mysql_data:
     name: jukebox-mysql_data
+  jukebox-postgres_data:
+    name: jukebox-postgres_data
   jukebox-redis_data:
     name: jukebox-redis_data
   jukebox-redis_config:

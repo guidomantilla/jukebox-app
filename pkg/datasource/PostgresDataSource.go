@@ -6,10 +6,10 @@ import (
 
 	"go.uber.org/zap"
 
-	_ "github.com/go-sql-driver/mysql"
+	_ "github.com/jackc/pgx/v4/stdlib"
 )
 
-type MysqlDataSource struct {
+type PostgresDataSource struct {
 	driverName string
 	username   string
 	password   string
@@ -18,13 +18,12 @@ type MysqlDataSource struct {
 	openFunc   func(driverName, dataSourceName string) (*sql.DB, error)
 }
 
-func NewMysqlDataSource(username string, password string, url string) *MysqlDataSource {
-
+func NewPostgresDataSource(username string, password string, url string) *PostgresDataSource {
 	url = strings.Replace(url, ":username", username, 1)
 	url = strings.Replace(url, ":password", password, 1)
 
-	return &MysqlDataSource{
-		driverName: MYSQL_DRIVER_NAME,
+	return &PostgresDataSource{
+		driverName: POSTGRES_DRIVER_NAME,
 		username:   username,
 		password:   password,
 		url:        url,
@@ -33,11 +32,11 @@ func NewMysqlDataSource(username string, password string, url string) *MysqlData
 	}
 }
 
-func (dataSource *MysqlDataSource) GetDriverName() string {
+func (dataSource *PostgresDataSource) GetDriverName() string {
 	return dataSource.driverName
 }
 
-func (dataSource *MysqlDataSource) GetDatabase() (*sql.DB, error) {
+func (dataSource *PostgresDataSource) GetDatabase() (*sql.DB, error) {
 
 	var err error
 

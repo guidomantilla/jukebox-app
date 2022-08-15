@@ -1,4 +1,4 @@
-create table user
+create table users
 (
     id    int auto_increment,
     code  int          not null,
@@ -9,7 +9,7 @@ create table user
 );
 
 
-create table artist
+create table artists
 (
     id   int auto_increment,
     code int          not null,
@@ -18,7 +18,7 @@ create table artist
         primary key (id)
 );
 
-create table song
+create table songs
 (
     id     int auto_increment,
     code   int          not null,
@@ -27,6 +27,6 @@ create table song
     constraint song_pk
         primary key (id),
     constraint song_artist_fk
-        foreign key (artistId) references artist (id)
+        foreign key (artistId) references artists (id)
             on update cascade on delete cascade
 );
