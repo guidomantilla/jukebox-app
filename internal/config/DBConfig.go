@@ -15,9 +15,9 @@ const (
 	DATASOURCE_URL      = "DATASOURCE_URL"
 )
 
-var singletonDataSource datasource.DBDataSource
+var singletonDataSource datasource.RelationalDataSource
 
-func InitDB(environment environment.Environment) datasource.DBDataSource {
+func InitDB(environment environment.Environment) datasource.RelationalDataSource {
 
 	driver := environment.GetValue(DATASOURCE_DRIVER).AsString()
 	if driver != datasource.POSTGRES_DRIVER_NAME && driver != datasource.MYSQL_DRIVER_NAME {
@@ -28,10 +28,7 @@ func InitDB(environment environment.Environment) datasource.DBDataSource {
 	password := environment.GetValue(DATASOURCE_PASSWORD).AsString()
 	url := environment.GetValue(DATASOURCE_URL).AsString()
 
-	var err error
-	if singletonDataSource, err = datasource.GetDBDataSourceFromDriverName(driver, username, password, url); err != nil {
-		zap.L().Fatal(err.Error())
-	}
+	singletonDataSource = datasource.NewRelationalDataSource(driver, username, password, url)
 	return singletonDataSource
 }
 

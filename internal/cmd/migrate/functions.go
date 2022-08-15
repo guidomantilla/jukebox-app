@@ -19,7 +19,7 @@ import (
 
 type MigrationFunction func(migration *migrate.Migrate) error
 
-func createMigrateDriver(dataSource datasource.DBDataSource) (database.Driver, error) {
+func createMigrateDriver(dataSource datasource.RelationalDataSource) (database.Driver, error) {
 
 	var err error
 	var db *sql.DB

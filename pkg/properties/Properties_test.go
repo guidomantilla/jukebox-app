@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestPropertiesAdd(t *testing.T) {
+func Test_PropertiesAdd(t *testing.T) {
 
 	properties := &DefaultProperties{
 		internalMap: make(map[string]string),
@@ -22,7 +22,7 @@ func TestPropertiesAdd(t *testing.T) {
 
 }
 
-func TestPropertiesGet(t *testing.T) {
+func Test_PropertiesGet(t *testing.T) {
 
 	properties := &DefaultProperties{
 		internalMap: make(map[string]string),
@@ -36,7 +36,7 @@ func TestPropertiesGet(t *testing.T) {
 	assert.Equal(t, "value03", properties.Get("property03"))
 }
 
-func TestPropertiesAsMap(t *testing.T) {
+func Test_PropertiesAsMap(t *testing.T) {
 
 	properties := &DefaultProperties{
 		internalMap: make(map[string]string),
@@ -50,35 +50,27 @@ func TestPropertiesAsMap(t *testing.T) {
 	assert.Equal(t, properties.internalMap, internalMap)
 }
 
-func TestNewDefaultProperties(t *testing.T) {
-	propertiesBuilder := NewDefaultProperties()
+func Test_NewDefaultProperties(t *testing.T) {
+	properties := NewDefaultProperties()
 
-	assert.NotNil(t, propertiesBuilder)
-	assert.NotNil(t, propertiesBuilder.internalMap)
+	assert.NotNil(t, properties)
+	assert.NotNil(t, properties.internalMap)
 }
 
-func TestPropertiesBuilderFromArray_Ok(t *testing.T) {
-
-	osArgs := os.Environ()
-	propertiesBuilder := NewDefaultProperties(FromArray(&osArgs))
-
-	assert.NotNil(t, propertiesBuilder)
-	assert.Equal(t, len(osArgs), len(propertiesBuilder.internalMap))
-}
-
-func TestPropertiesBuilderFromArray_Error(t *testing.T) {
-
-	args := []string{"ola", "adios"}
-	propertiesBuilder := NewDefaultProperties(FromArray(&args))
-
-	assert.NotNil(t, propertiesBuilder)
-	assert.Equal(t, 0, len(propertiesBuilder.internalMap))
-}
-
-func TestPropertiesBuilderBuild(t *testing.T) {
+func Test_PropertiesBuilderFromArray_Ok(t *testing.T) {
 
 	osArgs := os.Environ()
 	properties := NewDefaultProperties(FromArray(&osArgs))
 
 	assert.NotNil(t, properties)
+	assert.Equal(t, len(osArgs), len(properties.internalMap))
+}
+
+func Test_PropertiesBuilderFromArray_Error(t *testing.T) {
+
+	args := []string{"ola", "adios"}
+	properties := NewDefaultProperties(FromArray(&args))
+
+	assert.NotNil(t, properties)
+	assert.Equal(t, 0, len(properties.internalMap))
 }

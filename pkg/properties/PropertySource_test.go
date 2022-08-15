@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestNewDefaultPropertySource(t *testing.T) {
+func Test_NewDefaultPropertySource(t *testing.T) {
 
 	properties := &DefaultProperties{
 		internalMap: make(map[string]string),
@@ -22,7 +22,7 @@ func TestNewDefaultPropertySource(t *testing.T) {
 	assert.Equal(t, "group", propertySource.name)
 }
 
-func TestPropertySourceGet(t *testing.T) {
+func Test_PropertySourceGet(t *testing.T) {
 
 	properties := &DefaultProperties{
 		internalMap: make(map[string]string),
@@ -38,7 +38,7 @@ func TestPropertySourceGet(t *testing.T) {
 	assert.Equal(t, "value01", value)
 }
 
-func TestPropertySourceAsMap(t *testing.T) {
+func Test_PropertySourceAsMap(t *testing.T) {
 
 	properties := &DefaultProperties{
 		internalMap: make(map[string]string),

@@ -43,7 +43,7 @@ type DefaultUserRepository struct {
 
 func (repository *DefaultUserRepository) Create(ctx context.Context, user *model.User) error {
 
-	var tx = ctx.Value(transaction.DBTransactionContext{}).(*sql.Tx)
+	var tx = ctx.Value(transaction.RelationalTransactionContext{}).(*sql.Tx)
 
 	var err error
 
@@ -72,7 +72,7 @@ func (repository *DefaultUserRepository) Create(ctx context.Context, user *model
 
 func (repository *DefaultUserRepository) Update(ctx context.Context, user *model.User) error {
 
-	var tx = ctx.Value(transaction.DBTransactionContext{}).(*sql.Tx)
+	var tx = ctx.Value(transaction.RelationalTransactionContext{}).(*sql.Tx)
 
 	var err error
 
@@ -96,7 +96,7 @@ func (repository *DefaultUserRepository) Update(ctx context.Context, user *model
 
 func (repository *DefaultUserRepository) DeleteById(ctx context.Context, id int64) error {
 
-	var tx = ctx.Value(transaction.DBTransactionContext{}).(*sql.Tx)
+	var tx = ctx.Value(transaction.RelationalTransactionContext{}).(*sql.Tx)
 
 	var err error
 
@@ -120,7 +120,7 @@ func (repository *DefaultUserRepository) DeleteById(ctx context.Context, id int6
 
 func (repository *DefaultUserRepository) FindById(ctx context.Context, id int64) (*model.User, error) {
 
-	var tx = ctx.Value(transaction.DBTransactionContext{}).(*sql.Tx)
+	var tx = ctx.Value(transaction.RelationalTransactionContext{}).(*sql.Tx)
 
 	var err error
 	var statement *sql.Stmt
@@ -150,7 +150,7 @@ func (repository *DefaultUserRepository) FindById(ctx context.Context, id int64)
 
 func (repository *DefaultUserRepository) FindAll(ctx context.Context) (*[]model.User, error) {
 
-	var tx = ctx.Value(transaction.DBTransactionContext{}).(*sql.Tx)
+	var tx = ctx.Value(transaction.RelationalTransactionContext{}).(*sql.Tx)
 
 	var err error
 	var statement *sql.Stmt
@@ -192,7 +192,7 @@ func (repository *DefaultUserRepository) FindAll(ctx context.Context) (*[]model.
 
 func (repository *DefaultUserRepository) FindByCode(ctx context.Context, code int64) (*model.User, error) {
 
-	var tx = ctx.Value(transaction.DBTransactionContext{}).(*sql.Tx)
+	var tx = ctx.Value(transaction.RelationalTransactionContext{}).(*sql.Tx)
 
 	var err error
 	var statement *sql.Stmt
@@ -222,7 +222,7 @@ func (repository *DefaultUserRepository) FindByCode(ctx context.Context, code in
 
 func (repository *DefaultUserRepository) FindByName(ctx context.Context, name string) (*model.User, error) {
 
-	var tx = ctx.Value(transaction.DBTransactionContext{}).(*sql.Tx)
+	var tx = ctx.Value(transaction.RelationalTransactionContext{}).(*sql.Tx)
 
 	var err error
 	var statement *sql.Stmt
@@ -252,7 +252,7 @@ func (repository *DefaultUserRepository) FindByName(ctx context.Context, name st
 
 func (repository *DefaultUserRepository) FindByEmail(ctx context.Context, email string) (*model.User, error) {
 
-	var tx = ctx.Value(transaction.DBTransactionContext{}).(*sql.Tx)
+	var tx = ctx.Value(transaction.RelationalTransactionContext{}).(*sql.Tx)
 
 	var err error
 	var statement *sql.Stmt

@@ -6,24 +6,35 @@ import (
 
 	"go.uber.org/zap"
 
+	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/jackc/pgx/v4/stdlib"
 )
 
-type PostgresDataSource struct {
+const (
+	MYSQL_DRIVER_NAME    = "mysql"
+	POSTGRES_DRIVER_NAME = "pgx"
+)
+
+type RelationalDataSource interface {
+	GetDriverName() string
+	GetDatabase() (*sql.DB, error)
+}
+
+type DefaultRelationalDataSource struct {
 	driverName string
 	username   string
 	password   string
 	url        string
 	database   *sql.DB
-	openFunc   func(driverName, dataSourceName string) (*sql.DB, error)
+	openFunc   func(driverName, dataSourceUrl string) (*sql.DB, error)
 }
 
-func NewPostgresDataSource(username string, password string, url string) *PostgresDataSource {
+func NewRelationalDataSource(driverName string, username string, password string, url string) *DefaultRelationalDataSource {
 	url = strings.Replace(url, ":username", username, 1)
 	url = strings.Replace(url, ":password", password, 1)
 
-	return &PostgresDataSource{
-		driverName: POSTGRES_DRIVER_NAME,
+	return &DefaultRelationalDataSource{
+		driverName: driverName,
 		username:   username,
 		password:   password,
 		url:        url,
@@ -32,11 +43,11 @@ func NewPostgresDataSource(username string, password string, url string) *Postgr
 	}
 }
 
-func (dataSource *PostgresDataSource) GetDriverName() string {
+func (dataSource *DefaultRelationalDataSource) GetDriverName() string {
 	return dataSource.driverName
 }
 
-func (dataSource *PostgresDataSource) GetDatabase() (*sql.DB, error) {
+func (dataSource *DefaultRelationalDataSource) GetDatabase() (*sql.DB, error) {
 
 	var err error
 

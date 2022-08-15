@@ -43,7 +43,7 @@ type DefaultArtistRepository struct {
 
 func (repository *DefaultArtistRepository) Create(ctx context.Context, artist *model.Artist) error {
 
-	var tx = ctx.Value(transaction.DBTransactionContext{}).(*sql.Tx)
+	var tx = ctx.Value(transaction.RelationalTransactionContext{}).(*sql.Tx)
 
 	var err error
 
@@ -72,7 +72,7 @@ func (repository *DefaultArtistRepository) Create(ctx context.Context, artist *m
 
 func (repository *DefaultArtistRepository) Update(ctx context.Context, artist *model.Artist) error {
 
-	var tx = ctx.Value(transaction.DBTransactionContext{}).(*sql.Tx)
+	var tx = ctx.Value(transaction.RelationalTransactionContext{}).(*sql.Tx)
 
 	var err error
 
@@ -96,7 +96,7 @@ func (repository *DefaultArtistRepository) Update(ctx context.Context, artist *m
 
 func (repository *DefaultArtistRepository) DeleteById(ctx context.Context, id int64) error {
 
-	var tx = ctx.Value(transaction.DBTransactionContext{}).(*sql.Tx)
+	var tx = ctx.Value(transaction.RelationalTransactionContext{}).(*sql.Tx)
 
 	var err error
 
@@ -120,7 +120,7 @@ func (repository *DefaultArtistRepository) DeleteById(ctx context.Context, id in
 
 func (repository *DefaultArtistRepository) FindById(ctx context.Context, id int64) (*model.Artist, error) {
 
-	var tx = ctx.Value(transaction.DBTransactionContext{}).(*sql.Tx)
+	var tx = ctx.Value(transaction.RelationalTransactionContext{}).(*sql.Tx)
 
 	var err error
 	var statement *sql.Stmt
@@ -150,7 +150,7 @@ func (repository *DefaultArtistRepository) FindById(ctx context.Context, id int6
 
 func (repository *DefaultArtistRepository) FindAll(ctx context.Context) (*[]model.Artist, error) {
 
-	var tx = ctx.Value(transaction.DBTransactionContext{}).(*sql.Tx)
+	var tx = ctx.Value(transaction.RelationalTransactionContext{}).(*sql.Tx)
 
 	var err error
 	var statement *sql.Stmt
@@ -192,7 +192,7 @@ func (repository *DefaultArtistRepository) FindAll(ctx context.Context) (*[]mode
 
 func (repository *DefaultArtistRepository) FindByCode(ctx context.Context, code int64) (*model.Artist, error) {
 
-	var tx = ctx.Value(transaction.DBTransactionContext{}).(*sql.Tx)
+	var tx = ctx.Value(transaction.RelationalTransactionContext{}).(*sql.Tx)
 
 	var err error
 	var statement *sql.Stmt
@@ -222,7 +222,7 @@ func (repository *DefaultArtistRepository) FindByCode(ctx context.Context, code 
 
 func (repository *DefaultArtistRepository) FindByName(ctx context.Context, name string) (*model.Artist, error) {
 
-	var tx = ctx.Value(transaction.DBTransactionContext{}).(*sql.Tx)
+	var tx = ctx.Value(transaction.RelationalTransactionContext{}).(*sql.Tx)
 
 	var err error
 	var statement *sql.Stmt

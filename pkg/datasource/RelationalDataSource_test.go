@@ -9,21 +9,29 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestNewMysqlDataSource(t *testing.T) {
+func Test_NewRelationalDataSource(t *testing.T) {
 
-	mysqlDataSource := NewMysqlDataSource("some_username", "some_password", ":username_:password")
+	mysqlDataSource := NewRelationalDataSource("some_driver_name", "some_username", "some_password", ":username_:password")
 
 	assert.NotNil(t, mysqlDataSource)
-	assert.Equal(t, "mysql", mysqlDataSource.driverName)
+	assert.Equal(t, "some_driver_name", mysqlDataSource.driverName)
 	assert.Equal(t, "some_username", mysqlDataSource.username)
 	assert.Equal(t, "some_password", mysqlDataSource.password)
 	assert.Equal(t, "some_username_some_password", mysqlDataSource.url)
 	assert.Nil(t, mysqlDataSource.database)
 }
 
-func TestGetDatabase_WhenDBIsNil_Ok(t *testing.T) {
+func Test_GetDriverName(t *testing.T) {
 
-	mysqlDataSource := NewMysqlDataSource("some_username", "some_password", ":username_:password")
+	mysqlDataSource := NewRelationalDataSource("some_driver_name", "some_username", "some_password", ":username_:password")
+
+	driver := mysqlDataSource.GetDriverName()
+	assert.Equal(t, mysqlDataSource.driverName, driver)
+}
+
+func Test_GetDatabase_WhenDBIsNil_Ok(t *testing.T) {
+
+	mysqlDataSource := NewRelationalDataSource("some_driver_name", "some_username", "some_password", ":username_:password")
 	mysqlDataSource.openFunc = func(driverName, dataSourceName string) (*sql.DB, error) {
 		db, _, err := sqlmock.New()
 		if err != nil {
@@ -40,9 +48,9 @@ func TestGetDatabase_WhenDBIsNil_Ok(t *testing.T) {
 	assert.Equal(t, database, mysqlDataSource.database)
 }
 
-func TestGetDatabase_WhenDBIsNil_Error(t *testing.T) {
+func Test_GetDatabase_WhenDBIsNil_Error(t *testing.T) {
 
-	mysqlDataSource := NewMysqlDataSource("some_username", "some_password", ":username_:password")
+	mysqlDataSource := NewRelationalDataSource("some_driver_name", "some_username", "some_password", ":username_:password")
 	mysqlDataSource.openFunc = func(driverName, dataSourceName string) (*sql.DB, error) {
 		return nil, errors.New("some error")
 	}
@@ -54,7 +62,7 @@ func TestGetDatabase_WhenDBIsNil_Error(t *testing.T) {
 	assert.Nil(t, mysqlDataSource.database)
 }
 
-func TestGetDatabase_WhenDBIsNotNil_Ok(t *testing.T) {
+func Test_GetDatabase_WhenDBIsNotNil_Ok(t *testing.T) {
 
 	var err error
 	var db *sql.DB
@@ -63,7 +71,7 @@ func TestGetDatabase_WhenDBIsNotNil_Ok(t *testing.T) {
 		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
 	}
 
-	mysqlDataSource := NewMysqlDataSource("some_username", "some_password", ":username_:password")
+	mysqlDataSource := NewRelationalDataSource("some_driver_name", "some_username", "some_password", ":username_:password")
 	mysqlDataSource.database = db
 	mysqlDataSource.openFunc = func(driverName, dataSourceName string) (*sql.DB, error) {
 		return mysqlDataSource.database, nil
@@ -79,7 +87,7 @@ func TestGetDatabase_WhenDBIsNotNil_Ok(t *testing.T) {
 	assert.Equal(t, database, mysqlDataSource.database)
 }
 
-func TestGetDatabase_WhenDBIsNotNil_Error(t *testing.T) {
+func Test_GetDatabase_WhenDBIsNotNil_Error(t *testing.T) {
 
 	var err error
 	var db *sql.DB
@@ -89,7 +97,7 @@ func TestGetDatabase_WhenDBIsNotNil_Error(t *testing.T) {
 		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
 	}
 
-	mysqlDataSource := NewMysqlDataSource("some_username", "some_password", ":username_:password")
+	mysqlDataSource := NewRelationalDataSource("some_driver_name", "some_username", "some_password", ":username_:password")
 	mysqlDataSource.database = db
 
 	mysqlDataSource.openFunc = func(driverName, dataSourceName string) (*sql.DB, error) {
