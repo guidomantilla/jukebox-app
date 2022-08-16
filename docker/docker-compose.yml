@@ -24,7 +24,6 @@ services:
       SENTRY_RELEASE: sample
     networks:
       - jukebox-network
-
   jukebox-mysql:
     image: mysql
     platform: linux/x86_64
@@ -43,7 +42,6 @@ services:
       MYSQL_PASSWORD: 'jukebox+'
     networks:
       - jukebox-network
-
   jukebox-postgres:
     image: postgres
     platform: linux/x86_64
@@ -60,7 +58,6 @@ services:
       POSTGRES_PASSWORD: 'jukebox+'
     networks:
       - jukebox-network
-
   jukebox-redis:
     image: redis
     platform: linux/x86_64
@@ -75,6 +72,7 @@ services:
     networks:
       - jukebox-network
 
+## SONARQUBE
   sonarqube-server:
     image: sonarqube
     platform: linux/x86_64
@@ -94,7 +92,6 @@ services:
       SONAR_JDBC_PASSWORD: sonar
     networks:
       - jukebox-network
-
   sonarqube-postgres:
     image: postgres
     platform: linux/x86_64
@@ -122,6 +119,7 @@ volumes:
   jukebox-redis_config:
     name: jukebox-redis_config
 
+  ## SONARQUBE
   sonarqube-server_data:
     name: sonarqube-server_data
   sonarqube-server_extensions:
