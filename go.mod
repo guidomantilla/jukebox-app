@@ -11,6 +11,7 @@ require (
 	github.com/golang-migrate/migrate/v4 v4.15.2
 	github.com/golang/mock v1.6.0
 	github.com/jackc/pgx/v4 v4.17.0
+	github.com/pkg/errors v0.9.1
 	github.com/spf13/cobra v1.5.0
 	github.com/spyzhov/go-license v1.0.0
 	github.com/stretchr/testify v1.8.0

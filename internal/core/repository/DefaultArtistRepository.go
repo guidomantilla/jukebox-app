@@ -10,25 +10,6 @@ import (
 	"go.uber.org/zap"
 )
 
-var _ ArtistRepository = (*DefaultArtistRepository)(nil)
-
-/* TYPES DEFINITION */
-
-type ArtistRepository interface {
-	Create(_ context.Context, _ *model.Artist) error
-	Update(_ context.Context, _ *model.Artist) error
-	DeleteById(_ context.Context, id int64) error
-	FindById(_ context.Context, id int64) (*model.Artist, error)
-	FindAll(_ context.Context) (*[]model.Artist, error)
-
-	//Custom Finders
-
-	FindByCode(_ context.Context, code int64) (*model.Artist, error)
-	FindByName(_ context.Context, name string) (*model.Artist, error)
-}
-
-//
-
 type DefaultArtistRepository struct {
 	statementCreate     string
 	statementUpdate     string
@@ -38,8 +19,6 @@ type DefaultArtistRepository struct {
 	statementFindByCode string
 	statementFindByName string
 }
-
-/* DefaultUserRepository METHODS */
 
 func (repository *DefaultArtistRepository) Create(ctx context.Context, artist *model.Artist) error {
 

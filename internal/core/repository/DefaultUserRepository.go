@@ -10,24 +10,6 @@ import (
 	"go.uber.org/zap"
 )
 
-var _ UserRepository = (*DefaultUserRepository)(nil)
-
-/* TYPES DEFINITION */
-
-type UserRepository interface {
-	Create(_ context.Context, _ *model.User) error
-	Update(_ context.Context, _ *model.User) error
-	DeleteById(_ context.Context, id int64) error
-	FindById(_ context.Context, id int64) (*model.User, error)
-	FindAll(_ context.Context) (*[]model.User, error)
-
-	//Custom Finders
-
-	FindByCode(_ context.Context, code int64) (*model.User, error)
-	FindByName(_ context.Context, name string) (*model.User, error)
-	FindByEmail(_ context.Context, email string) (*model.User, error)
-}
-
 type DefaultUserRepository struct {
 	statementCreate      string
 	statementUpdate      string
@@ -38,8 +20,6 @@ type DefaultUserRepository struct {
 	statementFindByName  string
 	statementFindByEmail string
 }
-
-/* DefaultUserRepository METHODS */
 
 func (repository *DefaultUserRepository) Create(ctx context.Context, user *model.User) error {
 
