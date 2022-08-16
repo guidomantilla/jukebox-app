@@ -296,14 +296,14 @@ func (repository *DefaultSongRepository) FindByArtistId(ctx context.Context, id 
 
 func NewDefaultSongRepository() *DefaultSongRepository {
 	return &DefaultSongRepository{
-		statementCreate:   "insert song account (code, name, artistId) values (?, ?, ?)",
-		statementUpdate:   "update song set code = ?, name = ?, artistId = ? where id = ?",
-		statementDelete:   "delete from song where id = ?",
-		statementFindById: "select id, code, name, artistId from song where id = ?",
-		statementFind:     "select id, code, name, artistId from song",
+		statementCreate:   "insert into songs (code, name, artistId) values (?, ?, ?)",
+		statementUpdate:   "update songs set code = ?, name = ?, artistId = ? where id = ?",
+		statementDelete:   "delete from songs where id = ?",
+		statementFindById: "select id, code, name, artistId from songs where id = ?",
+		statementFind:     "select id, code, name, artistId from songs",
 
-		statementFindByCode:     "select id, code, name, artistId from song where code = ?",
-		statementFindByName:     "select id, code, name, artistId from song where name = ?",
-		statementFindByArtistId: "select id, code, name, artistId from song where artistId = ?",
+		statementFindByCode:     "select id, code, name, artistId from songs where code = ?",
+		statementFindByName:     "select id, code, name, artistId from songs where name = ?",
+		statementFindByArtistId: "select id, code, name, artistId from songs where artistId = ?",
 	}
 }

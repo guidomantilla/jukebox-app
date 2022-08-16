@@ -254,13 +254,13 @@ func (repository *DefaultArtistRepository) FindByName(ctx context.Context, name 
 
 func NewDefaultArtistRepository() *DefaultArtistRepository {
 	return &DefaultArtistRepository{
-		statementCreate:   "insert artist account (code, name) values (?, ?)",
-		statementUpdate:   "update artist set code = ?, name = ? where id = ?",
-		statementDelete:   "delete from artist where id = ?",
-		statementFindById: "select id, code, name from artist where id = ?",
-		statementFind:     "select id, code, name from artist",
+		statementCreate:   "insert into artists (code, name) values (?, ?)",
+		statementUpdate:   "update artists set code = ?, name = ? where id = ?",
+		statementDelete:   "delete from artists where id = ?",
+		statementFindById: "select id, code, name from artists where id = ?",
+		statementFind:     "select id, code, name from artists",
 
-		statementFindByCode: "select id, code, name from artist where code = ?",
-		statementFindByName: "select id, code, name from artist where name = ?",
+		statementFindByCode: "select id, code, name from artists where code = ?",
+		statementFindByName: "select id, code, name from artists where name = ?",
 	}
 }

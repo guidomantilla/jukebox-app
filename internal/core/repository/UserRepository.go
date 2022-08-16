@@ -284,14 +284,14 @@ func (repository *DefaultUserRepository) FindByEmail(ctx context.Context, email 
 
 func NewDefaultUserRepository() *DefaultUserRepository {
 	return &DefaultUserRepository{
-		statementCreate:   "insert user account (code, name, email) values (?, ?, ?)",
-		statementUpdate:   "update user set code = ?, name = ?, email = ? where id = ?",
-		statementDelete:   "delete from user where id = ?",
-		statementFindById: "select id, code, name, email from user where id = ?",
-		statementFind:     "select id, code, name, email from user",
+		statementCreate:   "insert into users (code, name, email) values (?, ?, ?)",
+		statementUpdate:   "update users set code = ?, name = ?, email = ? where id = ?",
+		statementDelete:   "delete from users where id = ?",
+		statementFindById: "select id, code, name, email from users where id = ?",
+		statementFind:     "select id, code, name, email from users",
 
-		statementFindByCode:  "select id, code, name, email from user where code = ?",
-		statementFindByName:  "select id, code, name, email from user where name = ?",
-		statementFindByEmail: "select id, code, name, email from user where email = ?",
+		statementFindByCode:  "select id, code, name, email from users where code = ?",
+		statementFindByName:  "select id, code, name, email from users where name = ?",
+		statementFindByEmail: "select id, code, name, email from users where email = ?",
 	}
 }
