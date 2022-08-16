@@ -10,7 +10,7 @@ import (
 	"go.uber.org/zap"
 )
 
-type DefaultSongRepository struct {
+type RelationalSongRepository struct {
 	statementCreate         string
 	statementUpdate         string
 	statementDelete         string
@@ -21,7 +21,7 @@ type DefaultSongRepository struct {
 	statementFindByArtistId string
 }
 
-func (repository *DefaultSongRepository) Create(ctx context.Context, song *model.Song) error {
+func (repository *RelationalSongRepository) Create(ctx context.Context, song *model.Song) error {
 
 	var tx = ctx.Value(transaction.RelationalTransactionContext{}).(*sql.Tx)
 
@@ -50,7 +50,7 @@ func (repository *DefaultSongRepository) Create(ctx context.Context, song *model
 	return nil
 }
 
-func (repository *DefaultSongRepository) Update(ctx context.Context, song *model.Song) error {
+func (repository *RelationalSongRepository) Update(ctx context.Context, song *model.Song) error {
 
 	var tx = ctx.Value(transaction.RelationalTransactionContext{}).(*sql.Tx)
 
@@ -74,7 +74,7 @@ func (repository *DefaultSongRepository) Update(ctx context.Context, song *model
 	return nil
 }
 
-func (repository *DefaultSongRepository) DeleteById(ctx context.Context, id int64) error {
+func (repository *RelationalSongRepository) DeleteById(ctx context.Context, id int64) error {
 
 	var tx = ctx.Value(transaction.RelationalTransactionContext{}).(*sql.Tx)
 
@@ -98,7 +98,7 @@ func (repository *DefaultSongRepository) DeleteById(ctx context.Context, id int6
 	return nil
 }
 
-func (repository *DefaultSongRepository) FindById(ctx context.Context, id int64) (*model.Song, error) {
+func (repository *RelationalSongRepository) FindById(ctx context.Context, id int64) (*model.Song, error) {
 
 	var tx = ctx.Value(transaction.RelationalTransactionContext{}).(*sql.Tx)
 
@@ -128,7 +128,7 @@ func (repository *DefaultSongRepository) FindById(ctx context.Context, id int64)
 	return &song, nil
 }
 
-func (repository *DefaultSongRepository) FindAll(ctx context.Context) (*[]model.Song, error) {
+func (repository *RelationalSongRepository) FindAll(ctx context.Context) (*[]model.Song, error) {
 
 	var tx = ctx.Value(transaction.RelationalTransactionContext{}).(*sql.Tx)
 
@@ -170,7 +170,7 @@ func (repository *DefaultSongRepository) FindAll(ctx context.Context) (*[]model.
 	return &songs, nil
 }
 
-func (repository *DefaultSongRepository) FindByCode(ctx context.Context, code int64) (*model.Song, error) {
+func (repository *RelationalSongRepository) FindByCode(ctx context.Context, code int64) (*model.Song, error) {
 
 	var tx = ctx.Value(transaction.RelationalTransactionContext{}).(*sql.Tx)
 
@@ -200,7 +200,7 @@ func (repository *DefaultSongRepository) FindByCode(ctx context.Context, code in
 	return &song, nil
 }
 
-func (repository *DefaultSongRepository) FindByName(ctx context.Context, name string) (*model.Song, error) {
+func (repository *RelationalSongRepository) FindByName(ctx context.Context, name string) (*model.Song, error) {
 
 	var tx = ctx.Value(transaction.RelationalTransactionContext{}).(*sql.Tx)
 
@@ -230,7 +230,7 @@ func (repository *DefaultSongRepository) FindByName(ctx context.Context, name st
 	return &song, nil
 }
 
-func (repository *DefaultSongRepository) FindByArtistId(ctx context.Context, id string) (*[]model.Song, error) {
+func (repository *RelationalSongRepository) FindByArtistId(ctx context.Context, id string) (*[]model.Song, error) {
 
 	var tx = ctx.Value(transaction.RelationalTransactionContext{}).(*sql.Tx)
 
@@ -274,8 +274,8 @@ func (repository *DefaultSongRepository) FindByArtistId(ctx context.Context, id 
 
 /* TYPES CONSTRUCTOR */
 
-func NewDefaultSongRepository() *DefaultSongRepository {
-	return &DefaultSongRepository{
+func NewRelationalSongRepository() *RelationalSongRepository {
+	return &RelationalSongRepository{
 		statementCreate:   "insert into songs (code, name, artistId) values (?, ?, ?)",
 		statementUpdate:   "update songs set code = ?, name = ?, artistId = ? where id = ?",
 		statementDelete:   "delete from songs where id = ?",

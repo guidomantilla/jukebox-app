@@ -19,9 +19,9 @@ func ExecuteCmdFn(_ *cobra.Command, args []string) {
 
 	_ = transaction.NewDefaultDBTransactionHandler(dataSource)
 
-	_ = repository.NewDefaultUserRepository()
-	_ = repository.NewDefaultArtistRepository()
-	_ = repository.NewDefaultSongRepository()
+	_ = repository.NewRelationalUserRepository()
+	_ = repository.NewRelationalArtistRepository()
+	_ = repository.NewRelationalSongRepository()
 
 	if err := config.InitWebServer(environment); err != nil {
 		zap.L().Fatal("error starting the server.")

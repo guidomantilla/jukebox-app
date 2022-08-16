@@ -158,7 +158,7 @@ func (repository *CachedUserRepository) findByIdAndSet(ctx context.Context, id i
 	return user, nil
 }
 
-func (repository *CachedUserRepository) findAllAndSet(ctx context.Context) (*[]model.User, error) {
+func (repository *CachedUserRepository) FindAllAndSet(ctx context.Context) (*[]model.User, error) {
 
 	var err error
 	var users *[]model.User
@@ -172,7 +172,7 @@ func (repository *CachedUserRepository) findAllAndSet(ctx context.Context) (*[]m
 		zap.L().Error("Error marshalling to json the users")
 		return users, nil
 	}
-	keyToCache := fmt.Sprintf("Users-FindAll()")
+	keyToCache := "Users-FindAll()"
 
 	usersToCache := &memcache.Item{
 		Key:   keyToCache,

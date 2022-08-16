@@ -10,18 +10,17 @@ import (
 	"go.uber.org/zap"
 )
 
-type DefaultUserRepository struct {
-	statementCreate      string
-	statementUpdate      string
-	statementDelete      string
-	statementFindById    string
-	statementFind        string
-	statementFindByCode  string
-	statementFindByName  string
-	statementFindByEmail string
+type RelationalArtistRepository struct {
+	statementCreate     string
+	statementUpdate     string
+	statementDelete     string
+	statementFindById   string
+	statementFind       string
+	statementFindByCode string
+	statementFindByName string
 }
 
-func (repository *DefaultUserRepository) Create(ctx context.Context, user *model.User) error {
+func (repository *RelationalArtistRepository) Create(ctx context.Context, artist *model.Artist) error {
 
 	var tx = ctx.Value(transaction.RelationalTransactionContext{}).(*sql.Tx)
 
@@ -39,18 +38,18 @@ func (repository *DefaultUserRepository) Create(ctx context.Context, user *model
 	}(statement)
 
 	var result sql.Result
-	if result, err = statement.Exec(user.Code, user.Name, user.Email); err != nil {
+	if result, err = statement.Exec(artist.Code, artist.Name); err != nil {
 		return err
 	}
 
-	if user.Id, err = result.LastInsertId(); err != nil {
+	if artist.Id, err = result.LastInsertId(); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (repository *DefaultUserRepository) Update(ctx context.Context, user *model.User) error {
+func (repository *RelationalArtistRepository) Update(ctx context.Context, artist *model.Artist) error {
 
 	var tx = ctx.Value(transaction.RelationalTransactionContext{}).(*sql.Tx)
 
@@ -67,14 +66,14 @@ func (repository *DefaultUserRepository) Update(ctx context.Context, user *model
 		}
 	}(statement)
 
-	if _, err = statement.Exec(user.Code, user.Name, user.Email, user.Id); err != nil {
+	if _, err = statement.Exec(artist.Code, artist.Name, artist.Id); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (repository *DefaultUserRepository) DeleteById(ctx context.Context, id int64) error {
+func (repository *RelationalArtistRepository) DeleteById(ctx context.Context, id int64) error {
 
 	var tx = ctx.Value(transaction.RelationalTransactionContext{}).(*sql.Tx)
 
@@ -98,7 +97,7 @@ func (repository *DefaultUserRepository) DeleteById(ctx context.Context, id int6
 	return nil
 }
 
-func (repository *DefaultUserRepository) FindById(ctx context.Context, id int64) (*model.User, error) {
+func (repository *RelationalArtistRepository) FindById(ctx context.Context, id int64) (*model.Artist, error) {
 
 	var tx = ctx.Value(transaction.RelationalTransactionContext{}).(*sql.Tx)
 
@@ -117,18 +116,18 @@ func (repository *DefaultUserRepository) FindById(ctx context.Context, id int64)
 
 	row := statement.QueryRow(id)
 
-	var user model.User
-	if err = row.Scan(&user.Id, &user.Code, &user.Name, &user.Email); err != nil {
+	var artist model.Artist
+	if err = row.Scan(&artist.Id, &artist.Code, &artist.Name); err != nil {
 		if err.Error() == "sql: no rows in result set" {
-			return nil, fmt.Errorf("user with id %d not found", id)
+			return nil, fmt.Errorf("artist with id %d not found", id)
 		}
 		return nil, err
 	}
 
-	return &user, nil
+	return &artist, nil
 }
 
-func (repository *DefaultUserRepository) FindAll(ctx context.Context) (*[]model.User, error) {
+func (repository *RelationalArtistRepository) FindAll(ctx context.Context) (*[]model.Artist, error) {
 
 	var tx = ctx.Value(transaction.RelationalTransactionContext{}).(*sql.Tx)
 
@@ -156,21 +155,21 @@ func (repository *DefaultUserRepository) FindAll(ctx context.Context) (*[]model.
 		}
 	}(rows)
 
-	users := make([]model.User, 0)
+	artists := make([]model.Artist, 0)
 	for rows.Next() {
 
-		var user model.User
-		if err = rows.Scan(&user.Id, &user.Code, &user.Name, &user.Email); err != nil {
+		var artist model.Artist
+		if err = rows.Scan(&artist.Id, &artist.Code, &artist.Name); err != nil {
 			return nil, err
 		}
 
-		users = append(users, user)
+		artists = append(artists, artist)
 	}
 
-	return &users, nil
+	return &artists, nil
 }
 
-func (repository *DefaultUserRepository) FindByCode(ctx context.Context, code int64) (*model.User, error) {
+func (repository *RelationalArtistRepository) FindByCode(ctx context.Context, code int64) (*model.Artist, error) {
 
 	var tx = ctx.Value(transaction.RelationalTransactionContext{}).(*sql.Tx)
 
@@ -189,18 +188,18 @@ func (repository *DefaultUserRepository) FindByCode(ctx context.Context, code in
 
 	row := statement.QueryRow(code)
 
-	var user model.User
-	if err = row.Scan(&user.Id, &user.Code, &user.Name, &user.Email); err != nil {
+	var artist model.Artist
+	if err = row.Scan(&artist.Id, &artist.Code, &artist.Name); err != nil {
 		if err.Error() == "sql: no rows in result set" {
-			return nil, fmt.Errorf("user with code %d not found", code)
+			return nil, fmt.Errorf("artist with code %d not found", code)
 		}
 		return nil, err
 	}
 
-	return &user, nil
+	return &artist, nil
 }
 
-func (repository *DefaultUserRepository) FindByName(ctx context.Context, name string) (*model.User, error) {
+func (repository *RelationalArtistRepository) FindByName(ctx context.Context, name string) (*model.Artist, error) {
 
 	var tx = ctx.Value(transaction.RelationalTransactionContext{}).(*sql.Tx)
 
@@ -219,59 +218,28 @@ func (repository *DefaultUserRepository) FindByName(ctx context.Context, name st
 
 	row := statement.QueryRow(name)
 
-	var user model.User
-	if err = row.Scan(&user.Id, &user.Code, &user.Name, &user.Email); err != nil {
+	var artist model.Artist
+	if err = row.Scan(&artist.Id, &artist.Code, &artist.Name); err != nil {
 		if err.Error() == "sql: no rows in result set" {
-			return nil, fmt.Errorf("user with name %s not found", name)
+			return nil, fmt.Errorf("artist with name %s not found", name)
 		}
 		return nil, err
 	}
 
-	return &user, nil
-}
-
-func (repository *DefaultUserRepository) FindByEmail(ctx context.Context, email string) (*model.User, error) {
-
-	var tx = ctx.Value(transaction.RelationalTransactionContext{}).(*sql.Tx)
-
-	var err error
-	var statement *sql.Stmt
-
-	if statement, err = tx.Prepare(repository.statementFindByName); err != nil {
-		return nil, err
-	}
-	defer func(statement *sql.Stmt) {
-		err = statement.Close()
-		if err != nil {
-			zap.L().Error("Error closing the statement")
-		}
-	}(statement)
-
-	row := statement.QueryRow(email)
-
-	var user model.User
-	if err = row.Scan(&user.Id, &user.Code, &user.Name, &user.Email); err != nil {
-		if err.Error() == "sql: no rows in result set" {
-			return nil, fmt.Errorf("user with email %s not found", email)
-		}
-		return nil, err
-	}
-
-	return &user, nil
+	return &artist, nil
 }
 
 /* TYPES CONSTRUCTOR */
 
-func NewDefaultUserRepository() *DefaultUserRepository {
-	return &DefaultUserRepository{
-		statementCreate:   "insert into users (code, name, email) values (?, ?, ?)",
-		statementUpdate:   "update users set code = ?, name = ?, email = ? where id = ?",
-		statementDelete:   "delete from users where id = ?",
-		statementFindById: "select id, code, name, email from users where id = ?",
-		statementFind:     "select id, code, name, email from users",
+func NewRelationalArtistRepository() *RelationalArtistRepository {
+	return &RelationalArtistRepository{
+		statementCreate:   "insert into artists (code, name) values (?, ?)",
+		statementUpdate:   "update artists set code = ?, name = ? where id = ?",
+		statementDelete:   "delete from artists where id = ?",
+		statementFindById: "select id, code, name from artists where id = ?",
+		statementFind:     "select id, code, name from artists",
 
-		statementFindByCode:  "select id, code, name, email from users where code = ?",
-		statementFindByName:  "select id, code, name, email from users where name = ?",
-		statementFindByEmail: "select id, code, name, email from users where email = ?",
+		statementFindByCode: "select id, code, name from artists where code = ?",
+		statementFindByName: "select id, code, name from artists where name = ?",
 	}
 }

@@ -5,9 +5,9 @@ import (
 	"jukebox-app/internal/core/model"
 )
 
-var _ ArtistRepository = (*DefaultArtistRepository)(nil)
-var _ SongRepository = (*DefaultSongRepository)(nil)
-var _ UserRepository = (*DefaultUserRepository)(nil)
+var _ ArtistRepository = (*RelationalArtistRepository)(nil)
+var _ SongRepository = (*RelationalSongRepository)(nil)
+var _ UserRepository = (*RelationalUserRepository)(nil)
 var _ UserRepository = (*CachedUserRepository)(nil)
 
 type ArtistRepository interface {
