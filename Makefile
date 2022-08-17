@@ -19,7 +19,8 @@ lint:
 	golangci-lint run ./...
 
 test:
-	go test -covermode count -coverprofile coverage.out ./pkg/... ./internal/...
+	go test -covermode count -coverprofile coverage.out.tmp ./pkg/... ./internal/core/...
+	cat coverage.out.tmp | grep -v "Mock" > coverage.out
 
 coverage: test
 	go tool cover -func=coverage.out
