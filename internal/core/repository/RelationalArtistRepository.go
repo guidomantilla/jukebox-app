@@ -3,11 +3,8 @@ package repository
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"jukebox-app/internal/core/model"
 	repositoryUtils "jukebox-app/pkg/repository"
-
-	"go.uber.org/zap"
 )
 
 type RelationalArtistRepository struct {
@@ -23,23 +20,15 @@ type RelationalArtistRepository struct {
 func (repository *RelationalArtistRepository) Create(ctx context.Context, artist *model.Artist) error {
 
 	var err error
-	err = repositoryUtils.RelationalContext(ctx, repository.statementCreate, func(statement *sql.Stmt) error {
-
-		var result sql.Result
-		if result, err = statement.Exec(artist.Code, artist.Name); err != nil {
-			return err
-		}
-
-		if artist.Id, err = result.LastInsertId(); err != nil {
-			return err
-		}
-
-		return nil
-	})
-
+	var id *int64
+	if id, err = repositoryUtils.RelationalWriteContext(ctx, repository.statementCreate, artist.Code, artist.Name); err != nil {
+		return err
+	}
 	if err != nil {
 		return err
 	}
+
+	artist.Id = *id
 
 	return nil
 }
@@ -47,15 +36,9 @@ func (repository *RelationalArtistRepository) Create(ctx context.Context, artist
 func (repository *RelationalArtistRepository) Update(ctx context.Context, artist *model.Artist) error {
 
 	var err error
-	err = repositoryUtils.RelationalContext(ctx, repository.statementUpdate, func(statement *sql.Stmt) error {
-
-		if _, err = statement.Exec(artist.Code, artist.Name, artist.Id); err != nil {
-			return err
-		}
-
-		return nil
-	})
-
+	if _, err = repositoryUtils.RelationalWriteContext(ctx, repository.statementUpdate, artist.Code, artist.Name, artist.Id); err != nil {
+		return err
+	}
 	if err != nil {
 		return err
 	}
@@ -66,15 +49,9 @@ func (repository *RelationalArtistRepository) Update(ctx context.Context, artist
 func (repository *RelationalArtistRepository) DeleteById(ctx context.Context, id int64) error {
 
 	var err error
-	err = repositoryUtils.RelationalContext(ctx, repository.statementDelete, func(statement *sql.Stmt) error {
-
-		if _, err = statement.Exec(id); err != nil {
-			return err
-		}
-
-		return nil
-	})
-
+	if _, err = repositoryUtils.RelationalWriteContext(ctx, repository.statementDelete, id); err != nil {
+		return err
+	}
 	if err != nil {
 		return err
 	}
@@ -86,19 +63,7 @@ func (repository *RelationalArtistRepository) FindById(ctx context.Context, id i
 
 	var err error
 	var artist model.Artist
-	err = repositoryUtils.RelationalContext(ctx, repository.statementDelete, func(statement *sql.Stmt) error {
-
-		row := statement.QueryRow(id)
-		if err = row.Scan(&artist.Id, &artist.Code, &artist.Name); err != nil {
-			if err.Error() == "sql: no rows in result set" {
-				return fmt.Errorf("artist with id %d not found", id)
-			}
-			return err
-		}
-
-		return nil
-	})
-	if err != nil {
+	if err = repositoryUtils.RelationalQueryRowContext(ctx, repository.statementFindById, id, &artist.Id, &artist.Code, &artist.Name); err != nil {
 		return nil, err
 	}
 
@@ -109,18 +74,7 @@ func (repository *RelationalArtistRepository) FindAll(ctx context.Context) (*[]m
 
 	var err error
 	artists := make([]model.Artist, 0)
-	err = repositoryUtils.RelationalContext(ctx, repository.statementDelete, func(statement *sql.Stmt) error {
-
-		var rows *sql.Rows
-		if rows, err = statement.Query(); err != nil {
-			return err
-		}
-		defer func(rows *sql.Rows) {
-			err = rows.Close()
-			if err != nil {
-				zap.L().Error("Error closing the result set")
-			}
-		}(rows)
+	err = repositoryUtils.RelationalQueryContext(ctx, repository.statementFind, func(rows *sql.Rows) error {
 
 		for rows.Next() {
 			var artist model.Artist
@@ -143,19 +97,7 @@ func (repository *RelationalArtistRepository) FindByCode(ctx context.Context, co
 
 	var err error
 	var artist model.Artist
-	err = repositoryUtils.RelationalContext(ctx, repository.statementDelete, func(statement *sql.Stmt) error {
-
-		row := statement.QueryRow(code)
-		if err = row.Scan(&artist.Id, &artist.Code, &artist.Name); err != nil {
-			if err.Error() == "sql: no rows in result set" {
-				return fmt.Errorf("artist with code %d not found", code)
-			}
-			return err
-		}
-
-		return nil
-	})
-	if err != nil {
+	if err = repositoryUtils.RelationalQueryRowContext(ctx, repository.statementFindByCode, code, &artist.Id, &artist.Code, &artist.Name); err != nil {
 		return nil, err
 	}
 
@@ -166,19 +108,7 @@ func (repository *RelationalArtistRepository) FindByName(ctx context.Context, na
 
 	var err error
 	var artist model.Artist
-	err = repositoryUtils.RelationalContext(ctx, repository.statementDelete, func(statement *sql.Stmt) error {
-
-		row := statement.QueryRow(name)
-		if err = row.Scan(&artist.Id, &artist.Code, &artist.Name); err != nil {
-			if err.Error() == "sql: no rows in result set" {
-				return fmt.Errorf("artist with name %s not found", name)
-			}
-			return err
-		}
-
-		return nil
-	})
-	if err != nil {
+	if err = repositoryUtils.RelationalQueryRowContext(ctx, repository.statementFindByName, name, &artist.Id, &artist.Code, &artist.Name); err != nil {
 		return nil, err
 	}
 

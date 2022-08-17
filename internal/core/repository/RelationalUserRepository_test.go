@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"jukebox-app/internal/config"
-	"jukebox-app/internal/core/model"
 	"jukebox-app/pkg/transaction"
 	"log"
 	"testing"
@@ -27,15 +26,11 @@ func Test_Create(t *testing.T) {
 
 		txCtx := context.WithValue(context.Background(), transaction.RelationalTransactionContext{}, tx)
 
-		user := &model.User{
-			Code:  100,
-			Name:  "Guido",
-			Email: "Mantilla",
+		user, err := repository.FindById(txCtx, 15)
+		if err != nil {
+			return err
 		}
-		if internalErr := repository.Create(txCtx, user); internalErr != nil {
-			return internalErr
-		}
-
+		log.Println(user)
 		return nil
 	})
 	if err != nil {
