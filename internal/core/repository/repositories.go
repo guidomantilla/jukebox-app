@@ -5,10 +5,12 @@ import (
 	"jukebox-app/internal/core/model"
 )
 
-var _ ArtistRepository = (*RelationalArtistRepository)(nil)
-var _ SongRepository = (*RelationalSongRepository)(nil)
-var _ UserRepository = (*RelationalUserRepository)(nil)
-var _ UserRepository = (*CachedUserRepository)(nil)
+var (
+	_ ArtistRepository = (*RelationalArtistRepository)(nil)
+	_ SongRepository   = (*RelationalSongRepository)(nil)
+	_ UserRepository   = (*RelationalUserRepository)(nil)
+	_ UserRepository   = (*CachedUserRepository)(nil)
+)
 
 type ArtistRepository interface {
 	Create(_ context.Context, _ *model.Artist) error

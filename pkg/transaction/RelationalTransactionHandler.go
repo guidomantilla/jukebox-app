@@ -7,8 +7,10 @@ import (
 	"go.uber.org/zap"
 )
 
-var _ RelationalTransactionHandler = (*DefaultDBTransactionHandler)(nil)
-var _ datasource.RelationalDataSource = (*DefaultDBTransactionHandler)(nil)
+var (
+	_ RelationalTransactionHandler    = (*DefaultDBTransactionHandler)(nil)
+	_ datasource.RelationalDataSource = (*DefaultDBTransactionHandler)(nil)
+)
 
 type RelationalTransactionContext struct{}
 
@@ -52,7 +54,7 @@ func (handler *DefaultDBTransactionHandler) HandleTransaction(fn RelationalTrans
 
 //
 
-func NewDefaultDBTransactionHandler(relationalDatasource datasource.RelationalDataSource) *DefaultDBTransactionHandler {
+func NewRelationalTransactionHandler(relationalDatasource datasource.RelationalDataSource) *DefaultDBTransactionHandler {
 	return &DefaultDBTransactionHandler{
 		RelationalDataSource: relationalDatasource,
 	}

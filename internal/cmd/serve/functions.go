@@ -17,7 +17,7 @@ func ExecuteCmdFn(_ *cobra.Command, args []string) {
 	dataSource := config.InitDB(environment)
 	defer config.StopDB()
 
-	_ = transaction.NewDefaultDBTransactionHandler(dataSource)
+	_ = transaction.NewRelationalTransactionHandler(dataSource)
 
 	_ = repository.NewRelationalUserRepository()
 	_ = repository.NewRelationalArtistRepository()

@@ -1,11 +1,11 @@
 package tools
 
-//go:generate mockgen -package mocks -destination ../tests/mocks/MockRelationalDataSource.go 			jukebox-app/pkg/datasource RelationalDataSource
-//go:generate mockgen -package mocks -destination ../tests/mocks/MockEnvironment.go 					jukebox-app/pkg/environment Environment
-//go:generate mockgen -package mocks -destination ../tests/mocks/MockPropertySource.go 					jukebox-app/pkg/properties PropertySource
-//go:generate mockgen -package mocks -destination ../tests/mocks/MockProperties.go 						jukebox-app/pkg/properties Properties
-//go:generate mockgen -package mocks -destination ../tests/mocks/MockRelationalTransactionHandler.go	jukebox-app/pkg/transaction RelationalTransactionHandler
+//go:generate mockgen -package datasource  -destination ../pkg/datasource/MockRelationalDataSource.go 			jukebox-app/pkg/datasource RelationalDataSource
+//go:generate mockgen -package environment -destination ../pkg/environment/MockEnvironment.go 					jukebox-app/pkg/environment Environment
+//go:generate mockgen -package properties  -destination ../pkg/properties/MockPropertySource.go 				jukebox-app/pkg/properties PropertySource
+//go:generate mockgen -package properties  -destination ../pkg/properties/MockProperties.go 					jukebox-app/pkg/properties Properties
+//go:generate mockgen -package transaction -destination ../pkg/transaction/MockRelationalTransactionHandler.go	jukebox-app/pkg/transaction RelationalTransactionHandler
 
-//go:generate mockgen -package mocks -destination ../tests/mocks/MockArtistRepository.go	jukebox-app/internal/core/repository ArtistRepository
-//go:generate mockgen -package mocks -destination ../tests/mocks/MockSongRepository.go		jukebox-app/internal/core/repository SongRepository
-//go:generate mockgen -package mocks -destination ../tests/mocks/MockUserRepository.go		jukebox-app/internal/core/repository UserRepository
+//go:generate mockgen -package repository -destination ../internal/core/repository/MockArtistRepository.go	jukebox-app/internal/core/repository ArtistRepository
+//go:generate mockgen -package repository -destination ../internal/core/repository/MockSongRepository.go	jukebox-app/internal/core/repository SongRepository
+//go:generate mockgen -package repository -destination ../internal/core/repository/MockUserRepository.go	jukebox-app/internal/core/repository UserRepository
