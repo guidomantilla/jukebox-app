@@ -3,7 +3,9 @@ package config
 import (
 	"fmt"
 	"jukebox-app/pkg/environment"
+	"jukebox-app/pkg/properties"
 	"log"
+	"os"
 	"time"
 
 	"github.com/getsentry/sentry-go"
@@ -11,8 +13,15 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-var _singletonEnvironment environment.Environment
-var _singletonLogger *zap.Logger
+const (
+	CMD_PROPERTY_SOURCE_NAME = "CMD"
+	OS_PROPERTY_SOURCE_NAME  = "OS"
+)
+
+var (
+	_singletonEnvironment environment.Environment
+	_singletonLogger      *zap.Logger
+)
 
 func StopConfig() {
 	// Stop Zap
@@ -25,7 +34,14 @@ func StopConfig() {
 func InitConfig(cmdArgs *[]string) environment.Environment {
 
 	// Load CMD and OS variables
-	_singletonEnvironment = environment.LoadEnvironment(cmdArgs)
+	osArgs := os.Environ()
+	osSource := properties.NewDefaultPropertySource(OS_PROPERTY_SOURCE_NAME,
+		properties.NewDefaultProperties(properties.FromArray(&osArgs)))
+
+	cmdSource := properties.NewDefaultPropertySource(CMD_PROPERTY_SOURCE_NAME,
+		properties.NewDefaultProperties(properties.FromArray(cmdArgs)))
+
+	_singletonEnvironment = environment.NewDefaultEnvironment(environment.WithPropertySources(osSource, cmdSource))
 
 	// Setup & Init Sentry
 	sentryOptions := sentry.ClientOptions{
