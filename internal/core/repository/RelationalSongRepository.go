@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"jukebox-app/internal/core/model"
-	"jukebox-app/pkg/transaction"
+	repositoryUtils "jukebox-app/pkg/repository"
 
 	"go.uber.org/zap"
 )
@@ -23,27 +23,22 @@ type RelationalSongRepository struct {
 
 func (repository *RelationalSongRepository) Create(ctx context.Context, song *model.Song) error {
 
-	var tx = ctx.Value(transaction.RelationalTransactionContext{}).(*sql.Tx)
-
 	var err error
+	err = repositoryUtils.RelationalContext(ctx, repository.statementCreate, func(statement *sql.Stmt) error {
 
-	var statement *sql.Stmt
-	if statement, err = tx.Prepare(repository.statementCreate); err != nil {
-		return err
-	}
-	defer func(statement *sql.Stmt) {
-		err = statement.Close()
-		if err != nil {
-			zap.L().Error("Error closing the statement")
+		var result sql.Result
+		if result, err = statement.Exec(song.Code, song.Name, song.ArtistId); err != nil {
+			return err
 		}
-	}(statement)
 
-	var result sql.Result
-	if result, err = statement.Exec(song.Code, song.Name, song.ArtistId); err != nil {
-		return err
-	}
+		if song.Id, err = result.LastInsertId(); err != nil {
+			return err
+		}
 
-	if song.Id, err = result.LastInsertId(); err != nil {
+		return nil
+	})
+
+	if err != nil {
 		return err
 	}
 
@@ -52,22 +47,17 @@ func (repository *RelationalSongRepository) Create(ctx context.Context, song *mo
 
 func (repository *RelationalSongRepository) Update(ctx context.Context, song *model.Song) error {
 
-	var tx = ctx.Value(transaction.RelationalTransactionContext{}).(*sql.Tx)
-
 	var err error
+	err = repositoryUtils.RelationalContext(ctx, repository.statementUpdate, func(statement *sql.Stmt) error {
 
-	var statement *sql.Stmt
-	if statement, err = tx.Prepare(repository.statementUpdate); err != nil {
-		return err
-	}
-	defer func(statement *sql.Stmt) {
-		err = statement.Close()
-		if err != nil {
-			zap.L().Error("Error closing the statement")
+		if _, err = statement.Exec(song.Code, song.Name, song.ArtistId, song.Id); err != nil {
+			return err
 		}
-	}(statement)
 
-	if _, err = statement.Exec(song.Code, song.Name, song.ArtistId, song.Id); err != nil {
+		return nil
+	})
+
+	if err != nil {
 		return err
 	}
 
@@ -76,22 +66,17 @@ func (repository *RelationalSongRepository) Update(ctx context.Context, song *mo
 
 func (repository *RelationalSongRepository) DeleteById(ctx context.Context, id int64) error {
 
-	var tx = ctx.Value(transaction.RelationalTransactionContext{}).(*sql.Tx)
-
 	var err error
+	err = repositoryUtils.RelationalContext(ctx, repository.statementDelete, func(statement *sql.Stmt) error {
 
-	var statement *sql.Stmt
-	if statement, err = tx.Prepare(repository.statementDelete); err != nil {
-		return err
-	}
-	defer func(statement *sql.Stmt) {
-		err = statement.Close()
-		if err != nil {
-			zap.L().Error("Error closing the statement")
+		if _, err = statement.Exec(id); err != nil {
+			return err
 		}
-	}(statement)
 
-	if _, err = statement.Exec(id); err != nil {
+		return nil
+	})
+
+	if err != nil {
 		return err
 	}
 
@@ -100,28 +85,21 @@ func (repository *RelationalSongRepository) DeleteById(ctx context.Context, id i
 
 func (repository *RelationalSongRepository) FindById(ctx context.Context, id int64) (*model.Song, error) {
 
-	var tx = ctx.Value(transaction.RelationalTransactionContext{}).(*sql.Tx)
-
 	var err error
-	var statement *sql.Stmt
-
-	if statement, err = tx.Prepare(repository.statementFindById); err != nil {
-		return nil, err
-	}
-	defer func(statement *sql.Stmt) {
-		err = statement.Close()
-		if err != nil {
-			zap.L().Error("Error closing the statement")
-		}
-	}(statement)
-
-	row := statement.QueryRow(id)
-
 	var song model.Song
-	if err = row.Scan(&song.Id, &song.Code, &song.Name, &song.ArtistId); err != nil {
-		if err.Error() == "sql: no rows in result set" {
-			return nil, fmt.Errorf("song with id %d not found", id)
+	err = repositoryUtils.RelationalContext(ctx, repository.statementDelete, func(statement *sql.Stmt) error {
+
+		row := statement.QueryRow(id)
+		if err = row.Scan(&song.Id, &song.Code, &song.Name, &song.ArtistId); err != nil {
+			if err.Error() == "sql: no rows in result set" {
+				return fmt.Errorf("song with id %d not found", id)
+			}
+			return err
 		}
+
+		return nil
+	})
+	if err != nil {
 		return nil, err
 	}
 
@@ -130,41 +108,33 @@ func (repository *RelationalSongRepository) FindById(ctx context.Context, id int
 
 func (repository *RelationalSongRepository) FindAll(ctx context.Context) (*[]model.Song, error) {
 
-	var tx = ctx.Value(transaction.RelationalTransactionContext{}).(*sql.Tx)
-
 	var err error
-	var statement *sql.Stmt
-
-	if statement, err = tx.Prepare(repository.statementFind); err != nil {
-		return nil, err
-	}
-	defer func(statement *sql.Stmt) {
-		err = statement.Close()
-		if err != nil {
-			zap.L().Error("Error closing the statement")
-		}
-	}(statement)
-
-	var rows *sql.Rows
-	if rows, err = statement.Query(); err != nil {
-		return nil, err
-	}
-	defer func(rows *sql.Rows) {
-		err = rows.Close()
-		if err != nil {
-			zap.L().Error("Error closing the result set")
-		}
-	}(rows)
-
 	songs := make([]model.Song, 0)
-	for rows.Next() {
+	err = repositoryUtils.RelationalContext(ctx, repository.statementDelete, func(statement *sql.Stmt) error {
 
-		var song model.Song
-		if err = rows.Scan(&song.Id, &song.Code, &song.Name, &song.ArtistId); err != nil {
-			return nil, err
+		var rows *sql.Rows
+		if rows, err = statement.Query(); err != nil {
+			return err
+		}
+		defer func(rows *sql.Rows) {
+			err = rows.Close()
+			if err != nil {
+				zap.L().Error("Error closing the result set")
+			}
+		}(rows)
+
+		for rows.Next() {
+			var song model.Song
+			if err = rows.Scan(&song.Id, &song.Code, &song.Name, &song.ArtistId); err != nil {
+				return err
+			}
+			songs = append(songs, song)
 		}
 
-		songs = append(songs, song)
+		return nil
+	})
+	if err != nil {
+		return nil, err
 	}
 
 	return &songs, nil
@@ -172,28 +142,21 @@ func (repository *RelationalSongRepository) FindAll(ctx context.Context) (*[]mod
 
 func (repository *RelationalSongRepository) FindByCode(ctx context.Context, code int64) (*model.Song, error) {
 
-	var tx = ctx.Value(transaction.RelationalTransactionContext{}).(*sql.Tx)
-
 	var err error
-	var statement *sql.Stmt
-
-	if statement, err = tx.Prepare(repository.statementFindByCode); err != nil {
-		return nil, err
-	}
-	defer func(statement *sql.Stmt) {
-		err = statement.Close()
-		if err != nil {
-			zap.L().Error("Error closing the statement")
-		}
-	}(statement)
-
-	row := statement.QueryRow(code)
-
 	var song model.Song
-	if err = row.Scan(&song.Id, &song.Code, &song.Name, &song.ArtistId); err != nil {
-		if err.Error() == "sql: no rows in result set" {
-			return nil, fmt.Errorf("song with code %d not found", code)
+	err = repositoryUtils.RelationalContext(ctx, repository.statementDelete, func(statement *sql.Stmt) error {
+
+		row := statement.QueryRow(code)
+		if err = row.Scan(&song.Id, &song.Code, &song.Name, &song.ArtistId); err != nil {
+			if err.Error() == "sql: no rows in result set" {
+				return fmt.Errorf("song with code %d not found", code)
+			}
+			return err
 		}
+
+		return nil
+	})
+	if err != nil {
 		return nil, err
 	}
 
@@ -202,71 +165,57 @@ func (repository *RelationalSongRepository) FindByCode(ctx context.Context, code
 
 func (repository *RelationalSongRepository) FindByName(ctx context.Context, name string) (*model.Song, error) {
 
-	var tx = ctx.Value(transaction.RelationalTransactionContext{}).(*sql.Tx)
-
 	var err error
-	var statement *sql.Stmt
-
-	if statement, err = tx.Prepare(repository.statementFindByName); err != nil {
-		return nil, err
-	}
-	defer func(statement *sql.Stmt) {
-		err = statement.Close()
-		if err != nil {
-			zap.L().Error("Error closing the statement")
-		}
-	}(statement)
-
-	row := statement.QueryRow(name)
-
 	var song model.Song
-	if err = row.Scan(&song.Id, &song.Code, &song.Name, &song.ArtistId); err != nil {
-		if err.Error() == "sql: no rows in result set" {
-			return nil, fmt.Errorf("song with name %s not found", name)
+	err = repositoryUtils.RelationalContext(ctx, repository.statementDelete, func(statement *sql.Stmt) error {
+
+		row := statement.QueryRow(name)
+		if err = row.Scan(&song.Id, &song.Code, &song.Name, &song.ArtistId); err != nil {
+			if err.Error() == "sql: no rows in result set" {
+				return fmt.Errorf("song with name %s not found", name)
+			}
+			return err
 		}
+
+		return nil
+	})
+	if err != nil {
 		return nil, err
 	}
 
 	return &song, nil
+
 }
 
 func (repository *RelationalSongRepository) FindByArtistId(ctx context.Context, id string) (*[]model.Song, error) {
 
-	var tx = ctx.Value(transaction.RelationalTransactionContext{}).(*sql.Tx)
-
 	var err error
-	var statement *sql.Stmt
-
-	if statement, err = tx.Prepare(repository.statementFindByArtistId); err != nil {
-		return nil, err
-	}
-	defer func(statement *sql.Stmt) {
-		err = statement.Close()
-		if err != nil {
-			zap.L().Error("Error closing the statement")
-		}
-	}(statement)
-
-	var rows *sql.Rows
-	if rows, err = statement.Query(id); err != nil {
-		return nil, err
-	}
-	defer func(rows *sql.Rows) {
-		err = rows.Close()
-		if err != nil {
-			zap.L().Error("Error closing the result set")
-		}
-	}(rows)
-
 	songs := make([]model.Song, 0)
-	for rows.Next() {
+	err = repositoryUtils.RelationalContext(ctx, repository.statementDelete, func(statement *sql.Stmt) error {
 
-		var song model.Song
-		if err = rows.Scan(&song.Id, &song.Code, &song.Name, &song.ArtistId); err != nil {
-			return nil, err
+		var rows *sql.Rows
+		if rows, err = statement.Query(id); err != nil {
+			return err
+		}
+		defer func(rows *sql.Rows) {
+			err = rows.Close()
+			if err != nil {
+				zap.L().Error("Error closing the result set")
+			}
+		}(rows)
+
+		for rows.Next() {
+			var song model.Song
+			if err = rows.Scan(&song.Id, &song.Code, &song.Name, &song.ArtistId); err != nil {
+				return err
+			}
+			songs = append(songs, song)
 		}
 
-		songs = append(songs, song)
+		return nil
+	})
+	if err != nil {
+		return nil, err
 	}
 
 	return &songs, nil
