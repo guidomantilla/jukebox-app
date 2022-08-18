@@ -28,7 +28,7 @@ func InitDB(environment environment.Environment) datasource.RelationalDataSource
 	password := environment.GetValue(DATASOURCE_PASSWORD).AsString()
 	url := environment.GetValue(DATASOURCE_URL).AsString()
 
-	singletonDataSource = datasource.NewRelationalDataSource(driver, username, password, url)
+	singletonDataSource = datasource.NewRelationalDataSource(driver, username, password, url, sql.Open)
 	return singletonDataSource
 }
 

@@ -3,6 +3,7 @@ package datasource
 import (
 	"database/sql"
 	"errors"
+	"reflect"
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
@@ -11,19 +12,23 @@ import (
 
 func Test_NewRelationalDataSource(t *testing.T) {
 
-	mysqlDataSource := NewRelationalDataSource("some_driver_name", "some_username", "some_password", ":username_:password")
+	openFunc := OpenDataSourceFunc(func(driverName, dataSourceUrl string) (*sql.DB, error) {
+		return nil, nil
+	})
+	mysqlDataSource := NewRelationalDataSource("some_driver_name", "some_username", "some_password", ":username_:password", openFunc)
 
 	assert.NotNil(t, mysqlDataSource)
 	assert.Equal(t, "some_driver_name", mysqlDataSource.driverName)
 	assert.Equal(t, "some_username", mysqlDataSource.username)
 	assert.Equal(t, "some_password", mysqlDataSource.password)
 	assert.Equal(t, "some_username_some_password", mysqlDataSource.url)
+	assert.Equal(t, reflect.ValueOf(openFunc).Pointer(), reflect.ValueOf(mysqlDataSource.openFunc).Pointer())
 	assert.Nil(t, mysqlDataSource.database)
 }
 
 func Test_GetDriverName(t *testing.T) {
 
-	mysqlDataSource := NewRelationalDataSource("some_driver_name", "some_username", "some_password", ":username_:password")
+	mysqlDataSource := NewRelationalDataSource("some_driver_name", "some_username", "some_password", ":username_:password", nil)
 
 	driver := mysqlDataSource.GetDriverName()
 	assert.Equal(t, mysqlDataSource.driverName, driver)
@@ -31,14 +36,14 @@ func Test_GetDriverName(t *testing.T) {
 
 func Test_GetDatabase_WhenDBIsNil_Ok(t *testing.T) {
 
-	mysqlDataSource := NewRelationalDataSource("some_driver_name", "some_username", "some_password", ":username_:password")
-	mysqlDataSource.openFunc = func(driverName, dataSourceName string) (*sql.DB, error) {
+	openFunc := OpenDataSourceFunc(func(driverName, dataSourceUrl string) (*sql.DB, error) {
 		db, _, err := sqlmock.New()
 		if err != nil {
 			t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
 		}
 		return db, nil
-	}
+	})
+	mysqlDataSource := NewRelationalDataSource("some_driver_name", "some_username", "some_password", ":username_:password", openFunc)
 
 	database, err := mysqlDataSource.GetDatabase()
 
@@ -50,10 +55,10 @@ func Test_GetDatabase_WhenDBIsNil_Ok(t *testing.T) {
 
 func Test_GetDatabase_WhenDBIsNil_Error(t *testing.T) {
 
-	mysqlDataSource := NewRelationalDataSource("some_driver_name", "some_username", "some_password", ":username_:password")
-	mysqlDataSource.openFunc = func(driverName, dataSourceName string) (*sql.DB, error) {
+	openFunc := OpenDataSourceFunc(func(driverName, dataSourceUrl string) (*sql.DB, error) {
 		return nil, errors.New("some error")
-	}
+	})
+	mysqlDataSource := NewRelationalDataSource("some_driver_name", "some_username", "some_password", ":username_:password", openFunc)
 
 	database, err := mysqlDataSource.GetDatabase()
 	assert.NotNil(t, err)
@@ -71,11 +76,10 @@ func Test_GetDatabase_WhenDBIsNotNil_Ok(t *testing.T) {
 		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
 	}
 
-	mysqlDataSource := NewRelationalDataSource("some_driver_name", "some_username", "some_password", ":username_:password")
-	mysqlDataSource.database = db
-	mysqlDataSource.openFunc = func(driverName, dataSourceName string) (*sql.DB, error) {
-		return mysqlDataSource.database, nil
-	}
+	openFunc := OpenDataSourceFunc(func(driverName, dataSourceUrl string) (*sql.DB, error) {
+		return db, nil
+	})
+	mysqlDataSource := NewRelationalDataSource("some_driver_name", "some_username", "some_password", ":username_:password", openFunc)
 
 	mock.ExpectPing()
 
@@ -97,13 +101,12 @@ func Test_GetDatabase_WhenDBIsNotNil_Error(t *testing.T) {
 		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
 	}
 
-	mysqlDataSource := NewRelationalDataSource("some_driver_name", "some_username", "some_password", ":username_:password")
-	mysqlDataSource.database = db
-
-	mysqlDataSource.openFunc = func(driverName, dataSourceName string) (*sql.DB, error) {
-
+	openFunc := OpenDataSourceFunc(func(driverName, dataSourceUrl string) (*sql.DB, error) {
 		return nil, errors.New("some error")
-	}
+	})
+
+	mysqlDataSource := NewRelationalDataSource("some_driver_name", "some_username", "some_password", ":username_:password", openFunc)
+	mysqlDataSource.database = db
 
 	mock.ExpectPing().WillReturnError(errors.New("some error"))
 

@@ -15,6 +15,8 @@ const (
 	POSTGRES_DRIVER_NAME = "pgx"
 )
 
+type OpenDataSourceFunc func(driverName, dataSourceUrl string) (*sql.DB, error)
+
 type RelationalDataSource interface {
 	GetDriverName() string
 	GetDatabase() (*sql.DB, error)
@@ -26,10 +28,10 @@ type DefaultRelationalDataSource struct {
 	password   string
 	url        string
 	database   *sql.DB
-	openFunc   func(driverName, dataSourceUrl string) (*sql.DB, error)
+	openFunc   OpenDataSourceFunc
 }
 
-func NewRelationalDataSource(driverName string, username string, password string, url string) *DefaultRelationalDataSource {
+func NewRelationalDataSource(driverName string, username string, password string, url string, openFunc OpenDataSourceFunc) *DefaultRelationalDataSource {
 	url = strings.Replace(url, ":username", username, 1)
 	url = strings.Replace(url, ":password", password, 1)
 
@@ -39,7 +41,7 @@ func NewRelationalDataSource(driverName string, username string, password string
 		password:   password,
 		url:        url,
 		database:   nil,
-		openFunc:   sql.Open,
+		openFunc:   openFunc,
 	}
 }
 

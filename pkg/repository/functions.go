@@ -26,12 +26,7 @@ func RelationalContext(ctx context.Context, sqlStatement string, fn RelationalFu
 	if statement, err = tx.Prepare(sqlStatement); err != nil {
 		return err
 	}
-	defer func(statement *sql.Stmt) {
-		err = statement.Close()
-		if err != nil {
-			zap.L().Error(Error_Closing_Statement)
-		}
-	}(statement)
+	defer closeStatement(statement)
 
 	if err = fn(statement); err != nil {
 		return err
@@ -47,23 +42,13 @@ func RelationalQueryContext(ctx context.Context, sqlStatement string, fn Relatio
 	if statement, err = tx.Prepare(sqlStatement); err != nil {
 		return err
 	}
-	defer func(statement *sql.Stmt) {
-		err = statement.Close()
-		if err != nil {
-			zap.L().Error(Error_Closing_Statement)
-		}
-	}(statement)
+	defer closeStatement(statement)
 
 	var rows *sql.Rows
 	if rows, err = statement.Query(); err != nil {
 		return err
 	}
-	defer func(rows *sql.Rows) {
-		err = rows.Close()
-		if err != nil {
-			zap.L().Error(Error_Closing_ResultSet)
-		}
-	}(rows)
+	defer closeResultSet(rows)
 
 	if err = fn(rows); err != nil {
 		return err
@@ -107,12 +92,7 @@ func RelationalQueryRowContext(ctx context.Context, sqlStatement string, key any
 	if statement, err = tx.Prepare(sqlStatement); err != nil {
 		return err
 	}
-	defer func(statement *sql.Stmt) {
-		err = statement.Close()
-		if err != nil {
-			zap.L().Error(Error_Closing_Statement)
-		}
-	}(statement)
+	defer closeStatement(statement)
 
 	row := statement.QueryRow(key)
 	if err = row.Scan(dest...); err != nil {
@@ -123,4 +103,16 @@ func RelationalQueryRowContext(ctx context.Context, sqlStatement string, key any
 	}
 
 	return nil
+}
+
+func closeStatement(statement *sql.Stmt) {
+	if err := statement.Close(); err != nil {
+		zap.L().Error(Error_Closing_Statement)
+	}
+}
+
+func closeResultSet(rows *sql.Rows) {
+	if err := rows.Close(); err != nil {
+		zap.L().Error(Error_Closing_ResultSet)
+	}
 }
