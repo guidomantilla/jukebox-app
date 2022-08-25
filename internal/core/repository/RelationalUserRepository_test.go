@@ -21,8 +21,7 @@ func Test_Create(t *testing.T) {
 	txHandler := transaction.NewRelationalTransactionHandler(dataSource)
 	repository := NewRelationalUserRepository()
 
-	var err error
-	err = txHandler.HandleTransaction(func(tx *sql.Tx) error {
+	err := txHandler.HandleTransaction(func(tx *sql.Tx) error {
 
 		txCtx := context.WithValue(context.Background(), transaction.RelationalTransactionContext{}, tx)
 

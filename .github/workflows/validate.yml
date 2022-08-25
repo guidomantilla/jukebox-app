@@ -1,0 +1,70 @@
+# Dependency Review Action
+#
+# This Action will scan dependency manifest files that change as part of a Pull Request,
+# surfacing known-vulnerable versions of the packages declared or updated in the PR.
+# Once installed, if the workflow run is marked as required, PRs introducing known-vulnerable packages will be blocked from merging.
+#
+# Source repository: https://github.com/actions/dependency-review-action
+# Public documentation: https://docs.github.com/en/code-security/supply-chain-security/understanding-your-software-supply-chain/about-dependency-review#dependency-review-enforcement
+name: 'Validate'
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    env:
+      HOST_POST: ':8080'
+      DATASOURCE_DRIVER: 'mysql'
+      DATASOURCE_USERNAME: 'jukebox'
+      DATASOURCE_PASSWORD: 'jukebox+'
+      DATASOURCE_URL: ':username::password@tcp(localhost:3307)/jukebox?charset=utf8&multiStatements=true'
+      LOG_LEVEL: 'WARN'
+      SENTRY_DSN: 'http://5a52dd69dfe542169006ce84aad106b5@192.168.0.152:9000/2'
+      SENTRY_ENVIRONMENT: 'dev'
+      SENTRY_RELEASE: 'sample'
+      PROJECT_HOME: $(git rev-parse --show-toplevel)
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    strategy:
+      fail-fast: false
+      matrix:
+        go: ['1.18', '1.19']
+
+    steps:
+      - name: 'Checkout Repository'
+        uses: actions/checkout@v3
+
+      - name: 'Set up Go'
+        uses: actions/setup-go@v3
+        with:
+          go-version: ${{ matrix.go }}
+
+      - name: 'Install golangci-lint'
+        run: go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+
+      - name: 'Dependency Review'
+        uses: actions/dependency-review-action@v2
+
+      - name: 'Verify Dependencies'
+        run: go mod tidy && go mod verify
+
+      - name: 'Format'
+        run: make format
+
+      - name: 'Vet'
+        run: make vet
+
+      - name: 'Lint'
+        run: make lint
+
+      - name: 'Unit Test'
+        run: make test
+
+      - name: 'Compile'
+        run: make compile
