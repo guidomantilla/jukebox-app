@@ -10,6 +10,8 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zaptest/observer"
 )
 
 func Test_RelationalContext_Ok(t *testing.T) {
@@ -429,4 +431,155 @@ func Test_RelationalQueryRowContext_Prepare_Err(t *testing.T) {
 	assert.Empty(t, content)
 	assert.Error(t, err)
 	assert.Equal(t, "some_error", err.Error())
+}
+
+func Test_RelationalQueryRowContext_Scan_Err(t *testing.T) {
+
+	var err error
+	var db *sql.DB
+	var mock sqlmock.Sqlmock
+	if db, mock, err = sqlmock.New(); err != nil {
+		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+	}
+
+	sqlStatement := "some_sql_statement"
+
+	mock.ExpectBegin()
+	mock.ExpectPrepare(sqlStatement)
+	mock.ExpectQuery(sqlStatement).WillReturnError(errors.New("some_error"))
+
+	openFunc := datasource.OpenDataSourceFunc(func(driverName, dataSourceUrl string) (*sql.DB, error) {
+		return db, nil
+	})
+	dataSource := datasource.NewRelationalDataSource("some_driver_name", "some_username", "some_password", ":username_:password", openFunc)
+
+	database, _ := dataSource.GetDatabase()
+	tx, _ := database.Begin()
+
+	txCtx := context.WithValue(context.Background(), transaction.RelationalTransactionContext{}, tx)
+
+	var id, uuid, title, content string
+	err = RelationalQueryRowContext(txCtx, sqlStatement, "", &id, &uuid, &title, &content)
+
+	assert.NotNil(t, err)
+	assert.Empty(t, id)
+	assert.Empty(t, uuid)
+	assert.Empty(t, title)
+	assert.Empty(t, content)
+	assert.Error(t, err)
+	assert.Equal(t, "some_error", err.Error())
+}
+
+func Test_RelationalQueryRowContext_Scan_No_Rows_Err(t *testing.T) {
+
+	var err error
+	var db *sql.DB
+	var mock sqlmock.Sqlmock
+	if db, mock, err = sqlmock.New(); err != nil {
+		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+	}
+
+	sqlStatement := "some_sql_statement"
+
+	mock.ExpectBegin()
+	mock.ExpectPrepare(sqlStatement)
+	mock.ExpectQuery(sqlStatement).WillReturnError(errors.New("sql: no rows in result set"))
+
+	openFunc := datasource.OpenDataSourceFunc(func(driverName, dataSourceUrl string) (*sql.DB, error) {
+		return db, nil
+	})
+	dataSource := datasource.NewRelationalDataSource("some_driver_name", "some_username", "some_password", ":username_:password", openFunc)
+
+	database, _ := dataSource.GetDatabase()
+	tx, _ := database.Begin()
+
+	txCtx := context.WithValue(context.Background(), transaction.RelationalTransactionContext{}, tx)
+
+	var id, uuid, title, content string
+	err = RelationalQueryRowContext(txCtx, sqlStatement, "1", &id, &uuid, &title, &content)
+
+	assert.NotNil(t, err)
+	assert.Empty(t, id)
+	assert.Empty(t, uuid)
+	assert.Empty(t, title)
+	assert.Empty(t, content)
+	assert.Error(t, err)
+	assert.Equal(t, "row with key 1 not found", err.Error())
+}
+
+func Test_closeStatement_Err(t *testing.T) {
+
+	zapCore, logs := observer.New(zap.InfoLevel)
+	logger := zap.New(zapCore)
+	zap.ReplaceGlobals(logger)
+
+	var err error
+	var db *sql.DB
+	var mock sqlmock.Sqlmock
+	if db, mock, err = sqlmock.New(); err != nil {
+		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+	}
+
+	sqlStatement := "some_sql_statement"
+
+	mock.ExpectBegin()
+	mock.ExpectPrepare(sqlStatement).WillReturnCloseError(errors.New("some_error"))
+
+	openFunc := datasource.OpenDataSourceFunc(func(driverName, dataSourceUrl string) (*sql.DB, error) {
+		return db, nil
+	})
+	dataSource := datasource.NewRelationalDataSource("some_driver_name", "some_username", "some_password", ":username_:password", openFunc)
+
+	database, _ := dataSource.GetDatabase()
+	tx, _ := database.Begin()
+	statement, _ := tx.Prepare(sqlStatement)
+
+	closeStatement(statement)
+
+	assert.Len(t, logs.All(), 1)
+	assert.Equal(t, Error_Closing_Statement, logs.All()[0].Message)
+
+	assert.Nil(t, err)
+}
+
+func Test_closeResultSet_Err(t *testing.T) {
+
+	zapCore, logs := observer.New(zap.InfoLevel)
+	logger := zap.New(zapCore)
+	zap.ReplaceGlobals(logger)
+
+	var err error
+	var db *sql.DB
+	var mock sqlmock.Sqlmock
+	if db, mock, err = sqlmock.New(); err != nil {
+		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+	}
+
+	sqlStatement := "some_sql_statement"
+
+	mock.ExpectBegin()
+	mock.ExpectPrepare(sqlStatement)
+	mock.ExpectQuery(sqlStatement).WillReturnRows(
+		sqlmock.NewRows([]string{"id", "uuid", "title", "content"}).
+			AddRow("1", "bea1b24d-0627-4ea0-aa2b-8af4c6c2a41c", "test", "test").
+			AddRow("1", "bea1b24d-0627-4ea0-aa2b-8af4c6c2a41c", "test", "test").
+			CloseError(errors.New("some_error")),
+	)
+
+	openFunc := datasource.OpenDataSourceFunc(func(driverName, dataSourceUrl string) (*sql.DB, error) {
+		return db, nil
+	})
+	dataSource := datasource.NewRelationalDataSource("some_driver_name", "some_username", "some_password", ":username_:password", openFunc)
+
+	database, _ := dataSource.GetDatabase()
+	tx, _ := database.Begin()
+	statement, _ := tx.Prepare(sqlStatement)
+	rows, _ := statement.Query()
+
+	closeResultSet(rows)
+
+	assert.Len(t, logs.All(), 1)
+	assert.Equal(t, Error_Closing_ResultSet, logs.All()[0].Message)
+
+	assert.Nil(t, err)
 }
