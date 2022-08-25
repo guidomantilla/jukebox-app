@@ -105,6 +105,8 @@ func RelationalQueryRowContext(ctx context.Context, sqlStatement string, key any
 	return nil
 }
 
+//
+
 func closeStatement(statement *sql.Stmt) {
 	if err := statement.Close(); err != nil {
 		zap.L().Error(Error_Closing_Statement)

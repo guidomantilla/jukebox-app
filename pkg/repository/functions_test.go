@@ -116,6 +116,8 @@ func Test_RelationalContext_Err(t *testing.T) {
 	assert.Equal(t, "some_error", err.Error())
 }
 
+//
+
 func Test_RelationalQueryContext_Ok(t *testing.T) {
 
 	var err error
@@ -257,6 +259,8 @@ func Test_RelationalQueryContext_Err(t *testing.T) {
 	assert.Equal(t, "some_error", err.Error())
 }
 
+//
+
 func Test_RelationalWriteContext_Ok(t *testing.T) {
 
 	var err error
@@ -357,6 +361,8 @@ func Test_RelationalWriteContext_LastInsertId_Err(t *testing.T) {
 	assert.Error(t, err)
 	assert.Equal(t, "some_error", err.Error())
 }
+
+//
 
 func Test_RelationalQueryRowContext_Ok(t *testing.T) {
 
@@ -507,6 +513,8 @@ func Test_RelationalQueryRowContext_Scan_No_Rows_Err(t *testing.T) {
 	assert.Equal(t, "row with key 1 not found", err.Error())
 }
 
+//
+
 func Test_closeStatement_Err(t *testing.T) {
 
 	zapCore, logs := observer.New(zap.InfoLevel)
@@ -583,3 +591,5 @@ func Test_closeResultSet_Err(t *testing.T) {
 
 	assert.Nil(t, err)
 }
+
+//

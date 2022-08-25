@@ -24,9 +24,6 @@ func (repository *RelationalArtistRepository) Create(ctx context.Context, artist
 	if id, err = repositoryUtils.RelationalWriteContext(ctx, repository.statementCreate, artist.Code, artist.Name); err != nil {
 		return err
 	}
-	if err != nil {
-		return err
-	}
 
 	artist.Id = *id
 
@@ -39,9 +36,6 @@ func (repository *RelationalArtistRepository) Update(ctx context.Context, artist
 	if _, err = repositoryUtils.RelationalWriteContext(ctx, repository.statementUpdate, artist.Code, artist.Name, artist.Id); err != nil {
 		return err
 	}
-	if err != nil {
-		return err
-	}
 
 	return nil
 }
@@ -50,9 +44,6 @@ func (repository *RelationalArtistRepository) DeleteById(ctx context.Context, id
 
 	var err error
 	if _, err = repositoryUtils.RelationalWriteContext(ctx, repository.statementDelete, id); err != nil {
-		return err
-	}
-	if err != nil {
 		return err
 	}
 
