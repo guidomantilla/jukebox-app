@@ -36,7 +36,7 @@ type SongRepository interface {
 
 	FindByCode(_ context.Context, code int64) (*model.Song, error)
 	FindByName(_ context.Context, name string) (*model.Song, error)
-	FindByArtistId(_ context.Context, id string) (*[]model.Song, error)
+	FindByArtistId(_ context.Context, id int64) (*[]model.Song, error)
 }
 type UserRepository interface {
 	Create(_ context.Context, _ *model.User) error

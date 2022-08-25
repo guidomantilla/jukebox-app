@@ -89,7 +89,7 @@ func (repository *RelationalSongRepository) FindByName(ctx context.Context, name
 	return &song, nil
 }
 
-func (repository *RelationalSongRepository) FindByArtistId(ctx context.Context, id string) (*[]model.Song, error) {
+func (repository *RelationalSongRepository) FindByArtistId(ctx context.Context, id int64) (*[]model.Song, error) {
 
 	return internalFindAllBy(ctx, repository.statementFindByArtistId)
 }

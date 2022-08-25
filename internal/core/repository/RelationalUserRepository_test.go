@@ -14,7 +14,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_Create_Ok(t *testing.T) {
+func Test_RelationalUserRepository_Create_Ok(t *testing.T) {
 
 	user := &model.User{
 		Id:    -1,
@@ -24,13 +24,13 @@ func Test_Create_Ok(t *testing.T) {
 	}
 
 	repository := NewRelationalUserRepository()
-	err := CallRepositorySaveFunction(t, repository.statementCreate, user, repository.Create, false)
+	err := CallRelationalUserRepositorySaveFunction(t, repository.statementCreate, user, repository.Create, false)
 
 	assert.Nil(t, err)
 	assert.Equal(t, int64(1), user.Id)
 }
 
-func Test_Create_Err(t *testing.T) {
+func Test_RelationalUserRepository_Create_Err(t *testing.T) {
 
 	user := &model.User{
 		Id:    -1,
@@ -40,7 +40,7 @@ func Test_Create_Err(t *testing.T) {
 	}
 
 	repository := NewRelationalUserRepository()
-	err := CallRepositorySaveFunction(t, repository.statementCreate, user, repository.Create, true)
+	err := CallRelationalUserRepositorySaveFunction(t, repository.statementCreate, user, repository.Create, true)
 
 	assert.NotNil(t, err)
 	assert.Equal(t, int64(-1), user.Id)
@@ -50,7 +50,7 @@ func Test_Create_Err(t *testing.T) {
 
 //
 
-func Test_Update_Ok(t *testing.T) {
+func Test_RelationalUserRepository_Update_Ok(t *testing.T) {
 
 	user := &model.User{
 		Id:    1,
@@ -60,13 +60,13 @@ func Test_Update_Ok(t *testing.T) {
 	}
 
 	repository := NewRelationalUserRepository()
-	err := CallRepositorySaveFunction(t, repository.statementUpdate, user, repository.Update, false)
+	err := CallRelationalUserRepositorySaveFunction(t, repository.statementUpdate, user, repository.Update, false)
 
 	assert.Nil(t, err)
 	assert.Equal(t, int64(1), user.Id)
 }
 
-func Test_Update_Err(t *testing.T) {
+func Test_RelationalUserRepository_Update_Err(t *testing.T) {
 
 	user := &model.User{
 		Id:    1,
@@ -76,7 +76,7 @@ func Test_Update_Err(t *testing.T) {
 	}
 
 	repository := NewRelationalUserRepository()
-	err := CallRepositorySaveFunction(t, repository.statementUpdate, user, repository.Update, true)
+	err := CallRelationalUserRepositorySaveFunction(t, repository.statementUpdate, user, repository.Update, true)
 
 	assert.NotNil(t, err)
 	assert.Equal(t, int64(1), user.Id)
@@ -86,27 +86,27 @@ func Test_Update_Err(t *testing.T) {
 
 //
 
-func Test_DeleteById_Ok(t *testing.T) {
+func Test_RelationalUserRepository_DeleteById_Ok(t *testing.T) {
 
 	user := &model.User{
 		Id: 1,
 	}
 
 	repository := NewRelationalUserRepository()
-	err := CallRepositoryDeleteFunction(t, repository.statementDelete, user.Id, repository.DeleteById, false)
+	err := CallRelationalUserRepositoryDeleteFunction(t, repository.statementDelete, user.Id, repository.DeleteById, false)
 
 	assert.Nil(t, err)
 	assert.Equal(t, int64(1), user.Id)
 }
 
-func Test_DeleteById_Err(t *testing.T) {
+func Test_RelationalUserRepository_DeleteById_Err(t *testing.T) {
 
 	user := &model.User{
 		Id: 1,
 	}
 
 	repository := NewRelationalUserRepository()
-	err := CallRepositoryDeleteFunction(t, repository.statementDelete, user.Id, repository.DeleteById, true)
+	err := CallRelationalUserRepositoryDeleteFunction(t, repository.statementDelete, user.Id, repository.DeleteById, true)
 
 	assert.NotNil(t, err)
 	assert.Equal(t, int64(1), user.Id)
@@ -116,19 +116,19 @@ func Test_DeleteById_Err(t *testing.T) {
 
 //
 
-func Test_FindAll_Ok(t *testing.T) {
+func Test_RelationalUserRepository_FindAll_Ok(t *testing.T) {
 
 	repository := NewRelationalUserRepository()
-	users, err := CallRepositoryFindAllFunction(t, repository.statementFind, repository.FindAll, false, false)
+	users, err := CallRelationalUserRepositoryFindAllFunction(t, repository.statementFind, repository.FindAll, false, false)
 
 	assert.Nil(t, err)
 	assert.NotEmpty(t, users)
 }
 
-func Test_FindAll_Query_Err(t *testing.T) {
+func Test_RelationalUserRepository_FindAll_Query_Err(t *testing.T) {
 
 	repository := NewRelationalUserRepository()
-	users, err := CallRepositoryFindAllFunction(t, repository.statementFind, repository.FindAll, true, false)
+	users, err := CallRelationalUserRepositoryFindAllFunction(t, repository.statementFind, repository.FindAll, true, false)
 
 	assert.NotNil(t, err)
 	assert.Empty(t, users)
@@ -136,10 +136,10 @@ func Test_FindAll_Query_Err(t *testing.T) {
 	assert.Equal(t, "some_error", err.Error())
 }
 
-func Test_FindAll_Scan_Err(t *testing.T) {
+func Test_RelationalUserRepository_FindAll_Scan_Err(t *testing.T) {
 
 	repository := NewRelationalUserRepository()
-	users, err := CallRepositoryFindAllFunction(t, repository.statementFind, repository.FindAll, false, true)
+	users, err := CallRelationalUserRepositoryFindAllFunction(t, repository.statementFind, repository.FindAll, false, true)
 
 	assert.NotNil(t, err)
 	assert.Empty(t, users)
@@ -149,19 +149,19 @@ func Test_FindAll_Scan_Err(t *testing.T) {
 
 //
 
-func Test_FindById_Ok(t *testing.T) {
+func Test_RelationalUserRepository_FindById_Ok(t *testing.T) {
 
 	repository := NewRelationalUserRepository()
-	user, err := CallRepositoryFindByInt64Function(t, repository.statementFindById, 1, repository.FindById, false, false)
+	user, err := CallRelationalUserRepositoryFindByInt64Function(t, repository.statementFindById, 1, repository.FindById, false, false)
 
 	assert.Nil(t, err)
 	assert.NotEmpty(t, user)
 }
 
-func Test_FindById_Query_Err(t *testing.T) {
+func Test_RelationalUserRepository_FindById_Query_Err(t *testing.T) {
 
 	repository := NewRelationalUserRepository()
-	user, err := CallRepositoryFindByInt64Function(t, repository.statementFindById, 1, repository.FindById, true, false)
+	user, err := CallRelationalUserRepositoryFindByInt64Function(t, repository.statementFindById, 1, repository.FindById, true, false)
 
 	assert.NotNil(t, err)
 	assert.Empty(t, user)
@@ -169,10 +169,10 @@ func Test_FindById_Query_Err(t *testing.T) {
 	assert.Equal(t, "some_error", err.Error())
 }
 
-func Test_FindById_Scan_Err(t *testing.T) {
+func Test_RelationalUserRepository_FindById_Scan_Err(t *testing.T) {
 
 	repository := NewRelationalUserRepository()
-	user, err := CallRepositoryFindByInt64Function(t, repository.statementFindById, 1, repository.FindById, false, true)
+	user, err := CallRelationalUserRepositoryFindByInt64Function(t, repository.statementFindById, 1, repository.FindById, false, true)
 
 	assert.NotNil(t, err)
 	assert.Empty(t, user)
@@ -182,19 +182,19 @@ func Test_FindById_Scan_Err(t *testing.T) {
 
 //
 
-func Test_FindByCode_Ok(t *testing.T) {
+func Test_RelationalUserRepository_FindByCode_Ok(t *testing.T) {
 
 	repository := NewRelationalUserRepository()
-	user, err := CallRepositoryFindByInt64Function(t, repository.statementFindByCode, 1, repository.FindByCode, false, false)
+	user, err := CallRelationalUserRepositoryFindByInt64Function(t, repository.statementFindByCode, 1, repository.FindByCode, false, false)
 
 	assert.Nil(t, err)
 	assert.NotEmpty(t, user)
 }
 
-func Test_FindByCode_Query_Err(t *testing.T) {
+func Test_RelationalUserRepository_FindByCode_Query_Err(t *testing.T) {
 
 	repository := NewRelationalUserRepository()
-	user, err := CallRepositoryFindByInt64Function(t, repository.statementFindByCode, 1, repository.FindByCode, true, false)
+	user, err := CallRelationalUserRepositoryFindByInt64Function(t, repository.statementFindByCode, 1, repository.FindByCode, true, false)
 
 	assert.NotNil(t, err)
 	assert.Empty(t, user)
@@ -202,10 +202,10 @@ func Test_FindByCode_Query_Err(t *testing.T) {
 	assert.Equal(t, "some_error", err.Error())
 }
 
-func Test_FindByCode_Scan_Err(t *testing.T) {
+func Test_RelationalUserRepository_FindByCode_Scan_Err(t *testing.T) {
 
 	repository := NewRelationalUserRepository()
-	user, err := CallRepositoryFindByInt64Function(t, repository.statementFindByCode, 1, repository.FindByCode, false, true)
+	user, err := CallRelationalUserRepositoryFindByInt64Function(t, repository.statementFindByCode, 1, repository.FindByCode, false, true)
 
 	assert.NotNil(t, err)
 	assert.Empty(t, user)
@@ -215,19 +215,19 @@ func Test_FindByCode_Scan_Err(t *testing.T) {
 
 //
 
-func Test_FindByName_Ok(t *testing.T) {
+func Test_RelationalUserRepository_FindByName_Ok(t *testing.T) {
 
 	repository := NewRelationalUserRepository()
-	user, err := CallRepositoryFindByStringFnFunction(t, repository.statementFindByName, "some_name", repository.FindByName, false, false)
+	user, err := CallRelationalUserRepositoryFindByStringFnFunction(t, repository.statementFindByName, "some_name", repository.FindByName, false, false)
 
 	assert.Nil(t, err)
 	assert.NotEmpty(t, user)
 }
 
-func Test_FindByName_Query_Err(t *testing.T) {
+func Test_RelationalUserRepository_FindByName_Query_Err(t *testing.T) {
 
 	repository := NewRelationalUserRepository()
-	user, err := CallRepositoryFindByStringFnFunction(t, repository.statementFindByName, "some_name", repository.FindByName, true, false)
+	user, err := CallRelationalUserRepositoryFindByStringFnFunction(t, repository.statementFindByName, "some_name", repository.FindByName, true, false)
 
 	assert.NotNil(t, err)
 	assert.Empty(t, user)
@@ -235,10 +235,10 @@ func Test_FindByName_Query_Err(t *testing.T) {
 	assert.Equal(t, "some_error", err.Error())
 }
 
-func Test_FindByName_Scan_Err(t *testing.T) {
+func Test_RelationalUserRepository_FindByName_Scan_Err(t *testing.T) {
 
 	repository := NewRelationalUserRepository()
-	user, err := CallRepositoryFindByStringFnFunction(t, repository.statementFindByName, "some_name", repository.FindByName, false, true)
+	user, err := CallRelationalUserRepositoryFindByStringFnFunction(t, repository.statementFindByName, "some_name", repository.FindByName, false, true)
 
 	assert.NotNil(t, err)
 	assert.Empty(t, user)
@@ -248,19 +248,19 @@ func Test_FindByName_Scan_Err(t *testing.T) {
 
 //
 
-func Test_FindByEmail_Ok(t *testing.T) {
+func Test_RelationalUserRepository_FindByEmail_Ok(t *testing.T) {
 
 	repository := NewRelationalUserRepository()
-	user, err := CallRepositoryFindByStringFnFunction(t, repository.statementFindByEmail, "some_email", repository.FindByEmail, false, false)
+	user, err := CallRelationalUserRepositoryFindByStringFnFunction(t, repository.statementFindByEmail, "some_email", repository.FindByEmail, false, false)
 
 	assert.Nil(t, err)
 	assert.NotEmpty(t, user)
 }
 
-func Test_FindByEmail_Query_Err(t *testing.T) {
+func Test_RelationalUserRepository_FindByEmail_Query_Err(t *testing.T) {
 
 	repository := NewRelationalUserRepository()
-	user, err := CallRepositoryFindByStringFnFunction(t, repository.statementFindByEmail, "some_email", repository.FindByEmail, true, false)
+	user, err := CallRelationalUserRepositoryFindByStringFnFunction(t, repository.statementFindByEmail, "some_email", repository.FindByEmail, true, false)
 
 	assert.NotNil(t, err)
 	assert.Empty(t, user)
@@ -268,10 +268,10 @@ func Test_FindByEmail_Query_Err(t *testing.T) {
 	assert.Equal(t, "some_error", err.Error())
 }
 
-func Test_FindByEmail_Scan_Err(t *testing.T) {
+func Test_RelationalUserRepository_FindByEmail_Scan_Err(t *testing.T) {
 
 	repository := NewRelationalUserRepository()
-	user, err := CallRepositoryFindByStringFnFunction(t, repository.statementFindByEmail, "some_email", repository.FindByEmail, false, true)
+	user, err := CallRelationalUserRepositoryFindByStringFnFunction(t, repository.statementFindByEmail, "some_email", repository.FindByEmail, false, true)
 
 	assert.NotNil(t, err)
 	assert.Empty(t, user)
@@ -281,11 +281,11 @@ func Test_FindByEmail_Scan_Err(t *testing.T) {
 
 //
 
-type FindAllFn func(ctx context.Context) (*[]model.User, error)
-type FindByInt64Fn func(ctx context.Context, n int64) (*model.User, error)
-type FindByStringFn func(ctx context.Context, s string) (*model.User, error)
+type RelationalUserRepository_FindAllFn func(ctx context.Context) (*[]model.User, error)
+type RelationalUserRepository_FindByInt64Fn func(ctx context.Context, n int64) (*model.User, error)
+type RelationalUserRepository_FindByStringFn func(ctx context.Context, s string) (*model.User, error)
 
-func CallRepositoryFindAllFunction(t *testing.T, statementFind string, findAllFn FindAllFn, withQueryError bool, withScanError bool) (*[]model.User, error) {
+func CallRelationalUserRepositoryFindAllFunction(t *testing.T, statementFind string, findAllFn RelationalUserRepository_FindAllFn, withQueryError bool, withScanError bool) (*[]model.User, error) {
 
 	var err error
 	var db *sql.DB
@@ -329,7 +329,7 @@ func CallRepositoryFindAllFunction(t *testing.T, statementFind string, findAllFn
 	return findAllFn(txCtx)
 }
 
-func CallRepositoryFindByInt64Function(t *testing.T, statementFind string, n int64, findByInt64Fn FindByInt64Fn, withQueryError bool, withScanError bool) (*model.User, error) {
+func CallRelationalUserRepositoryFindByInt64Function(t *testing.T, statementFind string, n int64, findByInt64Fn RelationalUserRepository_FindByInt64Fn, withQueryError bool, withScanError bool) (*model.User, error) {
 
 	var err error
 	var db *sql.DB
@@ -371,7 +371,7 @@ func CallRepositoryFindByInt64Function(t *testing.T, statementFind string, n int
 	return findByInt64Fn(txCtx, n)
 }
 
-func CallRepositoryFindByStringFnFunction(t *testing.T, statementFind string, s string, findByStringFn FindByStringFn, withQueryError bool, withScanError bool) (*model.User, error) {
+func CallRelationalUserRepositoryFindByStringFnFunction(t *testing.T, statementFind string, s string, findByStringFn RelationalUserRepository_FindByStringFn, withQueryError bool, withScanError bool) (*model.User, error) {
 
 	var err error
 	var db *sql.DB
@@ -415,10 +415,10 @@ func CallRepositoryFindByStringFnFunction(t *testing.T, statementFind string, s 
 
 //
 
-type SaveFn func(_ context.Context, _ *model.User) error
-type DeleteFn func(ctx context.Context, id int64) error
+type RelationalUserRepository_SaveFn func(_ context.Context, _ *model.User) error
+type RelationalUserRepository_DeleteFn func(ctx context.Context, id int64) error
 
-func CallRepositorySaveFunction(t *testing.T, statementCreate string, user *model.User, saveFn SaveFn, withExecError bool) error {
+func CallRelationalUserRepositorySaveFunction(t *testing.T, statementCreate string, user *model.User, saveFn RelationalUserRepository_SaveFn, withExecError bool) error {
 
 	var err error
 	var db *sql.DB
@@ -450,7 +450,7 @@ func CallRepositorySaveFunction(t *testing.T, statementCreate string, user *mode
 	return saveFn(txCtx, user)
 }
 
-func CallRepositoryDeleteFunction(t *testing.T, statementCreate string, id int64, deleteFn DeleteFn, withExecError bool) error {
+func CallRelationalUserRepositoryDeleteFunction(t *testing.T, statementCreate string, id int64, deleteFn RelationalUserRepository_DeleteFn, withExecError bool) error {
 
 	var err error
 	var db *sql.DB

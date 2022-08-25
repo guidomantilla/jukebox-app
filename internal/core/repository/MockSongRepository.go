@@ -79,7 +79,7 @@ func (mr *MockSongRepositoryMockRecorder) FindAll(arg0 interface{}) *gomock.Call
 }
 
 // FindByArtistId mocks base method.
-func (m *MockSongRepository) FindByArtistId(arg0 context.Context, arg1 string) (*[]model.Song, error) {
+func (m *MockSongRepository) FindByArtistId(arg0 context.Context, arg1 int64) (*[]model.Song, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindByArtistId", arg0, arg1)
 	ret0, _ := ret[0].(*[]model.Song)
