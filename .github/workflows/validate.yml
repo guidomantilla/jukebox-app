@@ -19,14 +19,13 @@ jobs:
     env:
       HOST_POST: ':8080'
       DATASOURCE_DRIVER: 'mysql'
-      DATASOURCE_USERNAME: 'jukebox'
-      DATASOURCE_PASSWORD: 'jukebox+'
-      DATASOURCE_URL: ':username::password@tcp(localhost:3307)/jukebox?charset=utf8&multiStatements=true'
+      DATASOURCE_USERNAME: ${{secrets.DATASOURCE_USERNAME}}
+      DATASOURCE_PASSWORD: ${{secrets.DATASOURCE_PASSWORD}}
+      DATASOURCE_URL: ${{secrets.DATASOURCE_URL}}
       LOG_LEVEL: 'WARN'
-      SENTRY_DSN: 'http://5a52dd69dfe542169006ce84aad106b5@192.168.0.152:9000/2'
-      SENTRY_ENVIRONMENT: 'dev'
-      SENTRY_RELEASE: 'sample'
-      PROJECT_HOME: $(git rev-parse --show-toplevel)
+      SENTRY_DSN: ${{secrets.SENTRY_DSN}}
+      SENTRY_ENVIRONMENT: ${{secrets.SENTRY_ENVIRONMENT}}
+      SENTRY_RELEASE: ${{secrets.SENTRY_RELEASE}}
     permissions:
       actions: read
       contents: read
