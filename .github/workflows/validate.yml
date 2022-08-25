@@ -49,6 +49,13 @@ jobs:
 
       - name: 'Dependency Review'
         uses: actions/dependency-review-action@v2
+        with:
+        # Possible values: "critical", "high", "moderate", "low"
+        # fail-on-severity: critical
+        #
+        # Possible values: Any available git ref
+          base-ref: ${{ github.event.pull_request.base.ref }}
+          head-ref: ${{ github.event.pull_request.head.ref }}
 
       - name: 'Verify Dependencies'
         run: go mod tidy && go mod verify
