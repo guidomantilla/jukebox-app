@@ -13,14 +13,47 @@ on:
   pull_request:
     branches: [ "main" ]
 
-permissions:
-  contents: read
-
 jobs:
-  dependency-review:
+  validate:
     runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    strategy:
+      fail-fast: false
+      matrix:
+        go: ['1.18', '1.19']
+
     steps:
       - name: 'Checkout Repository'
         uses: actions/checkout@v3
+
+      - name: 'Set up Go'
+        uses: actions/setup-go@v3
+        with:
+          languages: ${{ matrix.go }}
+
+      - name: 'Install golangci-lint'
+        run: go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+
       - name: 'Dependency Review'
         uses: actions/dependency-review-action@v2
+
+      - name: 'Verify Dependencies'
+        run: go mod tidy && go mod verify
+
+      - name: 'Format'
+        run: make format
+
+      - name: 'Vet'
+        run: make vet
+
+      - name: 'Lint'
+        run: golangci-lint run ./...
+
+      - name: 'Unit Test'
+        run: make test
+
+      - name: 'Compile'
+        run: make compile
