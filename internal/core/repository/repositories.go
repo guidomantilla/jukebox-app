@@ -14,41 +14,41 @@ var (
 )
 
 type ArtistRepository interface {
-	Create(_ context.Context, _ *model.Artist) error
-	Update(_ context.Context, _ *model.Artist) error
-	DeleteById(_ context.Context, id int64) error
-	FindById(_ context.Context, id int64) (*model.Artist, error)
-	FindAll(_ context.Context) (*[]model.Artist, error)
+	Create(ctx context.Context, artist *model.Artist) error
+	Update(ctx context.Context, artist *model.Artist) error
+	DeleteById(ctx context.Context, id int64) error
+	FindById(ctx context.Context, id int64) (*model.Artist, error)
+	FindAll(ctx context.Context) (*[]model.Artist, error)
 
 	//Custom Finders
 
-	FindByCode(_ context.Context, code int64) (*model.Artist, error)
-	FindByName(_ context.Context, name string) (*model.Artist, error)
+	FindByCode(ctx context.Context, code int64) (*model.Artist, error)
+	FindByName(ctx context.Context, name string) (*model.Artist, error)
 }
 
 type SongRepository interface {
-	Create(_ context.Context, _ *model.Song) error
-	Update(_ context.Context, _ *model.Song) error
-	DeleteById(_ context.Context, id int64) error
-	FindById(_ context.Context, id int64) (*model.Song, error)
-	FindAll(_ context.Context) (*[]model.Song, error)
+	Create(ctx context.Context, song *model.Song) error
+	Update(ctx context.Context, song *model.Song) error
+	DeleteById(ctx context.Context, id int64) error
+	FindById(ctx context.Context, id int64) (*model.Song, error)
+	FindAll(ctx context.Context) (*[]model.Song, error)
 
 	//Custom Finders
 
-	FindByCode(_ context.Context, code int64) (*model.Song, error)
-	FindByName(_ context.Context, name string) (*model.Song, error)
-	FindByArtistId(_ context.Context, id int64) (*[]model.Song, error)
+	FindByCode(ctx context.Context, code int64) (*model.Song, error)
+	FindByName(ctx context.Context, name string) (*model.Song, error)
+	FindByArtistId(ctx context.Context, id int64) (*[]model.Song, error)
 }
 type UserRepository interface {
-	Create(_ context.Context, _ *model.User) error
-	Update(_ context.Context, _ *model.User) error
-	DeleteById(_ context.Context, id int64) error
-	FindById(_ context.Context, id int64) (*model.User, error)
-	FindAll(_ context.Context) (*[]model.User, error)
+	Create(ctx context.Context, user *model.User) error
+	Update(ctx context.Context, user *model.User) error
+	DeleteById(ctx context.Context, id int64) error
+	FindById(ctx context.Context, id int64) (*model.User, error)
+	FindAll(ctx context.Context) (*[]model.User, error)
 
 	//Custom Finders
 
-	FindByCode(_ context.Context, code int64) (*model.User, error)
-	FindByName(_ context.Context, name string) (*model.User, error)
-	FindByEmail(_ context.Context, email string) (*model.User, error)
+	FindByCode(ctx context.Context, code int64) (*model.User, error)
+	FindByName(ctx context.Context, name string) (*model.User, error)
+	FindByEmail(ctx context.Context, email string) (*model.User, error)
 }

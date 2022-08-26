@@ -30,7 +30,7 @@ func (repository *CachedUserRepository) Create(ctx context.Context, user *model.
 		return err
 	}
 
-	if err = repository.cacheManager.Set(repository.cacheName, user.Id, user); err != nil {
+	if err = repository.cacheManager.Set(ctx, repository.cacheName, user.Id, user); err != nil {
 		zap.L().Error(fmt.Sprintf("Error caching the created user: %s", err.Error()))
 		return nil
 	}
@@ -45,7 +45,7 @@ func (repository *CachedUserRepository) Update(ctx context.Context, user *model.
 		return err
 	}
 
-	if err = repository.cacheManager.Set(repository.cacheName, user.Id, user); err != nil {
+	if err = repository.cacheManager.Set(ctx, repository.cacheName, user.Id, user); err != nil {
 		zap.L().Error("Error caching the updated user")
 		return nil
 	}
@@ -60,7 +60,7 @@ func (repository *CachedUserRepository) DeleteById(ctx context.Context, id int64
 		return err
 	}
 
-	if err = repository.cacheManager.Delete(repository.cacheName, id); err != nil {
+	if err = repository.cacheManager.Delete(ctx, repository.cacheName, id); err != nil {
 		if !errors.Is(err, memcache.ErrCacheMiss) {
 			zap.L().Error("Error deleting the user from cache")
 		}
@@ -76,7 +76,7 @@ func (repository *CachedUserRepository) FindById(ctx context.Context, id int64) 
 	var user *model.User
 	var valueFromCache any
 
-	valueFromCache, err = repository.cacheManager.Get(repository.cacheName, id)
+	valueFromCache, err = repository.cacheManager.Get(ctx, repository.cacheName, id)
 	if err != nil {
 		if !errors.Is(err, memcache.ErrCacheMiss) {
 			zap.L().Error("Error getting the user from cache")
@@ -120,7 +120,7 @@ func (repository *CachedUserRepository) findByIdAndSet(ctx context.Context, id i
 		return nil, err
 	}
 
-	if err = repository.cacheManager.Set(repository.cacheName, id, user); err != nil {
+	if err = repository.cacheManager.Set(ctx, repository.cacheName, id, user); err != nil {
 		zap.L().Error("Error caching the user")
 		return user, nil
 	}
@@ -137,7 +137,7 @@ func (repository *CachedUserRepository) FindAllAndSet(ctx context.Context) (*[]m
 		return nil, err
 	}
 
-	if err = repository.cacheManager.Set(repository.cacheName, "", users); err != nil {
+	if err = repository.cacheManager.Set(ctx, repository.cacheName, "", users); err != nil {
 		zap.L().Error("Error caching the users")
 		return users, nil
 	}

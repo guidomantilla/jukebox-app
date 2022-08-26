@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/eko/gocache/store"
+	"github.com/eko/gocache/v2/store"
 	"github.com/golang/mock/gomock"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
@@ -109,10 +109,10 @@ func Test_CachedUserRepository_Create_Set_Err(t *testing.T) {
 	delegateRepository.EXPECT().Create(ctx, user).DoAndReturn(mockCreateFunction).Return(nil)
 
 	cacheManager := cachemanager.NewMockCacheManager(ctrl)
-	mockSetFunction := func(_ string, _ any, _ any) error {
+	mockSetFunction := func(_ context.Context, _ string, _ any, _ any) error {
 		return errors.New("some_error")
 	}
-	cacheManager.EXPECT().Set("users", int64(1), user).DoAndReturn(mockSetFunction).Return(errors.New("some_error"))
+	cacheManager.EXPECT().Set(ctx, "users", int64(1), user).DoAndReturn(mockSetFunction).Return(errors.New("some_error"))
 
 	//
 
@@ -221,10 +221,10 @@ func Test_CachedUserRepository_Update_Set_Err(t *testing.T) {
 	delegateRepository.EXPECT().Update(ctx, user).DoAndReturn(mockUpdateFunction).Return(nil)
 
 	cacheManager := cachemanager.NewMockCacheManager(ctrl)
-	mockSetFunction := func(_ string, _ any, _ any) error {
+	mockSetFunction := func(_ context.Context, _ string, _ any, _ any) error {
 		return errors.New("some_error")
 	}
-	cacheManager.EXPECT().Set("users", int64(1), user).DoAndReturn(mockSetFunction).Return(errors.New("some_error"))
+	cacheManager.EXPECT().Set(ctx, "users", int64(1), user).DoAndReturn(mockSetFunction).Return(errors.New("some_error"))
 
 	//
 
@@ -268,7 +268,7 @@ func Test_CachedUserRepository_Delete_Ok(t *testing.T) {
 	cacheManager := cachemanager.NewDefaultCacheManager(store.GoCacheType, environment)
 	cacheRepository := NewCachedUserRepository(delegateRepository, cacheManager)
 
-	_ = cacheRepository.cacheManager.Set(cacheRepository.cacheName, user.Id, user)
+	_ = cacheRepository.cacheManager.Set(ctx, cacheRepository.cacheName, user.Id, user)
 	err := cacheRepository.DeleteById(ctx, user.Id)
 
 	assert.Nil(t, err)
@@ -333,10 +333,10 @@ func Test_CachedUserRepository_Delete_Set_Err(t *testing.T) {
 	delegateRepository.EXPECT().DeleteById(ctx, user.Id).DoAndReturn(mockDeleteFunction).Return(nil)
 
 	cacheManager := cachemanager.NewMockCacheManager(ctrl)
-	mockSetFunction := func(_ string, _ any) error {
+	mockSetFunction := func(_ context.Context, _ string, _ any) error {
 		return errors.New("some_error")
 	}
-	cacheManager.EXPECT().Delete("users", user.Id).DoAndReturn(mockSetFunction).Return(errors.New("some_error"))
+	cacheManager.EXPECT().Delete(ctx, "users", user.Id).DoAndReturn(mockSetFunction).Return(errors.New("some_error"))
 
 	//
 
