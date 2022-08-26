@@ -4,20 +4,23 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"strconv"
 
 	"github.com/bradfitz/gomemcache/memcache"
-	"github.com/eko/gocache/cache"
-	"github.com/eko/gocache/store"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 
 	"jukebox-app/internal/core/model"
+	"jukebox-app/pkg/cache-manager"
+)
+
+const (
+	USER_ID = "Users-Id(%s)"
 )
 
 type CachedUserRepository struct {
 	delegateUserRepository UserRepository
-	cache                  *cache.Cache
+	cacheManager           cachemanager.CacheManager
+	cacheName              string
 }
 
 func (repository *CachedUserRepository) Create(ctx context.Context, user *model.User) error {
@@ -27,15 +30,8 @@ func (repository *CachedUserRepository) Create(ctx context.Context, user *model.
 		return err
 	}
 
-	var valueToCache []byte
-	if valueToCache, err = json.Marshal(&user); err != nil {
-		zap.L().Error("Error marshalling to json the created user")
-		return nil
-	}
-	keyToCache := fmt.Sprintf("Users-Id(%s)", strconv.FormatInt(user.Id, 10))
-
-	if err = repository.cache.Set(keyToCache, valueToCache, &store.Options{}); err != nil {
-		zap.L().Error("Error caching the created user")
+	if err = repository.cacheManager.Set(repository.cacheName, user.Id, user); err != nil {
+		zap.L().Error(fmt.Sprintf("Error caching the created user: %s", err.Error()))
 		return nil
 	}
 
@@ -49,14 +45,7 @@ func (repository *CachedUserRepository) Update(ctx context.Context, user *model.
 		return err
 	}
 
-	var valueToCache []byte
-	if valueToCache, err = json.Marshal(&user); err != nil {
-		zap.L().Error("Error marshalling to json the updated user")
-		return nil
-	}
-	keyToCache := fmt.Sprintf("Users-Id(%s)", strconv.FormatInt(user.Id, 10))
-
-	if err = repository.cache.Set(keyToCache, valueToCache, &store.Options{}); err != nil {
+	if err = repository.cacheManager.Set(repository.cacheName, user.Id, user); err != nil {
 		zap.L().Error("Error caching the updated user")
 		return nil
 	}
@@ -71,8 +60,7 @@ func (repository *CachedUserRepository) DeleteById(ctx context.Context, id int64
 		return err
 	}
 
-	keyToCache := fmt.Sprintf("Users-Id(%s)", strconv.FormatInt(id, 10))
-	if err = repository.cache.Delete(keyToCache); err != nil {
+	if err = repository.cacheManager.Delete(repository.cacheName, id); err != nil {
 		if !errors.Is(err, memcache.ErrCacheMiss) {
 			zap.L().Error("Error deleting the user from cache")
 		}
@@ -88,8 +76,7 @@ func (repository *CachedUserRepository) FindById(ctx context.Context, id int64) 
 	var user *model.User
 	var valueFromCache any
 
-	keyToCache := fmt.Sprintf("Users-Id(%s)", strconv.FormatInt(id, 10))
-	valueFromCache, err = repository.cache.Get(keyToCache)
+	valueFromCache, err = repository.cacheManager.Get(repository.cacheName, id)
 	if err != nil {
 		if !errors.Is(err, memcache.ErrCacheMiss) {
 			zap.L().Error("Error getting the user from cache")
@@ -133,14 +120,7 @@ func (repository *CachedUserRepository) findByIdAndSet(ctx context.Context, id i
 		return nil, err
 	}
 
-	var valueToCache []byte
-	if valueToCache, err = json.Marshal(&user); err != nil {
-		zap.L().Error("Error marshalling to json the user")
-		return user, nil
-	}
-	keyToCache := fmt.Sprintf("Users-Id(%s)", strconv.FormatInt(id, 10))
-
-	if err = repository.cache.Set(keyToCache, valueToCache, &store.Options{}); err != nil {
+	if err = repository.cacheManager.Set(repository.cacheName, id, user); err != nil {
 		zap.L().Error("Error caching the user")
 		return user, nil
 	}
@@ -157,14 +137,7 @@ func (repository *CachedUserRepository) FindAllAndSet(ctx context.Context) (*[]m
 		return nil, err
 	}
 
-	var valueToCache []byte
-	if valueToCache, err = json.Marshal(&users); err != nil {
-		zap.L().Error("Error marshalling to json the users")
-		return users, nil
-	}
-	keyToCache := "Users-FindAll()"
-
-	if err = repository.cache.Set(keyToCache, valueToCache, &store.Options{}); err != nil {
+	if err = repository.cacheManager.Set(repository.cacheName, "", users); err != nil {
 		zap.L().Error("Error caching the users")
 		return users, nil
 	}
@@ -174,9 +147,10 @@ func (repository *CachedUserRepository) FindAllAndSet(ctx context.Context) (*[]m
 
 //
 
-func NewCachedUserRepository(delegateUserRepository UserRepository, cache *cache.Cache) *CachedUserRepository {
+func NewCachedUserRepository(delegateUserRepository UserRepository, cacheManager cachemanager.CacheManager) *CachedUserRepository {
 	return &CachedUserRepository{
 		delegateUserRepository: delegateUserRepository,
-		cache:                  cache,
+		cacheManager:           cacheManager,
+		cacheName:              "users",
 	}
 }
