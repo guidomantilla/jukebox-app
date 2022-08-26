@@ -42,7 +42,7 @@ func Test_CachedUserRepository_Create_Ok(t *testing.T) {
 
 	//
 
-	cacheManager := cachemanager.NewDefaultCacheManager(store.MemcacheType, environment)
+	cacheManager := cachemanager.NewDefaultCacheManager(store.GoCacheType, environment)
 	cacheRepository := NewCachedUserRepository(delegateRepository, cacheManager)
 	err := cacheRepository.Create(ctx, user)
 
@@ -77,7 +77,7 @@ func Test_CachedUserRepository_Create_Delegate_Err(t *testing.T) {
 
 	//
 
-	cacheManager := cachemanager.NewDefaultCacheManager(store.MemcacheType, environment)
+	cacheManager := cachemanager.NewDefaultCacheManager(store.GoCacheType, environment)
 	cacheRepository := NewCachedUserRepository(delegateRepository, cacheManager)
 	err := cacheRepository.Create(ctx, user)
 
@@ -154,7 +154,7 @@ func Test_CachedUserRepository_Update_Ok(t *testing.T) {
 
 	//
 
-	cacheManager := cachemanager.NewDefaultCacheManager(store.MemcacheType, environment)
+	cacheManager := cachemanager.NewDefaultCacheManager(store.GoCacheType, environment)
 	cacheRepository := NewCachedUserRepository(delegateRepository, cacheManager)
 	err := cacheRepository.Update(ctx, user)
 
@@ -189,7 +189,7 @@ func Test_CachedUserRepository_Update_Delegate_Err(t *testing.T) {
 
 	//
 
-	cacheManager := cachemanager.NewDefaultCacheManager(store.MemcacheType, environment)
+	cacheManager := cachemanager.NewDefaultCacheManager(store.GoCacheType, environment)
 	cacheRepository := NewCachedUserRepository(delegateRepository, cacheManager)
 	err := cacheRepository.Update(ctx, user)
 
@@ -265,7 +265,7 @@ func Test_CachedUserRepository_Delete_Ok(t *testing.T) {
 
 	//
 
-	cacheManager := cachemanager.NewDefaultCacheManager(store.MemcacheType, environment)
+	cacheManager := cachemanager.NewDefaultCacheManager(store.GoCacheType, environment)
 	cacheRepository := NewCachedUserRepository(delegateRepository, cacheManager)
 
 	_ = cacheRepository.cacheManager.Set(cacheRepository.cacheName, user.Id, user)
@@ -302,7 +302,7 @@ func Test_CachedUserRepository_Delete_Delegate_Err(t *testing.T) {
 
 	//
 
-	cacheManager := cachemanager.NewDefaultCacheManager(store.MemcacheType, environment)
+	cacheManager := cachemanager.NewDefaultCacheManager(store.GoCacheType, environment)
 	cacheRepository := NewCachedUserRepository(delegateRepository, cacheManager)
 	err := cacheRepository.DeleteById(ctx, user.Id)
 

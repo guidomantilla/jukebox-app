@@ -4,13 +4,13 @@ phony-goal: ; @echo $@
 build: validate
 	docker compose -f docker/docker-compose.yml up --build --remove-orphans --force-recreate --detach
 
-validate: format vet lint sonarqube
+validate: sort-import format vet lint sonarqube
 
 generate:
 	go generate ./...
 
 sort-import:
-	goimportssort -v -w ./..
+	goimportssort -w ./..
 
 format:
 	go fmt ./...
@@ -28,7 +28,6 @@ test:
 coverage: test
 	go tool cover -func=coverage.out
 	go tool cover -html=coverage.out -o coverage.html
-	#open coverage.html
 
 sonarqube: coverage
 	sonar-scanner

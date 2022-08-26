@@ -8,6 +8,7 @@ import (
 	"github.com/bradfitz/gomemcache/memcache"
 	"github.com/eko/gocache/cache"
 	"github.com/eko/gocache/store"
+	gocache "github.com/patrickmn/go-cache"
 
 	"jukebox-app/pkg/environment"
 )
@@ -71,18 +72,21 @@ func (cacheManager *DefaultCacheManager) GetType() string {
 
 func NewDefaultCacheManager(storeType string, environment environment.Environment) *DefaultCacheManager {
 
-	cacheAddresses := environment.GetValueOrDefault(CACHE_ADDRESS, MEMCACHED_ADDRESS_DEFAULT_VALUE).AsString()
-	pair := strings.SplitN(cacheAddresses, ",", 2)
-
-	var cacheStore *store.MemcacheStore
+	var cacheStore store.StoreInterface
 	if storeType == store.MemcacheType {
-		cacheStore = store.NewMemcache(memcache.New(pair...), &store.Options{Expiration: 10 * time.Second})
+		cacheAddresses := environment.GetValueOrDefault(CACHE_ADDRESS, MEMCACHED_ADDRESS_DEFAULT_VALUE).AsString()
+		pair := strings.SplitN(cacheAddresses, ",", 2)
+		memcachedStore := store.NewMemcache(memcache.New(pair...), &store.Options{Expiration: 10 * time.Second})
+		cacheStore = memcachedStore
 	}
 
-	internalCacheManager := cache.New(cacheStore)
+	if storeType == store.GoCacheType {
+		goCacheStore := store.NewGoCache(gocache.New(5*time.Minute, 10*time.Minute), &store.Options{Expiration: 10 * time.Second})
+		cacheStore = goCacheStore
+	}
 
 	return &DefaultCacheManager{
 		cacheStore: cacheStore,
-		cache:      internalCacheManager,
+		cache:      cache.New(cacheStore),
 	}
 }
