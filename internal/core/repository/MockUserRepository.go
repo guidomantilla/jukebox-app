@@ -6,10 +6,11 @@ package repository
 
 import (
 	context "context"
-	model "jukebox-app/internal/core/model"
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
+
+	model "jukebox-app/internal/core/model"
 )
 
 // MockUserRepository is a mock of UserRepository interface.

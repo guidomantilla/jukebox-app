@@ -86,8 +86,8 @@ func NewDefaultCacheManager(storeType string, environment environment.Environmen
 	case store.RedisType:
 		cacheAddresses := environment.GetValueOrDefault(CACHE_ADDRESS, REDIS_ADDRESS_DEFAULT_VALUE).AsString()
 		pair := strings.SplitN(cacheAddresses, ",", 2)
-		_ = store.NewRedis(redis.NewClient(&redis.Options{Addr: pair[0]}), &store.Options{Expiration: 10 * time.Second})
-		//cacheStore = memcachedStore
+		redisStore := store.NewRedis(redis.NewClient(&redis.Options{Addr: pair[0]}), &store.Options{Expiration: 10 * time.Second})
+		cacheStore = redisStore
 
 	default:
 		goCacheStore := store.NewGoCache(gocache.New(5*time.Minute, 10*time.Minute), &store.Options{Expiration: 10 * time.Second})
