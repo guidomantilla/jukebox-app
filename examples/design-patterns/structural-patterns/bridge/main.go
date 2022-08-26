@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+
 	"jukebox-app/examples/design-patterns/structural-patterns/bridge/machines"
 	"jukebox-app/examples/design-patterns/structural-patterns/bridge/printers"
 )

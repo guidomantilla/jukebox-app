@@ -4,17 +4,20 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"jukebox-app/internal/core/model"
 	"strconv"
 
 	"github.com/bradfitz/gomemcache/memcache"
+	"github.com/eko/gocache/cache"
+	"github.com/eko/gocache/store"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
+
+	"jukebox-app/internal/core/model"
 )
 
 type CachedUserRepository struct {
 	delegateUserRepository UserRepository
-	memcachedClient        *memcache.Client
+	cache                  *cache.Cache
 }
 
 func (repository *CachedUserRepository) Create(ctx context.Context, user *model.User) error {
@@ -31,11 +34,7 @@ func (repository *CachedUserRepository) Create(ctx context.Context, user *model.
 	}
 	keyToCache := fmt.Sprintf("Users-Id(%s)", strconv.FormatInt(user.Id, 10))
 
-	userToCache := &memcache.Item{
-		Key:   keyToCache,
-		Value: valueToCache,
-	}
-	if err = repository.memcachedClient.Set(userToCache); err != nil {
+	if err = repository.cache.Set(keyToCache, valueToCache, &store.Options{}); err != nil {
 		zap.L().Error("Error caching the created user")
 		return nil
 	}
@@ -57,11 +56,7 @@ func (repository *CachedUserRepository) Update(ctx context.Context, user *model.
 	}
 	keyToCache := fmt.Sprintf("Users-Id(%s)", strconv.FormatInt(user.Id, 10))
 
-	userToCache := &memcache.Item{
-		Key:   keyToCache,
-		Value: valueToCache,
-	}
-	if err = repository.memcachedClient.Set(userToCache); err != nil {
+	if err = repository.cache.Set(keyToCache, valueToCache, &store.Options{}); err != nil {
 		zap.L().Error("Error caching the updated user")
 		return nil
 	}
@@ -77,7 +72,7 @@ func (repository *CachedUserRepository) DeleteById(ctx context.Context, id int64
 	}
 
 	keyToCache := fmt.Sprintf("Users-Id(%s)", strconv.FormatInt(id, 10))
-	if err = repository.memcachedClient.Delete(keyToCache); err != nil {
+	if err = repository.cache.Delete(keyToCache); err != nil {
 		if !errors.Is(err, memcache.ErrCacheMiss) {
 			zap.L().Error("Error deleting the user from cache")
 		}
@@ -91,11 +86,10 @@ func (repository *CachedUserRepository) FindById(ctx context.Context, id int64) 
 
 	var err error
 	var user *model.User
-	var cachedUser *memcache.Item
+	var valueFromCache any
 
 	keyToCache := fmt.Sprintf("Users-Id(%s)", strconv.FormatInt(id, 10))
-
-	cachedUser, err = repository.memcachedClient.Get(keyToCache)
+	valueFromCache, err = repository.cache.Get(keyToCache)
 	if err != nil {
 		if !errors.Is(err, memcache.ErrCacheMiss) {
 			zap.L().Error("Error getting the user from cache")
@@ -104,7 +98,7 @@ func (repository *CachedUserRepository) FindById(ctx context.Context, id int64) 
 	}
 
 	user = &model.User{}
-	if err = json.Unmarshal(cachedUser.Value, user); err != nil {
+	if err = json.Unmarshal([]byte(valueFromCache.(string)), user); err != nil {
 		zap.L().Error("Error unmarshalling from json the user")
 		return repository.findByIdAndSet(ctx, id)
 	}
@@ -146,11 +140,7 @@ func (repository *CachedUserRepository) findByIdAndSet(ctx context.Context, id i
 	}
 	keyToCache := fmt.Sprintf("Users-Id(%s)", strconv.FormatInt(id, 10))
 
-	userToCache := &memcache.Item{
-		Key:   keyToCache,
-		Value: valueToCache,
-	}
-	if err = repository.memcachedClient.Set(userToCache); err != nil {
+	if err = repository.cache.Set(keyToCache, valueToCache, &store.Options{}); err != nil {
 		zap.L().Error("Error caching the user")
 		return user, nil
 	}
@@ -174,11 +164,7 @@ func (repository *CachedUserRepository) FindAllAndSet(ctx context.Context) (*[]m
 	}
 	keyToCache := "Users-FindAll()"
 
-	usersToCache := &memcache.Item{
-		Key:   keyToCache,
-		Value: valueToCache,
-	}
-	if err = repository.memcachedClient.Set(usersToCache); err != nil {
+	if err = repository.cache.Set(keyToCache, valueToCache, &store.Options{}); err != nil {
 		zap.L().Error("Error caching the users")
 		return users, nil
 	}
@@ -188,9 +174,9 @@ func (repository *CachedUserRepository) FindAllAndSet(ctx context.Context) (*[]m
 
 //
 
-func NewCachedUserRepository(delegateUserRepository UserRepository, memcachedClient *memcache.Client) *CachedUserRepository {
+func NewCachedUserRepository(delegateUserRepository UserRepository, cache *cache.Cache) *CachedUserRepository {
 	return &CachedUserRepository{
 		delegateUserRepository: delegateUserRepository,
-		memcachedClient:        memcachedClient,
+		cache:                  cache,
 	}
 }

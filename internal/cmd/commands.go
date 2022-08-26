@@ -1,12 +1,13 @@
 package cmd
 
 import (
-	"jukebox-app/internal/cmd/migrate"
-	"jukebox-app/internal/cmd/serve"
-	"jukebox-app/internal/cmd/test"
 	"log"
 
 	"github.com/spf13/cobra"
+
+	"jukebox-app/internal/cmd/migrate"
+	"jukebox-app/internal/cmd/serve"
+	"jukebox-app/internal/cmd/test"
 )
 
 func ExecuteAppCmd() {

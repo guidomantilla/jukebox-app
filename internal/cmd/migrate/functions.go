@@ -2,8 +2,6 @@ package migrate
 
 import (
 	"database/sql"
-	"jukebox-app/internal/config"
-	"jukebox-app/pkg/datasource"
 	"log"
 	"os"
 	"path/filepath"
@@ -14,6 +12,9 @@ import (
 	"github.com/golang-migrate/migrate/v4/database/pgx"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/spf13/cobra"
+
+	"jukebox-app/internal/config"
+	"jukebox-app/pkg/datasource"
 )
 
 type MigrationFunction func(migration *migrate.Migrate) error

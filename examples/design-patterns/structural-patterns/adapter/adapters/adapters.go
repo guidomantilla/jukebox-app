@@ -2,6 +2,7 @@ package adapters
 
 import (
 	"fmt"
+
 	"jukebox-app/examples/design-patterns/structural-patterns/adapter/machines"
 )
 

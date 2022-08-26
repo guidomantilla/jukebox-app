@@ -4,7 +4,7 @@ var _ PropertySource = (*DefaultPropertySource)(nil)
 
 type PropertySource interface {
 	Get(property string) string
-	AsMap() map[string]interface{}
+	AsMap() map[string]any
 }
 
 // DefaultPropertySource
@@ -18,9 +18,9 @@ func (source *DefaultPropertySource) Get(property string) string {
 	return source.properties.Get(property)
 }
 
-func (source *DefaultPropertySource) AsMap() map[string]interface{} {
+func (source *DefaultPropertySource) AsMap() map[string]any {
 
-	internalMap := make(map[string]interface{})
+	internalMap := make(map[string]any)
 	internalMap["name"], internalMap["value"] = source.name, source.properties.AsMap()
 	return internalMap
 }

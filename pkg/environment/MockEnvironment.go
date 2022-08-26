@@ -5,10 +5,11 @@
 package environment
 
 import (
-	properties "jukebox-app/pkg/properties"
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
+
+	properties "jukebox-app/pkg/properties"
 )
 
 // MockEnvironment is a mock of Environment interface.

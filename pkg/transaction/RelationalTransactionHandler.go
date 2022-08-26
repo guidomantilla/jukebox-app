@@ -2,9 +2,10 @@ package transaction
 
 import (
 	"database/sql"
-	"jukebox-app/pkg/datasource"
 
 	"go.uber.org/zap"
+
+	"jukebox-app/pkg/datasource"
 )
 
 var (

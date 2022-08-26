@@ -3,8 +3,6 @@ package repository
 import (
 	"context"
 	"database/sql"
-	"jukebox-app/pkg/datasource"
-	"jukebox-app/pkg/transaction"
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
@@ -12,6 +10,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zaptest/observer"
+
+	"jukebox-app/pkg/datasource"
+	"jukebox-app/pkg/transaction"
 )
 
 func Test_RelationalContext_Ok(t *testing.T) {

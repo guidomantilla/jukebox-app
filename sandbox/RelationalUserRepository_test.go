@@ -3,11 +3,12 @@ package main
 import (
 	"context"
 	"database/sql"
+	"log"
+	"testing"
+
 	"jukebox-app/internal/config"
 	"jukebox-app/internal/core/repository"
 	"jukebox-app/pkg/transaction"
-	"log"
-	"testing"
 )
 
 func Test_Create(t *testing.T) {

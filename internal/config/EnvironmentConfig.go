@@ -2,8 +2,6 @@ package config
 
 import (
 	"fmt"
-	"jukebox-app/pkg/environment"
-	"jukebox-app/pkg/properties"
 	"log"
 	"os"
 	"time"
@@ -11,6 +9,9 @@ import (
 	"github.com/getsentry/sentry-go"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+
+	"jukebox-app/pkg/environment"
+	"jukebox-app/pkg/properties"
 )
 
 const (

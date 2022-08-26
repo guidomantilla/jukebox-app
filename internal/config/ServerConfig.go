@@ -1,9 +1,9 @@
 package config
 
 import (
-	"jukebox-app/pkg/environment"
-
 	"github.com/gin-gonic/gin"
+
+	"jukebox-app/pkg/environment"
 )
 
 const (
@@ -27,7 +27,7 @@ func InitWebServer(environment environment.Environment) error {
 	return _singletonEngine.Run(hostAddress)
 }
 
-func loadApiRoutes(something interface{}) {
+func loadApiRoutes(something any) {
 
 	group := _singletonEngine.Group("/api")
 	group.GET("/songs", nil)

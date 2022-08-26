@@ -1,10 +1,11 @@
 package environment
 
 import (
-	"jukebox-app/pkg/properties"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+
+	"jukebox-app/pkg/properties"
 )
 
 func Test_NewDefaultEnvironment(t *testing.T) {

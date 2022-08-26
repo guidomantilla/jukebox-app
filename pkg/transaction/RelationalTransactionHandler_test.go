@@ -2,7 +2,6 @@ package transaction
 
 import (
 	"database/sql"
-	"jukebox-app/pkg/datasource"
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
@@ -11,6 +10,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zaptest/observer"
+
+	"jukebox-app/pkg/datasource"
 )
 
 func Test_NewRelationalTransactionHandler(t *testing.T) {

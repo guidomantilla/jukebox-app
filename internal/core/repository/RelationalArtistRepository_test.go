@@ -1,11 +1,12 @@
 package repository
 
 import (
-	"jukebox-app/internal/core/model"
 	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+
+	"jukebox-app/internal/core/model"
 )
 
 func Test_RelationalArtistRepository_Create_Ok(t *testing.T) {
