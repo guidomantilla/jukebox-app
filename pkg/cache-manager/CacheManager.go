@@ -3,16 +3,11 @@ package cachemanager
 import (
 	"context"
 	"encoding/json"
-	"strings"
-	"time"
 
-	"github.com/bradfitz/gomemcache/memcache"
 	"github.com/eko/gocache/v2/cache"
 	"github.com/eko/gocache/v2/store"
-	"github.com/go-redis/redis/v8"
-	gocache "github.com/patrickmn/go-cache"
 
-	"jukebox-app/pkg/environment"
+	"jukebox-app/pkg/encoding-json"
 )
 
 const (
@@ -21,23 +16,21 @@ const (
 	REDIS_ADDRESS_DEFAULT_VALUE     = "localhost:6379"
 )
 
+var _ CacheManager = (*DefaultCacheManager)(nil)
+
 type CacheManager interface {
-	Get(ctx context.Context, cacheName string, key any) (any, error)
 	Set(ctx context.Context, cacheName string, key any, value any) error
+	Get(ctx context.Context, cacheName string, key any, value any) error
 	Delete(ctx context.Context, cacheName string, key any) error
-	Invalidate(ctx context.Context, options store.InvalidateOptions) error
+	Invalidate(ctx context.Context, cacheName string) error
 	Clear(ctx context.Context) error
 	GetType() string
 }
 
 type DefaultCacheManager struct {
-	cacheStore store.StoreInterface
-	cache      *cache.Cache
-	storeType  string
-}
-
-func (cacheManager *DefaultCacheManager) Get(ctx context.Context, cacheName string, key any) (any, error) {
-	return nil, nil
+	cache         cache.CacheInterface
+	marshalFunc   encodingjson.MarshalFunc
+	unmarshalFunc encodingjson.UnmarshalFunc
 }
 
 func (cacheManager *DefaultCacheManager) Set(ctx context.Context, cacheName string, key any, value any) error {
@@ -45,57 +38,75 @@ func (cacheManager *DefaultCacheManager) Set(ctx context.Context, cacheName stri
 	var valueToCache []byte
 
 	keyToCache := generateKey(cacheName, key)
-	if valueToCache, err = json.Marshal(value); err != nil {
+	if valueToCache, err = cacheManager.marshalFunc(value); err != nil {
 		return err
 	}
 
-	if err = cacheManager.cache.Set(ctx, keyToCache, valueToCache, &store.Options{}); err != nil {
+	if err = cacheManager.cache.Set(ctx, keyToCache, valueToCache, &store.Options{Tags: []string{cacheName}}); err != nil {
 		return err
 	}
+	return nil
+}
+
+func (cacheManager *DefaultCacheManager) Get(ctx context.Context, cacheName string, key any, value any) error {
+	var err error
+	var data any
+
+	keyToCache := generateKey(cacheName, key)
+	if data, err = cacheManager.cache.Get(ctx, keyToCache); err != nil {
+		return err
+	}
+
+	byteSlice := data.([]byte)
+	if err = cacheManager.unmarshalFunc(byteSlice, value); err != nil {
+		return err
+	}
+
 	return nil
 }
 
 func (cacheManager *DefaultCacheManager) Delete(ctx context.Context, cacheName string, key any) error {
+	var err error
+
+	keyToCache := generateKey(cacheName, key)
+	if err = cacheManager.cache.Delete(ctx, keyToCache); err != nil {
+		return err
+	}
+
 	return nil
 }
 
-func (cacheManager *DefaultCacheManager) Invalidate(ctx context.Context, options store.InvalidateOptions) error {
+func (cacheManager *DefaultCacheManager) Invalidate(ctx context.Context, cacheName string) error {
+	var err error
+
+	if err = cacheManager.cache.Invalidate(ctx, store.InvalidateOptions{Tags: []string{cacheName}}); err != nil {
+		return err
+	}
+
 	return nil
 }
 
 func (cacheManager *DefaultCacheManager) Clear(ctx context.Context) error {
+
+	var err error
+
+	if err = cacheManager.cache.Clear(ctx); err != nil {
+		return err
+	}
+
 	return nil
 }
 
 func (cacheManager *DefaultCacheManager) GetType() string {
-	return cacheManager.storeType
+	return cacheManager.cache.GetType()
 }
 
 //
 
-func NewDefaultCacheManager(storeType string, environment environment.Environment) *DefaultCacheManager {
-
-	var cacheStore store.StoreInterface
-	switch storeType {
-	case store.MemcacheType:
-		cacheAddresses := environment.GetValueOrDefault(CACHE_ADDRESS, MEMCACHED_ADDRESS_DEFAULT_VALUE).AsString()
-		pair := strings.SplitN(cacheAddresses, ",", 2)
-		memcachedStore := store.NewMemcache(memcache.New(pair...), &store.Options{Expiration: 10 * time.Second})
-		cacheStore = memcachedStore
-
-	case store.RedisType:
-		cacheAddresses := environment.GetValueOrDefault(CACHE_ADDRESS, REDIS_ADDRESS_DEFAULT_VALUE).AsString()
-		pair := strings.SplitN(cacheAddresses, ",", 2)
-		redisStore := store.NewRedis(redis.NewClient(&redis.Options{Addr: pair[0]}), &store.Options{Expiration: 10 * time.Second})
-		cacheStore = redisStore
-
-	default:
-		goCacheStore := store.NewGoCache(gocache.New(5*time.Minute, 10*time.Minute), &store.Options{Expiration: 10 * time.Second})
-		cacheStore = goCacheStore
-	}
-
+func NewDefaultCacheManager(cache cache.CacheInterface) *DefaultCacheManager {
 	return &DefaultCacheManager{
-		cacheStore: cacheStore,
-		cache:      cache.New(cacheStore),
+		cache:         cache,
+		marshalFunc:   json.Marshal,
+		unmarshalFunc: json.Unmarshal,
 	}
 }

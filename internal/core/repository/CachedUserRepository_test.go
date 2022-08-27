@@ -42,7 +42,8 @@ func Test_CachedUserRepository_Create_Ok(t *testing.T) {
 
 	//
 
-	cacheManager := cachemanager.NewDefaultCacheManager(store.GoCacheType, environment)
+	cache, _ := cachemanager.NewCache(store.GoCacheType, environment)
+	cacheManager := cachemanager.NewDefaultCacheManager(cache)
 	cacheRepository := NewCachedUserRepository(delegateRepository, cacheManager)
 	err := cacheRepository.Create(ctx, user)
 
@@ -77,7 +78,8 @@ func Test_CachedUserRepository_Create_Delegate_Err(t *testing.T) {
 
 	//
 
-	cacheManager := cachemanager.NewDefaultCacheManager(store.GoCacheType, environment)
+	cache, _ := cachemanager.NewCache(store.GoCacheType, environment)
+	cacheManager := cachemanager.NewDefaultCacheManager(cache)
 	cacheRepository := NewCachedUserRepository(delegateRepository, cacheManager)
 	err := cacheRepository.Create(ctx, user)
 
@@ -154,7 +156,8 @@ func Test_CachedUserRepository_Update_Ok(t *testing.T) {
 
 	//
 
-	cacheManager := cachemanager.NewDefaultCacheManager(store.GoCacheType, environment)
+	cache, _ := cachemanager.NewCache(store.GoCacheType, environment)
+	cacheManager := cachemanager.NewDefaultCacheManager(cache)
 	cacheRepository := NewCachedUserRepository(delegateRepository, cacheManager)
 	err := cacheRepository.Update(ctx, user)
 
@@ -189,7 +192,8 @@ func Test_CachedUserRepository_Update_Delegate_Err(t *testing.T) {
 
 	//
 
-	cacheManager := cachemanager.NewDefaultCacheManager(store.GoCacheType, environment)
+	cache, _ := cachemanager.NewCache(store.GoCacheType, environment)
+	cacheManager := cachemanager.NewDefaultCacheManager(cache)
 	cacheRepository := NewCachedUserRepository(delegateRepository, cacheManager)
 	err := cacheRepository.Update(ctx, user)
 
@@ -265,7 +269,8 @@ func Test_CachedUserRepository_Delete_Ok(t *testing.T) {
 
 	//
 
-	cacheManager := cachemanager.NewDefaultCacheManager(store.GoCacheType, environment)
+	cache, _ := cachemanager.NewCache(store.GoCacheType, environment)
+	cacheManager := cachemanager.NewDefaultCacheManager(cache)
 	cacheRepository := NewCachedUserRepository(delegateRepository, cacheManager)
 
 	_ = cacheRepository.cacheManager.Set(ctx, cacheRepository.cacheName, user.Id, user)
@@ -302,7 +307,8 @@ func Test_CachedUserRepository_Delete_Delegate_Err(t *testing.T) {
 
 	//
 
-	cacheManager := cachemanager.NewDefaultCacheManager(store.GoCacheType, environment)
+	cache, _ := cachemanager.NewCache(store.GoCacheType, environment)
+	cacheManager := cachemanager.NewDefaultCacheManager(cache)
 	cacheRepository := NewCachedUserRepository(delegateRepository, cacheManager)
 	err := cacheRepository.DeleteById(ctx, user.Id)
 

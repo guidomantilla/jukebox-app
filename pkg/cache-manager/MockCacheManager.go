@@ -8,7 +8,6 @@ import (
 	context "context"
 	reflect "reflect"
 
-	store "github.com/eko/gocache/v2/store"
 	gomock "github.com/golang/mock/gomock"
 )
 
@@ -64,18 +63,17 @@ func (mr *MockCacheManagerMockRecorder) Delete(arg0, arg1, arg2 interface{}) *go
 }
 
 // Get mocks base method.
-func (m *MockCacheManager) Get(arg0 context.Context, arg1 string, arg2 interface{}) (interface{}, error) {
+func (m *MockCacheManager) Get(arg0 context.Context, arg1 string, arg2, arg3 interface{}) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Get", arg0, arg1, arg2)
-	ret0, _ := ret[0].(interface{})
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret := m.ctrl.Call(m, "Get", arg0, arg1, arg2, arg3)
+	ret0, _ := ret[0].(error)
+	return ret0
 }
 
 // Get indicates an expected call of Get.
-func (mr *MockCacheManagerMockRecorder) Get(arg0, arg1, arg2 interface{}) *gomock.Call {
+func (mr *MockCacheManagerMockRecorder) Get(arg0, arg1, arg2, arg3 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockCacheManager)(nil).Get), arg0, arg1, arg2)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockCacheManager)(nil).Get), arg0, arg1, arg2, arg3)
 }
 
 // GetType mocks base method.
@@ -93,7 +91,7 @@ func (mr *MockCacheManagerMockRecorder) GetType() *gomock.Call {
 }
 
 // Invalidate mocks base method.
-func (m *MockCacheManager) Invalidate(arg0 context.Context, arg1 store.InvalidateOptions) error {
+func (m *MockCacheManager) Invalidate(arg0 context.Context, arg1 string) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Invalidate", arg0, arg1)
 	ret0, _ := ret[0].(error)
