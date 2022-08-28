@@ -4,11 +4,11 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"jukebox-app/internal/model"
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
 
-	"jukebox-app/internal/core/model"
 	"jukebox-app/pkg/datasource"
 	"jukebox-app/pkg/transaction"
 )

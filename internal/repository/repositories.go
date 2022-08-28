@@ -2,8 +2,7 @@ package repository
 
 import (
 	"context"
-
-	"jukebox-app/internal/core/model"
+	"jukebox-app/internal/model"
 )
 
 var (

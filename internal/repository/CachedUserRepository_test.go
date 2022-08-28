@@ -3,13 +3,13 @@ package repository
 import (
 	"context"
 	"encoding/json"
+	"jukebox-app/internal/model"
 	"testing"
 
 	"github.com/golang/mock/gomock"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 
-	"jukebox-app/internal/core/model"
 	"jukebox-app/pkg/cache-manager"
 )
 

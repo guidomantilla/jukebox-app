@@ -3,14 +3,14 @@ package test
 import (
 	"context"
 	"database/sql"
+	"jukebox-app/internal/model"
+	"jukebox-app/internal/repository"
 	"log"
 
 	"github.com/eko/gocache/v2/store"
 	"github.com/spf13/cobra"
 
 	"jukebox-app/internal/config"
-	"jukebox-app/internal/core/model"
-	"jukebox-app/internal/core/repository"
 	cachemanager "jukebox-app/pkg/cache-manager"
 	"jukebox-app/pkg/transaction"
 )

@@ -3,11 +3,11 @@ package main
 import (
 	"context"
 	"database/sql"
+	"jukebox-app/internal/repository"
 	"log"
 	"testing"
 
 	"jukebox-app/internal/config"
-	"jukebox-app/internal/core/repository"
 	"jukebox-app/pkg/transaction"
 )
 

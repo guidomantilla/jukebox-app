@@ -4,12 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"jukebox-app/internal/model"
 
 	"github.com/bradfitz/gomemcache/memcache"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 
-	"jukebox-app/internal/core/model"
 	"jukebox-app/pkg/cache-manager"
 	encodingjson "jukebox-app/pkg/encoding-json"
 )
