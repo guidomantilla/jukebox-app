@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	encodingjson "jukebox-app/pkg/encoding-json"
 
 	"github.com/bradfitz/gomemcache/memcache"
 	"github.com/pkg/errors"
@@ -12,6 +11,7 @@ import (
 
 	"jukebox-app/internal/core/model"
 	"jukebox-app/pkg/cache-manager"
+	encodingjson "jukebox-app/pkg/encoding-json"
 )
 
 type CachedUserRepository struct {
