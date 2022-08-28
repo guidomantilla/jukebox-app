@@ -5,9 +5,9 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"jukebox-app/internal/cmd/migrate"
-	"jukebox-app/internal/cmd/serve"
-	"jukebox-app/internal/cmd/test"
+	"jukebox-app/cmd/migrate"
+	"jukebox-app/cmd/serve"
+	"jukebox-app/cmd/test"
 )
 
 func ExecuteAppCmd() {

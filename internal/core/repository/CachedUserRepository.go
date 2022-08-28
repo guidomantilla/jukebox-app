@@ -73,19 +73,11 @@ func (repository *CachedUserRepository) FindById(ctx context.Context, id int64) 
 
 	var err error
 	var user *model.User
-	var valueFromCache any
 
-	if err = repository.cacheManager.Get(ctx, repository.cacheName, id, &valueFromCache); err != nil {
+	if err = repository.cacheManager.Get(ctx, repository.cacheName, id, &user); err != nil {
 		if !errors.Is(err, memcache.ErrCacheMiss) {
 			zap.L().Error("Error getting the user from cache")
 		}
-		return repository.findByIdAndSet(ctx, id)
-	}
-
-	user = &model.User{}
-	byteSlice := valueFromCache.([]byte)
-	if err = repository.unmarshalFunc(byteSlice, user); err != nil {
-		zap.L().Error("Error unmarshalling from json the user")
 		return repository.findByIdAndSet(ctx, id)
 	}
 

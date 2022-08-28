@@ -554,9 +554,9 @@ func Test_CachedUserRepository_FindById_Ok(t *testing.T) {
 	delegateRepository := NewMockUserRepository(ctrl)
 	cacheManager := cachemanager.NewMockCacheManager(ctrl)
 
-	mockGetFunction := func(_ context.Context, _ string, _ any, something *any) error {
+	mockGetFunction := func(_ context.Context, _ string, _ any, something any) error {
 		marshal, _ := json.Marshal(user)
-		*something = marshal
+		_ = json.Unmarshal(marshal, something)
 		return nil
 	}
 	cacheManager.EXPECT().Get(ctx, "users", user.Id, gomock.Any()).DoAndReturn(mockGetFunction).Return(nil)
@@ -593,7 +593,7 @@ func Test_CachedUserRepository_Get_Err(t *testing.T) {
 	delegateRepository.EXPECT().FindById(ctx, user.Id).DoAndReturn(mockFindByIdFunction).Return(user, nil)
 
 	cacheManager := cachemanager.NewMockCacheManager(ctrl)
-	mockGetFunction := func(_ context.Context, _ string, _ any, something *any) error {
+	mockGetFunction := func(_ context.Context, _ string, _ any, something any) error {
 		return errors.New("some_error")
 	}
 	cacheManager.EXPECT().Get(ctx, "users", user.Id, gomock.Any()).DoAndReturn(mockGetFunction).Return(errors.New("some_error"))
@@ -606,53 +606,6 @@ func Test_CachedUserRepository_Get_Err(t *testing.T) {
 	//
 
 	cacheRepository := NewCachedUserRepository(delegateRepository, cacheManager)
-	user2, err := cacheRepository.FindById(ctx, user.Id)
-
-	assert.Nil(t, err)
-	assert.Equal(t, user.Id, user2.Id)
-	assert.Equal(t, user.Code, user2.Code)
-	assert.Equal(t, user.Name, user2.Name)
-	assert.Equal(t, user.Email, user2.Email)
-}
-
-func Test_CachedUserRepository_Unmarshal_Err(t *testing.T) {
-
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-
-	ctx := context.TODO()
-	user := &model.User{
-		Id:    1,
-		Code:  2,
-		Name:  "3",
-		Email: "4",
-	}
-
-	delegateRepository := NewMockUserRepository(ctrl)
-	mockFindByIdFunction := func(ctx context.Context, id int64) (*model.User, error) {
-		return user, nil
-	}
-	delegateRepository.EXPECT().FindById(ctx, user.Id).DoAndReturn(mockFindByIdFunction).Return(user, nil)
-
-	cacheManager := cachemanager.NewMockCacheManager(ctrl)
-	mockGetFunction := func(_ context.Context, _ string, _ any, something *any) error {
-		marshal, _ := json.Marshal(user)
-		*something = marshal
-		return nil
-	}
-	cacheManager.EXPECT().Get(ctx, "users", user.Id, gomock.Any()).DoAndReturn(mockGetFunction).Return(nil)
-
-	mockSetFunction := func(_ context.Context, _ string, _ any, _ any) error {
-		return nil
-	}
-	cacheManager.EXPECT().Set(ctx, "users", user.Id, user).DoAndReturn(mockSetFunction).Return(nil)
-
-	//
-
-	cacheRepository := NewCachedUserRepository(delegateRepository, cacheManager)
-	cacheRepository.unmarshalFunc = func(data []byte, v any) error {
-		return errors.New("some_error")
-	}
 	user2, err := cacheRepository.FindById(ctx, user.Id)
 
 	assert.Nil(t, err)
