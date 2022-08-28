@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"jukebox-app/examples/endpoints/grpc/rpc"
 	"log"
 	"os"
 	"time"
@@ -13,6 +12,8 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/status"
+
+	"jukebox-app/examples/endpoints/grpc/rpc"
 )
 
 func main() {

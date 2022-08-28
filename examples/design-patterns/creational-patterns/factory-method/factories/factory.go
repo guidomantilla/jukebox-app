@@ -2,6 +2,7 @@ package factories
 
 import (
 	"fmt"
+
 	"jukebox-app/examples/design-patterns/creational-patterns/factory-method/products"
 )
 

@@ -2,10 +2,11 @@ package config
 
 import (
 	"database/sql"
-	"jukebox-app/pkg/datasource"
-	"jukebox-app/pkg/environment"
 
 	"go.uber.org/zap"
+
+	"jukebox-app/pkg/datasource"
+	"jukebox-app/pkg/environment"
 )
 
 const (

@@ -3,7 +3,8 @@ package repository
 import (
 	"context"
 	"database/sql"
-	"jukebox-app/internal/core/model"
+	"jukebox-app/internal/model"
+
 	repositoryUtils "jukebox-app/pkg/repository"
 )
 
@@ -25,9 +26,6 @@ func (repository *RelationalUserRepository) Create(ctx context.Context, user *mo
 	if id, err = repositoryUtils.RelationalWriteContext(ctx, repository.statementCreate, user.Code, user.Name, user.Email); err != nil {
 		return err
 	}
-	if err != nil {
-		return err
-	}
 
 	user.Id = *id
 
@@ -40,9 +38,6 @@ func (repository *RelationalUserRepository) Update(ctx context.Context, user *mo
 	if _, err = repositoryUtils.RelationalWriteContext(ctx, repository.statementUpdate, user.Code, user.Name, user.Email, user.Id); err != nil {
 		return err
 	}
-	if err != nil {
-		return err
-	}
 
 	return nil
 }
@@ -51,9 +46,6 @@ func (repository *RelationalUserRepository) DeleteById(ctx context.Context, id i
 
 	var err error
 	if _, err = repositoryUtils.RelationalWriteContext(ctx, repository.statementDelete, id); err != nil {
-		return err
-	}
-	if err != nil {
 		return err
 	}
 

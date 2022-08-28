@@ -1,12 +1,14 @@
-package repository
+package main
 
 import (
 	"context"
 	"database/sql"
-	"jukebox-app/internal/config"
-	"jukebox-app/pkg/transaction"
+	"jukebox-app/internal/repository"
 	"log"
 	"testing"
+
+	"jukebox-app/internal/config"
+	"jukebox-app/pkg/transaction"
 )
 
 func Test_Create(t *testing.T) {
@@ -19,7 +21,7 @@ func Test_Create(t *testing.T) {
 	defer config.StopDB()
 
 	txHandler := transaction.NewRelationalTransactionHandler(dataSource)
-	repository := NewRelationalUserRepository()
+	repository := repository.NewRelationalUserRepository()
 
 	err := txHandler.HandleTransaction(func(tx *sql.Tx) error {
 

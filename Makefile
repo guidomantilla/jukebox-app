@@ -4,10 +4,13 @@ phony-goal: ; @echo $@
 build: validate
 	docker compose -f docker/docker-compose.yml up --build --remove-orphans --force-recreate --detach
 
-validate: format vet lint sonarqube
+validate: sort-import format vet lint sonarqube
 
 generate:
 	go generate ./...
+
+sort-import:
+	goimportssort -w ./..
 
 format:
 	go fmt ./...
@@ -19,13 +22,12 @@ lint:
 	golangci-lint run ./...
 
 test:
-	go test -covermode count -coverprofile coverage.out.tmp ./pkg/... ./internal/core/...
+	go test -covermode count -coverprofile coverage.out.tmp ./pkg/... ./internal/...
 	cat coverage.out.tmp | grep -v "Mock" > coverage.out
 
 coverage: test
 	go tool cover -func=coverage.out
 	go tool cover -html=coverage.out -o coverage.html
-	#open coverage.html
 
 sonarqube: coverage
 	sonar-scanner
@@ -62,8 +64,9 @@ env-setup:
 	go run . migrate up
 
 prepare:
-	go install github.com/golang/mock/mockgen@latest
+	go install github.com/AanZee/goimportssort@latest
 	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+	go install github.com/golang/mock/mockgen@latest
 	go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
 	go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
 	go install github.com/ktr0731/evans@latest

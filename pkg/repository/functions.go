@@ -4,10 +4,11 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"jukebox-app/pkg/transaction"
 	"strings"
 
 	"go.uber.org/zap"
+
+	"jukebox-app/pkg/transaction"
 )
 
 const (
@@ -97,13 +98,15 @@ func RelationalQueryRowContext(ctx context.Context, sqlStatement string, key any
 	row := statement.QueryRow(key)
 	if err = row.Scan(dest...); err != nil {
 		if err.Error() == "sql: no rows in result set" {
-			return fmt.Errorf("row with key %d not found", key)
+			return fmt.Errorf("row with key %v not found", key)
 		}
 		return err
 	}
 
 	return nil
 }
+
+//
 
 func closeStatement(statement *sql.Stmt) {
 	if err := statement.Close(); err != nil {

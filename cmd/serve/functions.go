@@ -1,12 +1,13 @@
 package serve
 
 import (
-	"jukebox-app/internal/config"
-	"jukebox-app/internal/core/repository"
-	"jukebox-app/pkg/transaction"
+	"jukebox-app/internal/repository"
 
 	"github.com/spf13/cobra"
 	"go.uber.org/zap"
+
+	"jukebox-app/internal/config"
+	"jukebox-app/pkg/transaction"
 )
 
 func ExecuteCmdFn(_ *cobra.Command, args []string) {

@@ -5,11 +5,11 @@
 package repository
 
 import (
-	context "context"
-	model "jukebox-app/internal/core/model"
-	reflect "reflect"
+	"context"
+	"jukebox-app/internal/model"
+	"reflect"
 
-	gomock "github.com/golang/mock/gomock"
+	"github.com/golang/mock/gomock"
 )
 
 // MockArtistRepository is a mock of ArtistRepository interface.
