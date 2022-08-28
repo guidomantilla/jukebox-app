@@ -38,22 +38,23 @@ func RelationalContext(ctx context.Context, sqlStatement string, fn RelationalFu
 func RelationalQueryContext(ctx context.Context, sqlStatement string, fn RelationalQueryFunction) error {
 
 	var err error
-	var statement *sql.Stmt
-	var tx = ctx.Value(transaction.RelationalTransactionContext{}).(*sql.Tx)
-	if statement, err = tx.Prepare(sqlStatement); err != nil {
-		return err
-	}
-	defer closeStatement(statement)
+	err = RelationalContext(ctx, sqlStatement, func(statement *sql.Stmt) error {
 
-	var rows *sql.Rows
-	if rows, err = statement.Query(); err != nil {
-		return err
-	}
-	defer closeResultSet(rows)
+		var rows *sql.Rows
+		if rows, err = statement.Query(); err != nil {
+			return err
+		}
+		defer closeResultSet(rows)
 
-	if err = fn(rows); err != nil {
+		if err = fn(rows); err != nil {
+			return err
+		}
+		return nil
+	})
+	if err != nil {
 		return err
 	}
+
 	return nil
 }
 
@@ -88,18 +89,18 @@ func RelationalWriteContext(ctx context.Context, sqlStatement string, args ...an
 func RelationalQueryRowContext(ctx context.Context, sqlStatement string, key any, dest ...any) error {
 
 	var err error
-	var statement *sql.Stmt
-	var tx = ctx.Value(transaction.RelationalTransactionContext{}).(*sql.Tx)
-	if statement, err = tx.Prepare(sqlStatement); err != nil {
-		return err
-	}
-	defer closeStatement(statement)
+	err = RelationalContext(ctx, sqlStatement, func(statement *sql.Stmt) error {
 
-	row := statement.QueryRow(key)
-	if err = row.Scan(dest...); err != nil {
-		if err.Error() == "sql: no rows in result set" {
-			return fmt.Errorf("row with key %v not found", key)
+		row := statement.QueryRow(key)
+		if err = row.Scan(dest...); err != nil {
+			if err.Error() == "sql: no rows in result set" {
+				return fmt.Errorf("row with key %v not found", key)
+			}
+			return err
 		}
+		return nil
+	})
+	if err != nil {
 		return err
 	}
 
