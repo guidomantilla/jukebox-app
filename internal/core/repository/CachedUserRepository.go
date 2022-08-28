@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	encodingjson "jukebox-app/pkg/encoding-json"
 
 	"github.com/bradfitz/gomemcache/memcache"
 	"github.com/pkg/errors"
@@ -13,14 +14,12 @@ import (
 	"jukebox-app/pkg/cache-manager"
 )
 
-const (
-	USER_ID = "Users-Id(%s)"
-)
-
 type CachedUserRepository struct {
 	delegateUserRepository UserRepository
 	cacheManager           cachemanager.CacheManager
 	cacheName              string
+	marshalFunc            encodingjson.MarshalFunc
+	unmarshalFunc          encodingjson.UnmarshalFunc
 }
 
 func (repository *CachedUserRepository) Create(ctx context.Context, user *model.User) error {
@@ -76,8 +75,7 @@ func (repository *CachedUserRepository) FindById(ctx context.Context, id int64) 
 	var user *model.User
 	var valueFromCache any
 
-	err = repository.cacheManager.Get(ctx, repository.cacheName, id, &valueFromCache)
-	if err != nil {
+	if err = repository.cacheManager.Get(ctx, repository.cacheName, id, &valueFromCache); err != nil {
 		if !errors.Is(err, memcache.ErrCacheMiss) {
 			zap.L().Error("Error getting the user from cache")
 		}
@@ -85,7 +83,8 @@ func (repository *CachedUserRepository) FindById(ctx context.Context, id int64) 
 	}
 
 	user = &model.User{}
-	if err = json.Unmarshal([]byte(valueFromCache.(string)), user); err != nil {
+	byteSlice := valueFromCache.([]byte)
+	if err = repository.unmarshalFunc(byteSlice, user); err != nil {
 		zap.L().Error("Error unmarshalling from json the user")
 		return repository.findByIdAndSet(ctx, id)
 	}
@@ -128,7 +127,7 @@ func (repository *CachedUserRepository) findByIdAndSet(ctx context.Context, id i
 	return user, nil
 }
 
-func (repository *CachedUserRepository) FindAllAndSet(ctx context.Context) (*[]model.User, error) {
+func (repository *CachedUserRepository) findAllAndSet(ctx context.Context) (*[]model.User, error) {
 
 	var err error
 	var users *[]model.User
@@ -137,7 +136,7 @@ func (repository *CachedUserRepository) FindAllAndSet(ctx context.Context) (*[]m
 		return nil, err
 	}
 
-	if err = repository.cacheManager.Set(ctx, repository.cacheName, "", users); err != nil {
+	if err = repository.cacheManager.Set(ctx, repository.cacheName, "all", users); err != nil {
 		zap.L().Error("Error caching the users")
 		return users, nil
 	}
@@ -152,5 +151,7 @@ func NewCachedUserRepository(delegateUserRepository UserRepository, cacheManager
 		delegateUserRepository: delegateUserRepository,
 		cacheManager:           cacheManager,
 		cacheName:              "users",
+		marshalFunc:            json.Marshal,
+		unmarshalFunc:          json.Unmarshal,
 	}
 }
