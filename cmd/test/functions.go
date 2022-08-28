@@ -46,7 +46,7 @@ func ExecuteCmdFn(_ *cobra.Command, args []string) {
 
 		log.Println("UserRepository.Create Done: ", *user, err)
 
-		localUser, err := cacheUserRepository.FindById(txCtx, user.Id)
+		localUser, err := cacheUserRepository.FindById(txCtx, int64(1))
 		if err != nil {
 			return err
 		}

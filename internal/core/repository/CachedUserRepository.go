@@ -75,9 +75,7 @@ func (repository *CachedUserRepository) FindById(ctx context.Context, id int64) 
 	var user *model.User
 
 	if err = repository.cacheManager.Get(ctx, repository.cacheName, id, &user); err != nil {
-		if !errors.Is(err, memcache.ErrCacheMiss) {
-			zap.L().Error("Error getting the user from cache")
-		}
+		zap.L().Error(fmt.Sprintf("Error getting the user from cache: %s", err.Error()))
 		return repository.findByIdAndSet(ctx, id)
 	}
 
