@@ -1,4 +1,4 @@
 //go:build integration
 // +build integration
 
-package integration
+package repository
