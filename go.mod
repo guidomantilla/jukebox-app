@@ -28,11 +28,16 @@ require (
 	google.golang.org/protobuf v1.28.1
 )
 
+exclude (
+	github.com/XiaoMi/pegasus-go-client v0.0.0-20220519103347-ba0e68465cd5 // indirect
+	github.com/pegasus-kv/thrift v0.14.1 // indirect
+)
+
 require (
 	github.com/Azure/go-ansiterm v0.0.0-20210617225240-d185dfc1b5a1 // indirect
 	github.com/Microsoft/go-winio v0.5.2 // indirect
 	github.com/Microsoft/hcsshim v0.9.4 // indirect
-	github.com/XiaoMi/pegasus-go-client v0.0.0-20220519103347-ba0e68465cd5 // indirect
+	github.com/XiaoMi/pegasus-go-client v0.0.0-20210427083443-f3b6b08bc4c2 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cenkalti/backoff/v4 v4.1.3 // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
@@ -78,7 +83,7 @@ require (
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/opencontainers/image-spec v1.0.3-0.20211202183452-c5a74bcca799 // indirect
 	github.com/opencontainers/runc v1.1.3 // indirect
-	github.com/pegasus-kv/thrift v0.14.1 // indirect
+	github.com/pegasus-kv/thrift v0.13.0 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.5 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/prometheus/client_golang v1.13.0 // indirect
