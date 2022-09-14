@@ -14,50 +14,18 @@ services:
       - jukebox-postgres
       - jukebox-redis
     environment:
-      HOST_POST: :8080
-      LOG_LEVEL: ERROR
-      DATASOURCE_USERNAME: jukebox
-      DATASOURCE_PASSWORD: "jukebox+"
-      DATASOURCE_URL: ":username::password@tcp(jukebox-mysql:3307)/jukebox?charset=utf8&multiStatements=true"
-      SENTRY_DSN: ""
-      SENTRY_ENVIRONMENT: dev
-      SENTRY_RELEASE: sample
+      HOST_POST: ':8080'
+      LOG_LEVEL: 'ERROR'
+      DATASOURCE_USERNAME: 'jukebox'
+      DATASOURCE_PASSWORD: 'jukebox+'
+      DATASOURCE_URL: ':username::password@tcp(jukebox-mysql:3307)/jukebox?charset=utf8&multiStatements=true'
+      SENTRY_DSN: ''
+      SENTRY_ENVIRONMENT: 'dev'
+      SENTRY_RELEASE: 'sample'
     networks:
       - jukebox-network
-  jukebox-mysql:
-    image: mysql
-    platform: linux/x86_64
-    restart: always
-    container_name: jukebox-mysql
-    ports:
-      - "3307:3306"
-      - "33070:33060"
-    volumes:
-      - jukebox-mysql:/var/lib/mysql
-    environment:
-      MYSQL_DATABASE: 'jukebox'
-      MYSQL_ROOT_HOST: '%'
-      MYSQL_ROOT_PASSWORD: 'jukebox*'
-      MYSQL_USER: 'jukebox'
-      MYSQL_PASSWORD: 'jukebox+'
-    networks:
-      - jukebox-network
-  jukebox-postgres:
-    image: postgres
-    platform: linux/x86_64
-    restart: always
-    container_name: jukebox-postgres
-    ports:
-      - "5433:5432"
-    volumes:
-      - jukebox-postgres:/var/lib/postgresql
-      - jukebox-postgres_data:/var/lib/postgresql/data
-    environment:
-      POSTGRES_DB: 'jukebox'
-      POSTGRES_USER: 'jukebox'
-      POSTGRES_PASSWORD: 'jukebox+'
-    networks:
-      - jukebox-network
+
+## DATABASES
   jukebox-redis:
     image: redis
     platform: linux/x86_64
@@ -72,64 +40,11 @@ services:
     networks:
       - jukebox-network
 
-## SONARQUBE
-  sonarqube-server:
-    image: sonarqube
-    platform: linux/x86_64
-    restart: always
-    container_name: sonarqube-server
-    ports:
-      - "9000:9000"
-    depends_on:
-      - sonarqube-postgres
-    volumes:
-      - sonarqube-server_data:/opt/sonarqube/data
-      - sonarqube-server_extensions:/opt/sonarqube/extensions
-      - sonarqube-server_logs:/opt/sonarqube/logs
-    environment:
-      SONAR_JDBC_URL: jdbc:postgresql://sonarqube-postgres:5432/sonar
-      SONAR_JDBC_USERNAME: sonar
-      SONAR_JDBC_PASSWORD: sonar
-    networks:
-      - jukebox-network
-  sonarqube-postgres:
-    image: postgres
-    platform: linux/x86_64
-    restart: always
-    container_name: sonarqube-postgres
-    volumes:
-      - sonarqube-postgres:/var/lib/postgresql
-      - sonarqube-postgres_data:/var/lib/postgresql/data
-    environment:
-      POSTGRES_USER: sonar
-      POSTGRES_PASSWORD: sonar
-      POSTGRES_DB: sonar
-    networks:
-      - jukebox-network
-
 volumes:
-  jukebox-mysql:
-    name: jukebox-mysql
-  jukebox-postgres:
-    name: jukebox-postgres
-  jukebox-postgres_data:
-    name: jukebox-postgres_data
   jukebox-redis:
     name: jukebox-redis
   jukebox-redis_config:
     name: jukebox-redis_config
-
-  ## SONARQUBE
-  sonarqube-server_data:
-    name: sonarqube-server_data
-  sonarqube-server_extensions:
-    name: sonarqube-server_extensions
-  sonarqube-server_logs:
-    name: sonarqube-server_logs
-  sonarqube-postgres:
-    name: sonarqube-postgres
-  sonarqube-postgres_data:
-    name: sonarqube-postgres_data
 
 networks:
   jukebox-network:
