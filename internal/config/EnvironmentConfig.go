@@ -92,7 +92,7 @@ func InitConfig(cmdArgs *[]string) environment.Environment {
 }
 
 func sentryHook(entry zapcore.Entry) error {
-	if entry.Level == zapcore.ErrorLevel {
+	if entry.Level == zapcore.ErrorLevel || entry.Level == zapcore.FatalLevel {
 		sentry.CaptureException(fmt.Errorf("%s, Line No: %d :: %s", entry.Caller.File, entry.Caller.Line, entry.Message))
 	}
 	return nil
