@@ -4,24 +4,6 @@ phony-goal: ; @echo $@
 build: validate
 	docker compose -f docker/docker-compose.yml up --detach
 
-build-portainer-stack:
-	docker compose -f docker/portainer-stack-compose.yml up --detach
-
-build-jaeger-stack:
-	docker compose -f docker/jaeger-stack-compose.yml up --detach
-
-build-sonarqube-stack:
-	docker compose -f docker/sonarqube-stack-compose.yml up --detach
-
-build-kafka-stack:
-	docker compose -f docker/kafka-stack-compose.yml up --detach
-
-build-mysql-stack:
-	docker compose -f docker/mysql-stack-compose.yml up --detach
-
-build-postgres-stack:
-	docker compose -f docker/postgres-stack-compose.yml up --detach
-
 validate: sort-import format vet lint sonarqube
 
 generate:
