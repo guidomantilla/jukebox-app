@@ -4,12 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"jukebox-app/internal/model"
 
 	"github.com/bradfitz/gomemcache/memcache"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 
+	"jukebox-app/internal/model"
 	"jukebox-app/pkg/cache-manager"
 	encodingjson "jukebox-app/pkg/encoding-json"
 )
@@ -30,7 +30,7 @@ func (repository *CachedUserRepository) Create(ctx context.Context, user *model.
 	}
 
 	if err = repository.cacheManager.Set(ctx, repository.cacheName, user.Id, user); err != nil {
-		zap.L().Error(fmt.Sprintf("Error caching the created user: %s", err.Error()))
+		zap.L().Error(fmt.Sprintf("error caching the created user: %s", err.Error()))
 		return nil
 	}
 
@@ -45,7 +45,7 @@ func (repository *CachedUserRepository) Update(ctx context.Context, user *model.
 	}
 
 	if err = repository.cacheManager.Set(ctx, repository.cacheName, user.Id, user); err != nil {
-		zap.L().Error("Error caching the updated user")
+		zap.L().Error("error caching the updated user")
 		return nil
 	}
 
@@ -61,7 +61,7 @@ func (repository *CachedUserRepository) DeleteById(ctx context.Context, id int64
 
 	if err = repository.cacheManager.Delete(ctx, repository.cacheName, id); err != nil {
 		if !errors.Is(err, memcache.ErrCacheMiss) {
-			zap.L().Error("Error deleting the user from cache")
+			zap.L().Error("error deleting the user from cache")
 		}
 		return nil
 	}
@@ -75,7 +75,7 @@ func (repository *CachedUserRepository) FindById(ctx context.Context, id int64) 
 	var user *model.User
 
 	if err = repository.cacheManager.Get(ctx, repository.cacheName, id, &user); err != nil {
-		zap.L().Error(fmt.Sprintf("Error getting the user from cache: %s", err.Error()))
+		zap.L().Error(fmt.Sprintf("error getting the user from cache: %s", err.Error()))
 		return repository.findByIdAndSet(ctx, id)
 	}
 
@@ -110,7 +110,7 @@ func (repository *CachedUserRepository) findByIdAndSet(ctx context.Context, id i
 	}
 
 	if err = repository.cacheManager.Set(ctx, repository.cacheName, id, user); err != nil {
-		zap.L().Error("Error caching the user")
+		zap.L().Error("error caching the user")
 		return user, nil
 	}
 
@@ -127,7 +127,7 @@ func (repository *CachedUserRepository) findAllAndSet(ctx context.Context) (*[]m
 	}
 
 	if err = repository.cacheManager.Set(ctx, repository.cacheName, "all", users); err != nil {
-		zap.L().Error("Error caching the users")
+		zap.L().Error("error caching the users")
 		return users, nil
 	}
 

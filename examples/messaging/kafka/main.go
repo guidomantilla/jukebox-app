@@ -17,13 +17,21 @@ func consumer() {
 		"group.id":          "myGroup",
 		"auto.offset.reset": "earliest",
 	})
-	defer c.Close()
+	defer func(c *kafka.Consumer) {
+		err := c.Close()
+		if err != nil {
+
+		}
+	}(c)
 
 	if err != nil {
 		panic(err)
 	}
 
-	c.SubscribeTopics([]string{"myTopic", "^aRegex.*[Tt]opic"}, nil)
+	err = c.SubscribeTopics([]string{"myTopic", "^aRegex.*[Tt]opic"}, nil)
+	if err != nil {
+		return
+	}
 
 	for {
 		msg, err := c.ReadMessage(-1)

@@ -2,6 +2,7 @@ package config
 
 import (
 	"database/sql"
+	"fmt"
 
 	"go.uber.org/zap"
 
@@ -20,9 +21,11 @@ var singletonDataSource datasource.RelationalDataSource
 
 func InitDB(environment environment.Environment) datasource.RelationalDataSource {
 
+	zap.L().Info("server starting up - setting up DB connection")
+
 	driver := environment.GetValue(DATASOURCE_DRIVER).AsString()
 	if driver != datasource.POSTGRES_DRIVER_NAME && driver != datasource.MYSQL_DRIVER_NAME {
-		zap.L().Fatal("invalid driver name")
+		zap.L().Fatal("server starting up - invalid driver name")
 	}
 
 	username := environment.GetValue(DATASOURCE_USERNAME).AsString()
@@ -38,13 +41,17 @@ func StopDB() {
 	var err error
 	var database *sql.DB
 
+	zap.L().Info("server shutting down - closing DB")
+
 	if database, err = singletonDataSource.GetDatabase(); err != nil {
-		zap.L().Error("Error closing DB: " + err.Error())
+		zap.L().Error(fmt.Sprintf("server shutting down - error closing DB: %s", err.Error()))
 		return
 	}
 
 	if err = database.Close(); err != nil {
-		zap.L().Error("Error closing DB")
+		zap.L().Error(fmt.Sprintf("server shutting down - error closing DB: %s", err.Error()))
 		return
 	}
+
+	zap.L().Info("server shutting down - DB closed")
 }

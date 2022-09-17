@@ -3,8 +3,8 @@ package repository
 import (
 	"context"
 	"database/sql"
-	"jukebox-app/internal/model"
 
+	"jukebox-app/internal/model"
 	repositoryUtils "jukebox-app/pkg/repository"
 )
 
