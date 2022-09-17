@@ -1,31 +1,56 @@
 package serve
 
 import (
+	"context"
+	"jukebox-app/internal/config"
 	"jukebox-app/internal/repository"
+	cachemanager "jukebox-app/pkg/cache-manager"
+	"jukebox-app/pkg/transaction"
+	"os"
+	"os/signal"
+	"syscall"
 
+	"github.com/eko/gocache/v2/store"
 	"github.com/spf13/cobra"
 	"go.uber.org/zap"
-
-	"jukebox-app/internal/config"
-	"jukebox-app/pkg/transaction"
 )
 
 func ExecuteCmdFn(_ *cobra.Command, args []string) {
 
-	environment := config.InitConfig(&args)
-	defer config.StopConfig()
+	// Create context that listens for the interrupt signal from the OS.
+	ctx := context.Background()
+	notifyCtx, stop := signal.NotifyContext(ctx, syscall.SIGINT, syscall.SIGTERM, syscall.SIGKILL)
+	defer stop()
 
+	//
+
+	environment := config.InitConfig(&args)
 	dataSource := config.InitDB(environment)
-	defer config.StopDB()
+
+	cacheInterface, _ := cachemanager.NewCache(store.GoCacheType, environment)
+	cacheManager := cachemanager.NewDefaultCacheManager(cacheInterface)
 
 	_ = transaction.NewRelationalTransactionHandler(dataSource)
 
-	_ = repository.NewRelationalUserRepository()
+	userRepository := repository.NewRelationalUserRepository()
+	_ = repository.NewCachedUserRepository(userRepository, cacheManager)
 	_ = repository.NewRelationalArtistRepository()
 	_ = repository.NewRelationalSongRepository()
 
-	if err := config.InitWebServer(environment); err != nil {
-		zap.L().Fatal("error starting the server.")
-	}
-	defer config.StopWebServer()
+	//
+
+	config.InitWebServer(environment)
+	<-notifyCtx.Done() // Listen for the interrupt signal.
+	stop()             // Restore default behavior on the interrupt signal and notify user of shutdown.
+	zap.L().Info("server shutting down gracefully, press Ctrl+C again to force")
+
+	config.StopDB()
+	config.StopConfig()
+	config.StopWebServer()
+
+	zap.L().Info("server shutdown")
+
+	//
+
+	os.Exit(0)
 }

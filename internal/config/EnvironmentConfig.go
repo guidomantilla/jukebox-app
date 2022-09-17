@@ -2,7 +2,6 @@ package config
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"time"
 
@@ -24,15 +23,9 @@ var (
 	_singletonLogger      *zap.Logger
 )
 
-func StopConfig() {
-	// Stop Zap
-	_ = _singletonLogger.Sync()
-
-	// Stop Sentry
-	sentry.Flush(2 * time.Second)
-}
-
 func InitConfig(cmdArgs *[]string) environment.Environment {
+
+	zap.L().Info("server starting up - setting up configuration & logging")
 
 	// Load CMD and OS variables
 	osArgs := os.Environ()
@@ -54,13 +47,13 @@ func InitConfig(cmdArgs *[]string) environment.Environment {
 
 	var err error
 	if err = sentry.Init(sentryOptions); err != nil {
-		log.Fatalf("sentry.Init: %s", err)
+		zap.L().Fatal(fmt.Sprintf("server starting up - error setting up sentry: %s", err.Error()))
 	}
 
 	// Setup Zap
 	level := zapcore.Level(0)
 	if err = level.UnmarshalText([]byte(_singletonEnvironment.GetValue("LOG_LEVEL").AsString())); err != nil {
-		log.Fatalf("invalid zap log level: %s", err)
+		zap.L().Fatal(fmt.Sprintf("server starting up - invalid zap log level: %s", err.Error()))
 	}
 
 	loggerConfig := zap.Config{
@@ -74,7 +67,7 @@ func InitConfig(cmdArgs *[]string) environment.Environment {
 
 	// Init Zap with Sentry Hooks for error level logs
 	if _singletonLogger, err = loggerConfig.Build(zap.Hooks(sentryHook)); err != nil {
-		log.Fatalln(err)
+		zap.L().Fatal(fmt.Sprintf("server starting up - error hooking up sentry and zap: %s", err.Error()))
 	}
 	zap.ReplaceGlobals(_singletonLogger)
 
@@ -96,4 +89,17 @@ func sentryHook(entry zapcore.Entry) error {
 		sentry.CaptureException(fmt.Errorf("%s, Line No: %d :: %s", entry.Caller.File, entry.Caller.Line, entry.Message))
 	}
 	return nil
+}
+
+func StopConfig() {
+
+	zap.L().Info("server shutting down - stopping configuration & logging")
+
+	// Stop Zap
+	_ = _singletonLogger.Sync()
+
+	// Stop Sentry
+	sentry.Flush(2 * time.Second)
+
+	zap.L().Info("server shutting down - configuration & logging stopped")
 }
