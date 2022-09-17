@@ -6,7 +6,6 @@ import (
 	"jukebox-app/internal/repository"
 	cachemanager "jukebox-app/pkg/cache-manager"
 	"jukebox-app/pkg/transaction"
-	"os"
 	"os/signal"
 	"syscall"
 
@@ -25,7 +24,10 @@ func ExecuteCmdFn(_ *cobra.Command, args []string) {
 	//
 
 	environment := config.InitConfig(&args)
+	defer config.StopConfig()
+
 	dataSource := config.InitDB(environment)
+	defer config.StopDB()
 
 	cacheInterface, _ := cachemanager.NewCache(store.GoCacheType, environment)
 	cacheManager := cachemanager.NewDefaultCacheManager(cacheInterface)
@@ -40,17 +42,9 @@ func ExecuteCmdFn(_ *cobra.Command, args []string) {
 	//
 
 	config.InitWebServer(environment)
+	defer config.StopWebServer()
+
 	<-notifyCtx.Done() // Listen for the interrupt signal.
 	stop()             // Restore default behavior on the interrupt signal and notify user of shutdown.
 	zap.L().Info("server shutting down gracefully, press Ctrl+C again to force")
-
-	config.StopDB()
-	config.StopConfig()
-	config.StopWebServer()
-
-	zap.L().Info("server shutdown")
-
-	//
-
-	os.Exit(0)
 }
