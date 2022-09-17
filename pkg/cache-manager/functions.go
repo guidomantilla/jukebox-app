@@ -19,7 +19,7 @@ func generateKey(cacheName string, key any) string {
 	return cacheName + "-" + fmt.Sprintf("%v", key)
 }
 
-func NewCache(storeType string, environment environment.Environment) (cache.CacheInterface, error) {
+func BuildCacheInterface(storeType string, environment environment.Environment) (cache.CacheInterface, error) {
 
 	var cacheStore store.StoreInterface
 	switch storeType {

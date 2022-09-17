@@ -32,7 +32,7 @@ func ExecuteCmdFn(_ *cobra.Command, args []string) {
 		Name:  "Guido",
 		Email: "guido.mantilla@yahoo.com",
 	}
-	cache, _ := cachemanager.NewCache(store.GoCacheType, environment)
+	cache, _ := cachemanager.BuildCacheInterface(store.GoCacheType, environment)
 	cacheManager := cachemanager.NewDefaultCacheManager(cache)
 	cacheUserRepository := repository.NewCachedUserRepository(userRepository, cacheManager)
 

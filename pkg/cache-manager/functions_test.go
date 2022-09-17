@@ -22,16 +22,16 @@ func Test_NewCache(t *testing.T) {
 	environment := config.InitConfig(&args)
 	defer config.StopConfig()
 
-	cache, _ := NewCache(store.GoCacheType, environment)
+	cache, _ := BuildCacheInterface(store.GoCacheType, environment)
 	assert.NotNil(t, cache)
 
-	cache, _ = NewCache(store.MemcacheType, environment)
+	cache, _ = BuildCacheInterface(store.MemcacheType, environment)
 	assert.NotNil(t, cache)
 
-	cache, _ = NewCache(store.RedisType, environment)
+	cache, _ = BuildCacheInterface(store.RedisType, environment)
 	assert.NotNil(t, cache)
 
-	cache, err := NewCache("", environment)
+	cache, err := BuildCacheInterface("", environment)
 	assert.Nil(t, cache)
 	assert.NotNil(t, err)
 	assert.Error(t, err)
