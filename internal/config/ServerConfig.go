@@ -34,8 +34,9 @@ func InitWebServer(environment environment.Environment) *http.Server {
 
 	hostAddress := environment.GetValueOrDefault(HOST_POST, HOST_POST_DEFAULT_VALUE).AsString()
 	_singletonServer = &http.Server{
-		Addr:    hostAddress,
-		Handler: router,
+		Addr:              hostAddress,
+		Handler:           router,
+		ReadHeaderTimeout: 60,
 	}
 
 	go func() {
