@@ -4,7 +4,7 @@ phony-goal: ; @echo $@
 build: validate
 	docker compose -f docker/docker-compose.yml up --detach
 
-validate: sort-import format vet lint coverage
+validate: generate sort-import format vet lint coverage
 
 generate:
 	go generate ./...
