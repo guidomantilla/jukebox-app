@@ -6,6 +6,7 @@ import (
 	"syscall"
 
 	"github.com/eko/gocache/v2/store"
+	"github.com/gin-gonic/gin"
 	"github.com/spf13/cobra"
 	"go.uber.org/zap"
 
@@ -42,7 +43,16 @@ func ExecuteCmdFn(_ *cobra.Command, args []string) {
 
 	//
 
-	config.InitWebServer(environment)
+	router := gin.Default()
+	routerGroup := router.Group("/api")
+	routerGroup.GET("/songs", nil)
+	routerGroup.GET("/songs/:id", nil)
+	routerGroup.POST("/songs", nil)
+	routerGroup.PUT("/songs/:id", nil)
+	routerGroup.PATCH("/songs/:id", nil)
+	routerGroup.DELETE("/songs/:id", nil)
+
+	config.InitWebServer(environment, router)
 	defer config.StopWebServer()
 
 	<-notifyCtx.Done() // Listen for the interrupt signal.

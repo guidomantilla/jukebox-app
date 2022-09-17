@@ -19,18 +19,9 @@ const (
 
 var _singletonServer *http.Server
 
-func InitWebServer(environment environment.Environment) *http.Server {
+func InitWebServer(environment environment.Environment, router *gin.Engine) {
 
 	zap.L().Info("server starting up - starting http server")
-
-	router := gin.Default()
-	routerGroup := router.Group("/api")
-	routerGroup.GET("/songs", nil)
-	routerGroup.GET("/songs/:id", nil)
-	routerGroup.POST("/songs", nil)
-	routerGroup.PUT("/songs/:id", nil)
-	routerGroup.PATCH("/songs/:id", nil)
-	routerGroup.DELETE("/songs/:id", nil)
 
 	hostAddress := environment.GetValueOrDefault(HOST_POST, HOST_POST_DEFAULT_VALUE).AsString()
 	_singletonServer = &http.Server{
@@ -44,8 +35,6 @@ func InitWebServer(environment environment.Environment) *http.Server {
 			zap.L().Fatal(fmt.Sprintf("server starting up - error: %s", err.Error()))
 		}
 	}()
-
-	return _singletonServer
 }
 
 func StopWebServer() {
