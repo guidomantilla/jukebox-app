@@ -2,7 +2,6 @@ package serve
 
 import (
 	"context"
-	cachemanager "jukebox-app/pkg/cache-manager"
 	"os/signal"
 	"syscall"
 
@@ -12,7 +11,7 @@ import (
 
 	"jukebox-app/internal/config"
 	"jukebox-app/internal/repository"
-
+	cachemanager "jukebox-app/pkg/cache-manager"
 	"jukebox-app/pkg/transaction"
 )
 

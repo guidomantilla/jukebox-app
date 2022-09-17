@@ -6,10 +6,11 @@ package repository
 
 import (
 	"context"
-	"jukebox-app/internal/model"
 	"reflect"
 
 	"github.com/golang/mock/gomock"
+
+	"jukebox-app/internal/model"
 )
 
 // MockSongRepository is a mock of SongRepository interface.

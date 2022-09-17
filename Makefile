@@ -10,7 +10,12 @@ generate:
 	go generate ./...
 
 sort-import:
-	goimportssort -w ./..
+	goimportssort -w cmd
+	goimportssort -w internal
+	goimportssort -w pkg
+	goimportssort -w tests
+	goimportssort -w tools
+
 
 format:
 	go fmt ./...
