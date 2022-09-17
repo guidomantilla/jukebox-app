@@ -1,12 +1,13 @@
 package config
 
 import (
-	appserver "jukebox-app/pkg/application-server"
-	"jukebox-app/pkg/environment"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/qmdx00/lifecycle"
+
+	appserver "jukebox-app/pkg/application-server"
+	"jukebox-app/pkg/environment"
 )
 
 const (

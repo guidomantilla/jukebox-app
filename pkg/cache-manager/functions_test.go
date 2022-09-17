@@ -5,8 +5,6 @@ import (
 
 	"github.com/eko/gocache/v2/store"
 	"github.com/stretchr/testify/assert"
-
-	"jukebox-app/internal/config"
 )
 
 func Test_generateKey(t *testing.T) {
@@ -18,20 +16,16 @@ func Test_generateKey(t *testing.T) {
 }
 func Test_NewCache(t *testing.T) {
 
-	var args []string
-	environment := config.InitConfig(&args)
-	defer config.StopConfig()
-
-	cache, _ := BuildCacheInterface(store.GoCacheType, environment)
+	cache, _ := BuildCacheInterface(store.GoCacheType, "some_address")
 	assert.NotNil(t, cache)
 
-	cache, _ = BuildCacheInterface(store.MemcacheType, environment)
+	cache, _ = BuildCacheInterface(store.MemcacheType, "some_address")
 	assert.NotNil(t, cache)
 
-	cache, _ = BuildCacheInterface(store.RedisType, environment)
+	cache, _ = BuildCacheInterface(store.RedisType, "some_address")
 	assert.NotNil(t, cache)
 
-	cache, err := BuildCacheInterface("", environment)
+	cache, err := BuildCacheInterface("", "some_address")
 	assert.Nil(t, cache)
 	assert.NotNil(t, err)
 	assert.Error(t, err)

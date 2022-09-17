@@ -14,11 +14,15 @@ import (
 func Test_Create(t *testing.T) {
 
 	var args []string
-	environment := config.InitConfig(&args)
-	defer config.StopConfig()
+	env := config.InitConfig(&args)
+	defer func() {
+		_ = config.StopConfig()
+	}()
 
-	dataSource := config.InitDB(environment)
-	defer config.StopDB()
+	dataSource := config.InitDB(env)
+	defer func() {
+		_ = config.StopDB()
+	}()
 
 	txHandler := transaction.NewRelationalTransactionHandler(dataSource)
 	repository := repository.NewRelationalUserRepository()

@@ -49,10 +49,14 @@ func handleMigration(args []string, fn MigrationFunction) error {
 	var err error
 
 	env := config.InitConfig(&args)
-	defer config.StopConfig()
+	defer func() {
+		_ = config.StopConfig()
+	}()
 
 	dataSource := config.InitDB(env)
-	defer config.StopDB()
+	defer func() {
+		_ = config.StopDB()
+	}()
 
 	var driver database.Driver
 	if driver, err = createMigrateDriver(dataSource); err != nil {

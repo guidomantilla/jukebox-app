@@ -4,7 +4,7 @@ phony-goal: ; @echo $@
 build: validate
 	docker compose -f docker/docker-compose.yml up --detach
 
-validate: sort-import format vet lint sonarqube
+validate: sort-import format vet lint coverage
 
 generate:
 	go generate ./...
@@ -16,18 +16,17 @@ sort-import:
 	goimportssort -w tests
 	goimportssort -w tools
 
-
 format:
 	go fmt ./...
 
 vet:
-	go vet ./...
+	go vet ./cmd/... ./internal/... ./pkg/... ./tests/... ./tools/...
 
 lint:
-	golangci-lint run ./...
+	golangci-lint run ./cmd/... ./internal/... ./pkg/... ./tests/... ./tools/...
 
 test:
-	go test -covermode count -coverprofile coverage.out.tmp ./pkg/... ./internal/...
+	go test -covermode count -coverprofile coverage.out.tmp ./internal/... ./pkg/...
 	cat coverage.out.tmp | grep -v "Mock" > coverage.out
 
 coverage: test
