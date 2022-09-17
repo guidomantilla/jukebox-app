@@ -2,16 +2,17 @@ package serve
 
 import (
 	"context"
-	"jukebox-app/internal/config"
-	"jukebox-app/internal/repository"
-	cachemanager "jukebox-app/pkg/cache-manager"
-	"jukebox-app/pkg/transaction"
 	"os/signal"
 	"syscall"
 
 	"github.com/eko/gocache/v2/store"
 	"github.com/spf13/cobra"
 	"go.uber.org/zap"
+
+	"jukebox-app/internal/config"
+	"jukebox-app/internal/repository"
+	cachemanager "jukebox-app/pkg/cache-manager"
+	"jukebox-app/pkg/transaction"
 )
 
 func ExecuteCmdFn(_ *cobra.Command, args []string) {
