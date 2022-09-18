@@ -7,6 +7,6 @@ package tools
 //go:generate mockgen -package properties   -destination ../pkg/properties/MockProperties.go 					jukebox-app/pkg/properties Properties
 //go:generate mockgen -package transaction  -destination ../pkg/transaction/MockRelationalTransactionHandler.go	jukebox-app/pkg/transaction RelationalTransactionHandler
 
-//go:generate mockgen -package repository -destination ../internal/core/repository/MockArtistRepository.go	jukebox-app/internal/core/repository ArtistRepository
-//go:generate mockgen -package repository -destination ../internal/core/repository/MockSongRepository.go	jukebox-app/internal/core/repository SongRepository
-//go:generate mockgen -package repository -destination ../internal/core/repository/MockUserRepository.go	jukebox-app/internal/core/repository UserRepository
+//go:generate mockgen -package repository -destination ../internal/repository/MockArtistRepository.go			jukebox-app/internal/repository ArtistRepository
+//go:generate mockgen -package repository -destination ../internal/repository/MockSongRepository.go				jukebox-app/internal/repository SongRepository
+//go:generate mockgen -package repository -destination ../internal/repository/MockUserRepository.go				jukebox-app/internal/repository UserRepository

@@ -2,7 +2,6 @@ package cachemanager
 
 import (
 	"fmt"
-	"strings"
 	"time"
 
 	"github.com/bradfitz/gomemcache/memcache"
@@ -11,28 +10,22 @@ import (
 	"github.com/go-redis/redis/v8"
 	gocache "github.com/patrickmn/go-cache"
 	"github.com/pkg/errors"
-
-	"jukebox-app/pkg/environment"
 )
 
 func generateKey(cacheName string, key any) string {
 	return cacheName + "-" + fmt.Sprintf("%v", key)
 }
 
-func NewCache(storeType string, environment environment.Environment) (cache.CacheInterface, error) {
+func BuildCacheInterface(storeType string, cacheAddresses ...string) (cache.CacheInterface, error) {
 
 	var cacheStore store.StoreInterface
 	switch storeType {
 	case store.MemcacheType:
-		cacheAddresses := environment.GetValueOrDefault(CACHE_ADDRESS, MEMCACHED_ADDRESS_DEFAULT_VALUE).AsString()
-		pair := strings.SplitN(cacheAddresses, ",", 2)
-		memcachedStore := store.NewMemcache(memcache.New(pair...), &store.Options{Expiration: 10 * time.Second})
+		memcachedStore := store.NewMemcache(memcache.New(cacheAddresses...), &store.Options{Expiration: 10 * time.Second})
 		cacheStore = memcachedStore
 
 	case store.RedisType:
-		cacheAddresses := environment.GetValueOrDefault(CACHE_ADDRESS, REDIS_ADDRESS_DEFAULT_VALUE).AsString()
-		pair := strings.SplitN(cacheAddresses, ",", 2)
-		redisStore := store.NewRedis(redis.NewClient(&redis.Options{Addr: pair[0]}), &store.Options{Expiration: 10 * time.Second})
+		redisStore := store.NewRedis(redis.NewClient(&redis.Options{Addr: cacheAddresses[0]}), &store.Options{Expiration: 10 * time.Second})
 		cacheStore = redisStore
 
 	case store.GoCacheType:

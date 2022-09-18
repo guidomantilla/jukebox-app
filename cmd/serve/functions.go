@@ -1,38 +1,26 @@
 package serve
 
 import (
-	"context"
-	"os/signal"
 	"syscall"
 
-	"github.com/eko/gocache/v2/store"
-	"github.com/gin-gonic/gin"
+	"github.com/qmdx00/lifecycle"
 	"github.com/spf13/cobra"
 	"go.uber.org/zap"
 
 	"jukebox-app/internal/config"
 	"jukebox-app/internal/repository"
-	cachemanager "jukebox-app/pkg/cache-manager"
 	"jukebox-app/pkg/transaction"
 )
 
 func ExecuteCmdFn(_ *cobra.Command, args []string) {
 
-	// Create context that listens for the interrupt signal from the OS.
-	ctx := context.Background()
-	notifyCtx, stop := signal.NotifyContext(ctx, syscall.SIGINT, syscall.SIGTERM, syscall.SIGKILL)
-	defer stop()
-
 	//
 
 	environment := config.InitConfig(&args)
-	defer config.StopConfig()
-
 	dataSource := config.InitDB(environment)
-	defer config.StopDB()
+	cacheManager := config.InitCache(environment)
 
-	cacheInterface, _ := cachemanager.NewCache(store.GoCacheType, environment)
-	cacheManager := cachemanager.NewDefaultCacheManager(cacheInterface)
+	//
 
 	_ = transaction.NewRelationalTransactionHandler(dataSource)
 
@@ -43,19 +31,19 @@ func ExecuteCmdFn(_ *cobra.Command, args []string) {
 
 	//
 
-	router := gin.Default()
-	routerGroup := router.Group("/api")
-	routerGroup.GET("/songs", nil)
-	routerGroup.GET("/songs/:id", nil)
-	routerGroup.POST("/songs", nil)
-	routerGroup.PUT("/songs/:id", nil)
-	routerGroup.PATCH("/songs/:id", nil)
-	routerGroup.DELETE("/songs/:id", nil)
+	ginServer := config.InitGinServer(environment)
 
-	config.InitWebServer(environment, router)
-	defer config.StopWebServer()
+	//
 
-	<-notifyCtx.Done() // Listen for the interrupt signal.
-	stop()             // Restore default behavior on the interrupt signal and notify user of shutdown.
-	zap.L().Info("server shutting down gracefully, press Ctrl+C again to force")
+	jukeboxApp := lifecycle.NewApp(
+		lifecycle.WithName("jukebox-app"),
+		lifecycle.WithVersion("v1.0"),
+		lifecycle.WithSignal(syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGINT, syscall.SIGKILL),
+	)
+	jukeboxApp.Attach("ginServer", ginServer)
+	jukeboxApp.Cleanup(config.StopDB, config.StopConfig)
+
+	if err := jukeboxApp.Run(); err != nil {
+		zap.L().Fatal(err.Error())
+	}
 }

@@ -91,7 +91,7 @@ func sentryHook(entry zapcore.Entry) error {
 	return nil
 }
 
-func StopConfig() {
+func StopConfig() error {
 
 	zap.L().Info("server shutting down - stopping configuration & logging")
 
@@ -102,4 +102,5 @@ func StopConfig() {
 	sentry.Flush(2 * time.Second)
 
 	zap.L().Info("server shutting down - configuration & logging stopped")
+	return nil
 }

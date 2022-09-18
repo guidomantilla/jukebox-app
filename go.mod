@@ -18,6 +18,7 @@ require (
 	github.com/jackc/pgx/v4 v4.17.2
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/pkg/errors v0.9.1
+	github.com/qmdx00/lifecycle v1.1.1
 	github.com/spf13/cobra v1.5.0
 	github.com/spyzhov/go-license v1.0.0
 	github.com/stretchr/testify v1.8.0

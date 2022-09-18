@@ -10,12 +10,6 @@ import (
 	"jukebox-app/pkg/encoding-json"
 )
 
-const (
-	CACHE_ADDRESS                   = "CACHE_ADDRESS"
-	MEMCACHED_ADDRESS_DEFAULT_VALUE = "localhost:11211"
-	REDIS_ADDRESS_DEFAULT_VALUE     = "localhost:6379"
-)
-
 var _ CacheManager = (*DefaultCacheManager)(nil)
 
 type CacheManager interface {

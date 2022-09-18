@@ -13,8 +13,6 @@ func fun(s string) {
 }
 
 func main() {
-	fmt.Println("Hello World")
-
 	// Direct call
 	fun("direct call")
 
