@@ -37,7 +37,7 @@ func (p *DefaultProperties) AsMap() map[string]string {
 
 //
 
-type DefaultPropertiesOption = func(properties *DefaultProperties)
+type DefaultPropertiesOption func(properties *DefaultProperties)
 
 func NewDefaultProperties(options ...DefaultPropertiesOption) *DefaultProperties {
 	properties := &DefaultProperties{
