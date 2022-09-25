@@ -44,7 +44,8 @@ func ExecuteCmdFn(_ *cobra.Command, args []string) {
 	//
 
 	client := messaging.NewDefaultRabbitMQQueueConnection("my-queue", "amqp://raven-dev:raven-dev*+@192.168.0.101:5672/", amqp.Dial)
-	jukeboxApp.Attach("rabbitMQListener", appserver.BuildRabbitMQMessageDispatcher(client))
+	listener := appserver.NewDefaultRabbitMQMessageListener()
+	jukeboxApp.Attach("rabbitMQListener", appserver.BuildRabbitMQMessageDispatcher(client, listener))
 	<-time.After(time.Second)
 
 	jukeboxApp.Attach("ginServer", config.InitGinServer(environment))

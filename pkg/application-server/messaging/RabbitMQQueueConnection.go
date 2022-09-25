@@ -14,6 +14,8 @@ const (
 
 type DialRabbitMQFunc func(url string) (*amqp.Connection, error)
 
+var _ RabbitMQQueueConnection = (*DefaultRabbitMQQueueConnection)(nil)
+
 type RabbitMQQueueConnection interface {
 	Start()
 	Close()

@@ -1,4 +1,4 @@
-package application_server
+package applicationserver
 
 import (
 	"context"
