@@ -28,9 +28,13 @@ func InitDB(environment environment.Environment) datasource.RelationalDataSource
 		zap.L().Fatal("server starting up - error setting up DB connection: invalid driver name")
 	}
 
+	url := environment.GetValue(DATASOURCE_URL).AsString()
+	if url == "" {
+		zap.L().Fatal("server starting up - error setting up DB connection: invalid url")
+	}
+
 	username := environment.GetValue(DATASOURCE_USERNAME).AsString()
 	password := environment.GetValue(DATASOURCE_PASSWORD).AsString()
-	url := environment.GetValue(DATASOURCE_URL).AsString()
 
 	singletonDataSource = datasource.NewRelationalDataSource(driver, username, password, url, sql.Open)
 	return singletonDataSource

@@ -3,17 +3,13 @@ package serve
 import (
 	"encoding/json"
 	"syscall"
-	"time"
 
 	"github.com/qmdx00/lifecycle"
-	amqp "github.com/rabbitmq/amqp091-go"
 	"github.com/spf13/cobra"
 	"go.uber.org/zap"
 
 	"jukebox-app/internal/config"
 	"jukebox-app/internal/repository"
-	appserver "jukebox-app/pkg/application-server"
-	"jukebox-app/pkg/application-server/messaging"
 	"jukebox-app/pkg/transaction"
 )
 
@@ -43,12 +39,8 @@ func ExecuteCmdFn(_ *cobra.Command, args []string) {
 
 	//
 
-	client := messaging.NewDefaultRabbitMQQueueConnection("my-queue", "amqp://raven-dev:raven-dev*+@192.168.0.101:5672/", amqp.Dial)
-	listener := appserver.NewDefaultRabbitMQMessageListener()
-	jukeboxApp.Attach("rabbitMQListener", appserver.BuildRabbitMQMessageDispatcher(client, listener))
-	<-time.After(time.Second)
-
-	jukeboxApp.Attach("ginServer", config.InitGinServer(environment))
+	jukeboxApp.Attach("RabbitMQDispatcher", config.InitRabbitMQDispatcher(environment))
+	jukeboxApp.Attach("GinServer", config.InitGinServer(environment))
 
 	//
 

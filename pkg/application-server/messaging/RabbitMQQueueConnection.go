@@ -2,6 +2,7 @@ package messaging
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	amqp "github.com/rabbitmq/amqp091-go"
@@ -11,8 +12,6 @@ import (
 const (
 	makeConnectionDelay = 2 * time.Second
 )
-
-type DialRabbitMQFunc func(url string) (*amqp.Connection, error)
 
 var _ RabbitMQQueueConnection = (*DefaultRabbitMQQueueConnection)(nil)
 
@@ -30,20 +29,20 @@ type DefaultRabbitMQQueueConnection struct {
 	notifyOnClosedChannel    chan *amqp.Error
 	queueName                string
 	queue                    amqp.Queue
-
-	isReady                bool
-	notifyOnClosingWatcher chan bool
-	dialFunc               DialRabbitMQFunc
+	isReady                  bool
+	notifyOnClosingWatcher   chan bool
 }
 
-func NewDefaultRabbitMQQueueConnection(queueName string, rabbitMQUrl string, dialFunc DialRabbitMQFunc) *DefaultRabbitMQQueueConnection {
+func NewDefaultRabbitMQQueueConnection(queueName string, username string, password string, rabbitMQUrl string) *DefaultRabbitMQQueueConnection {
+
+	rabbitMQUrl = strings.Replace(rabbitMQUrl, ":username", username, 1)
+	rabbitMQUrl = strings.Replace(rabbitMQUrl, ":password", password, 1)
 
 	client := &DefaultRabbitMQQueueConnection{
 		rabbitMQUrl:            rabbitMQUrl,
 		queueName:              queueName,
 		isReady:                false,
 		notifyOnClosingWatcher: make(chan bool),
-		dialFunc:               dialFunc,
 	}
 
 	return client
@@ -79,7 +78,7 @@ func (client *DefaultRabbitMQQueueConnection) Connect() (*amqp.Connection, *amqp
 func (client *DefaultRabbitMQQueueConnection) makeConnection() error {
 
 	var err error
-	if client.connection, err = client.dialFunc(client.rabbitMQUrl); err != nil {
+	if client.connection, err = amqp.Dial(client.rabbitMQUrl); err != nil {
 		return err
 	}
 
