@@ -1,12 +1,12 @@
 package config
 
 import (
+	"github.com/qmdx00/lifecycle"
+	"go.uber.org/zap"
+
 	appserver "jukebox-app/pkg/application-server"
 	"jukebox-app/pkg/application-server/messaging"
 	"jukebox-app/pkg/environment"
-
-	"github.com/qmdx00/lifecycle"
-	"go.uber.org/zap"
 )
 
 const (
