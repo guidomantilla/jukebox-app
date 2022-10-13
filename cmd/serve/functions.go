@@ -40,6 +40,7 @@ func ExecuteCmdFn(_ *cobra.Command, args []string) {
 	//
 
 	jukeboxApp.Attach("RabbitMQDispatcher", config.InitRabbitMQDispatcher(environment))
+	jukeboxApp.Attach("NatsDispatcher", config.InitNatsDispatcher(environment))
 	jukeboxApp.Attach("GinServer", config.InitGinServer(environment))
 
 	//

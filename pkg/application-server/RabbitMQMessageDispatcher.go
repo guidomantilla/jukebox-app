@@ -3,7 +3,6 @@ package applicationserver
 import (
 	"context"
 	"fmt"
-	"net/http"
 	"time"
 
 	"github.com/qmdx00/lifecycle"
@@ -14,6 +13,8 @@ import (
 )
 
 //
+
+var _ RabbitMQMessageListener = (*DefaultRabbitMQMessageListener)(nil)
 
 type RabbitMQMessageListener interface {
 	OnMessage(message *amqp.Delivery) error
@@ -45,8 +46,9 @@ type RabbitMQMessageDispatcher struct {
 
 func BuildRabbitMQMessageDispatcher(rabbitmqConnection messaging.RabbitMQQueueConnection, rabbitmqListener RabbitMQMessageListener) lifecycle.Server {
 	return &RabbitMQMessageDispatcher{
-		rabbitmqConnection: rabbitmqConnection,
-		rabbitmqListener:   rabbitmqListener,
+		rabbitmqConnection:   rabbitmqConnection,
+		rabbitmqListener:     rabbitmqListener,
+		receivedMessagesChan: make(<-chan amqp.Delivery),
 	}
 }
 
@@ -59,7 +61,6 @@ func (server *RabbitMQMessageDispatcher) Run(ctx context.Context) error {
 	server.rabbitmqConnection.Start()
 
 	var err error
-	//var connection *amqp.Connection
 	var channel *amqp.Channel
 	var queue *amqp.Queue
 
@@ -73,7 +74,7 @@ func (server *RabbitMQMessageDispatcher) Run(ctx context.Context) error {
 		return err
 	}
 
-	if err = server.ListenAndDispatch(); err != nil && err != http.ErrServerClosed {
+	if err = server.ListenAndDispatch(); err != nil {
 		zap.L().Error(fmt.Sprintf("server starting up - rabbitmq dispatcher - error: %s", err.Error()))
 		return err
 	}
