@@ -21,7 +21,7 @@ require (
 	github.com/qmdx00/lifecycle v1.1.1
 	github.com/spf13/cobra v1.5.0
 	github.com/spyzhov/go-license v1.0.0
-	github.com/stretchr/testify v1.8.0
+	github.com/stretchr/testify v1.8.1
 	github.com/testcontainers/testcontainers-go v0.13.0
 	go.uber.org/zap v1.23.0
 	google.golang.org/grpc v1.49.0
