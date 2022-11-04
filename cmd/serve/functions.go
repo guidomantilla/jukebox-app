@@ -17,7 +17,7 @@ func ExecuteCmdFn(_ *cobra.Command, args []string) {
 
 	jukeboxApp := lifecycle.NewApp(
 		lifecycle.WithName("jukebox-app"),
-		lifecycle.WithVersion("v1.0"),
+		lifecycle.WithVersion("1.0"),
 		lifecycle.WithSignal(syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGINT, syscall.SIGKILL),
 	)
 	jukeboxApp.Cleanup(config.StopDB, config.StopConfig)
