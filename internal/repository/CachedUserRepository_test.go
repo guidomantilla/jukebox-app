@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"jukebox-app/internal/model"
-	"jukebox-app/pkg/cache-manager"
+	"jukebox-app/pkg/cachemanager"
 )
 
 func Test_CachedUserRepository_Create_Ok(t *testing.T) {

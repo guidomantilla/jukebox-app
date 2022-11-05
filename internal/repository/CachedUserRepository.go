@@ -9,8 +9,8 @@ import (
 	"go.uber.org/zap"
 
 	"jukebox-app/internal/model"
-	"jukebox-app/pkg/cache-manager"
-	encodingjson "jukebox-app/pkg/encoding-json"
+	"jukebox-app/pkg/cachemanager"
+	"jukebox-app/pkg/encodingjson"
 )
 
 type CachedUserRepository struct {
