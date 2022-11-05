@@ -4,8 +4,8 @@ import (
 	"github.com/qmdx00/lifecycle"
 	"go.uber.org/zap"
 
-	appserver "jukebox-app/pkg/application-server"
-	"jukebox-app/pkg/application-server/messaging"
+	appserver "jukebox-app/pkg/app"
+	"jukebox-app/pkg/app/messaging"
 	"jukebox-app/pkg/environment"
 )
 

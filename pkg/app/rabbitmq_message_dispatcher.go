@@ -9,7 +9,7 @@ import (
 	amqp "github.com/rabbitmq/amqp091-go"
 	"go.uber.org/zap"
 
-	"jukebox-app/pkg/application-server/messaging"
+	"jukebox-app/pkg/app/messaging"
 )
 
 //

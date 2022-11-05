@@ -3,7 +3,7 @@ package config
 import (
 	"github.com/qmdx00/lifecycle"
 
-	appserver "jukebox-app/pkg/application-server"
+	appserver "jukebox-app/pkg/app"
 	"jukebox-app/pkg/environment"
 )
 
