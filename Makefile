@@ -26,8 +26,7 @@ lint:
 
 test:
 	go test -covermode count -coverprofile coverage.out.tmp.01 ./internal/... ./pkg/...
-	cat coverage.out.tmp.01 | grep -v "Mock" > coverage.out.tmp.02
-	cat coverage.out.tmp.02 | grep -v "application-server/" > coverage.out
+	cat coverage.out.tmp.01 | grep -v "mocks.go" > coverage.out
 
 coverage: test
 	go tool cover -func=coverage.out
