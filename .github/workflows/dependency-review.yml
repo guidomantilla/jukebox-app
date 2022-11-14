@@ -27,4 +27,4 @@ jobs:
         run: go mod tidy && go mod verify
 
       - name: 'Dependency Review'
-        uses: actions/dependency-review-action@v2
+        uses: actions/dependency-review-action@v3
