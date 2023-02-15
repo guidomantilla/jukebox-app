@@ -74,6 +74,6 @@ prepare:
 	go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
 	go install github.com/ktr0731/evans@latest
 	go install github.com/nats-io/natscli/nats@latest
-	go install github.com/actgardner/gogen-avro/gogen-avro@latest
+	#go install github.com/actgardner/gogen-avro/gogen-avro@latest
 	go mod download
 	go mod tidy
