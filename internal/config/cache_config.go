@@ -8,7 +8,7 @@ import (
 	"github.com/eko/gocache/v2/store"
 	"go.uber.org/zap"
 
-	cachemanager "jukebox-app/pkg/cache-manager"
+	"jukebox-app/pkg/cachemanager"
 	"jukebox-app/pkg/environment"
 )
 

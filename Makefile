@@ -13,21 +13,20 @@ sort-import:
 	goimportssort -w cmd
 	goimportssort -w internal
 	goimportssort -w pkg
-	goimportssort -w tests
 	goimportssort -w tools
 
 format:
 	go fmt ./...
 
 vet:
-	go vet ./cmd/... ./internal/... ./pkg/... ./tests/... ./tools/...
+	go vet ./cmd/... ./internal/... ./pkg/... ./tools/...
 
 lint:
-	golangci-lint run ./cmd/... ./internal/... ./pkg/... ./tests/... ./tools/...
+	golangci-lint run ./cmd/... ./internal/... ./pkg/... ./tools/...
 
 test:
-	go test -covermode count -coverprofile coverage.out.tmp ./internal/... ./pkg/...
-	cat coverage.out.tmp | grep -v "Mock" > coverage.out
+	go test -covermode count -coverprofile coverage.out.tmp.01 ./internal/... ./pkg/...
+	cat coverage.out.tmp.01 | grep -v "mocks.go" > coverage.out
 
 coverage: test
 	go tool cover -func=coverage.out
@@ -74,5 +73,7 @@ prepare:
 	go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
 	go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
 	go install github.com/ktr0731/evans@latest
+	go install github.com/nats-io/natscli/nats@latest
+	#go install github.com/actgardner/gogen-avro/gogen-avro@latest
 	go mod download
 	go mod tidy

@@ -1,6 +1,7 @@
 package serve
 
 import (
+	"encoding/json"
 	"syscall"
 
 	"github.com/qmdx00/lifecycle"
@@ -14,6 +15,13 @@ import (
 
 func ExecuteCmdFn(_ *cobra.Command, args []string) {
 
+	jukeboxApp := lifecycle.NewApp(
+		lifecycle.WithName("jukebox-app"),
+		lifecycle.WithVersion("1.0"),
+		lifecycle.WithSignal(syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGINT, syscall.SIGKILL),
+	)
+	jukeboxApp.Cleanup(config.StopDB, config.StopConfig)
+
 	//
 
 	environment := config.InitConfig(&args)
@@ -25,23 +33,17 @@ func ExecuteCmdFn(_ *cobra.Command, args []string) {
 	_ = transaction.NewRelationalTransactionHandler(dataSource)
 
 	userRepository := repository.NewRelationalUserRepository()
-	_ = repository.NewCachedUserRepository(userRepository, cacheManager)
+	_ = repository.NewCachedUserRepository(userRepository, cacheManager, json.Marshal, json.Unmarshal)
 	_ = repository.NewRelationalArtistRepository()
 	_ = repository.NewRelationalSongRepository()
 
 	//
 
-	ginServer := config.InitGinServer(environment)
+	jukeboxApp.Attach("RabbitMQDispatcher", config.InitRabbitMQDispatcher(environment))
+	jukeboxApp.Attach("NatsDispatcher", config.InitNatsDispatcher(environment))
+	jukeboxApp.Attach("GinServer", config.InitGinServer(environment))
 
 	//
-
-	jukeboxApp := lifecycle.NewApp(
-		lifecycle.WithName("jukebox-app"),
-		lifecycle.WithVersion("v1.0"),
-		lifecycle.WithSignal(syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGINT, syscall.SIGKILL),
-	)
-	jukeboxApp.Attach("ginServer", ginServer)
-	jukeboxApp.Cleanup(config.StopDB, config.StopConfig)
 
 	if err := jukeboxApp.Run(); err != nil {
 		zap.L().Fatal(err.Error())

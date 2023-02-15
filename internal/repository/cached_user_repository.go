@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 
 	"github.com/bradfitz/gomemcache/memcache"
@@ -10,8 +9,8 @@ import (
 	"go.uber.org/zap"
 
 	"jukebox-app/internal/model"
-	"jukebox-app/pkg/cache-manager"
-	encodingjson "jukebox-app/pkg/encoding-json"
+	"jukebox-app/pkg/cachemanager"
+	"jukebox-app/pkg/encodingjson"
 )
 
 type CachedUserRepository struct {
@@ -136,12 +135,13 @@ func (repository *CachedUserRepository) findAllAndSet(ctx context.Context) (*[]m
 
 //
 
-func NewCachedUserRepository(delegateUserRepository UserRepository, cacheManager cachemanager.CacheManager) *CachedUserRepository {
+func NewCachedUserRepository(delegateUserRepository UserRepository, cacheManager cachemanager.CacheManager,
+	marshalFunc encodingjson.MarshalFunc, unmarshalFunc encodingjson.UnmarshalFunc) *CachedUserRepository {
 	return &CachedUserRepository{
 		delegateUserRepository: delegateUserRepository,
 		cacheManager:           cacheManager,
 		cacheName:              "users",
-		marshalFunc:            json.Marshal,
-		unmarshalFunc:          json.Unmarshal,
+		marshalFunc:            marshalFunc,
+		unmarshalFunc:          unmarshalFunc,
 	}
 }

@@ -6,13 +6,13 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/qmdx00/lifecycle"
 
-	appserver "jukebox-app/pkg/application-server"
+	appserver "jukebox-app/pkg/app"
 	"jukebox-app/pkg/environment"
 )
 
 const (
-	HOST_POST               = "HOST_POST"
-	HOST_POST_DEFAULT_VALUE = ":8080"
+	HOST_PORT               = "HOST_PORT"
+	HOST_PORT_DEFAULT_VALUE = ":8080"
 )
 
 func InitGinServer(environment environment.Environment) lifecycle.Server {
@@ -30,7 +30,7 @@ func InitGinServer(environment environment.Environment) lifecycle.Server {
 
 	//
 
-	hostAddress := environment.GetValueOrDefault(HOST_POST, HOST_POST_DEFAULT_VALUE).AsString()
+	hostAddress := environment.GetValueOrDefault(HOST_PORT, HOST_PORT_DEFAULT_VALUE).AsString()
 	httpServer := &http.Server{
 		Addr:              hostAddress,
 		Handler:           router,

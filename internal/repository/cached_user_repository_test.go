@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"jukebox-app/internal/model"
-	"jukebox-app/pkg/cache-manager"
+	"jukebox-app/pkg/cachemanager"
 )
 
 func Test_CachedUserRepository_Create_Ok(t *testing.T) {
@@ -43,7 +43,7 @@ func Test_CachedUserRepository_Create_Ok(t *testing.T) {
 
 	//
 
-	cacheRepository := NewCachedUserRepository(delegateRepository, cacheManager)
+	cacheRepository := NewCachedUserRepository(delegateRepository, cacheManager, json.Marshal, json.Unmarshal)
 	err := cacheRepository.Create(ctx, user)
 
 	assert.Nil(t, err)
@@ -75,7 +75,7 @@ func Test_CachedUserRepository_Create_Delegate_Err(t *testing.T) {
 
 	//
 
-	cacheRepository := NewCachedUserRepository(delegateRepository, cacheManager)
+	cacheRepository := NewCachedUserRepository(delegateRepository, cacheManager, json.Marshal, json.Unmarshal)
 	err := cacheRepository.Create(ctx, user)
 
 	assert.NotNil(t, err)
@@ -113,7 +113,7 @@ func Test_CachedUserRepository_Create_Set_Err(t *testing.T) {
 
 	//
 
-	cacheRepository := NewCachedUserRepository(delegateRepository, cacheManager)
+	cacheRepository := NewCachedUserRepository(delegateRepository, cacheManager, json.Marshal, json.Unmarshal)
 	err := cacheRepository.Create(ctx, user)
 
 	assert.Nil(t, err)
@@ -152,7 +152,7 @@ func Test_CachedUserRepository_Update_Ok(t *testing.T) {
 
 	//
 
-	cacheRepository := NewCachedUserRepository(delegateRepository, cacheManager)
+	cacheRepository := NewCachedUserRepository(delegateRepository, cacheManager, json.Marshal, json.Unmarshal)
 	err := cacheRepository.Update(ctx, user)
 
 	assert.Nil(t, err)
@@ -184,7 +184,7 @@ func Test_CachedUserRepository_Update_Delegate_Err(t *testing.T) {
 
 	//
 
-	cacheRepository := NewCachedUserRepository(delegateRepository, cacheManager)
+	cacheRepository := NewCachedUserRepository(delegateRepository, cacheManager, json.Marshal, json.Unmarshal)
 	err := cacheRepository.Update(ctx, user)
 
 	assert.NotNil(t, err)
@@ -221,7 +221,7 @@ func Test_CachedUserRepository_Update_Set_Err(t *testing.T) {
 
 	//
 
-	cacheRepository := NewCachedUserRepository(delegateRepository, cacheManager)
+	cacheRepository := NewCachedUserRepository(delegateRepository, cacheManager, json.Marshal, json.Unmarshal)
 	err := cacheRepository.Update(ctx, user)
 
 	assert.Nil(t, err)
@@ -259,7 +259,7 @@ func Test_CachedUserRepository_Delete_Ok(t *testing.T) {
 
 	//
 
-	cacheRepository := NewCachedUserRepository(delegateRepository, cacheManager)
+	cacheRepository := NewCachedUserRepository(delegateRepository, cacheManager, json.Marshal, json.Unmarshal)
 	err := cacheRepository.DeleteById(ctx, user.Id)
 
 	assert.Nil(t, err)
@@ -291,7 +291,7 @@ func Test_CachedUserRepository_Delete_Delegate_Err(t *testing.T) {
 
 	//
 
-	cacheRepository := NewCachedUserRepository(delegateRepository, cacheManager)
+	cacheRepository := NewCachedUserRepository(delegateRepository, cacheManager, json.Marshal, json.Unmarshal)
 	err := cacheRepository.DeleteById(ctx, user.Id)
 
 	assert.NotNil(t, err)
@@ -328,7 +328,7 @@ func Test_CachedUserRepository_Delete_Set_Err(t *testing.T) {
 
 	//
 
-	cacheRepository := NewCachedUserRepository(delegateRepository, cacheManager)
+	cacheRepository := NewCachedUserRepository(delegateRepository, cacheManager, json.Marshal, json.Unmarshal)
 	err := cacheRepository.DeleteById(ctx, user.Id)
 
 	assert.Nil(t, err)
@@ -364,7 +364,7 @@ func Test_CachedUserRepository_findByIdAndSet_Ok(t *testing.T) {
 
 	//
 
-	cacheRepository := NewCachedUserRepository(delegateRepository, cacheManager)
+	cacheRepository := NewCachedUserRepository(delegateRepository, cacheManager, json.Marshal, json.Unmarshal)
 	user2, err := cacheRepository.findByIdAndSet(ctx, user.Id)
 
 	assert.Nil(t, err)
@@ -397,7 +397,7 @@ func Test_CachedUserRepository_findByIdAndSet_Delegate_Err(t *testing.T) {
 
 	//
 
-	cacheRepository := NewCachedUserRepository(delegateRepository, cacheManager)
+	cacheRepository := NewCachedUserRepository(delegateRepository, cacheManager, json.Marshal, json.Unmarshal)
 	user2, err := cacheRepository.findByIdAndSet(ctx, user.Id)
 
 	assert.NotNil(t, err)
@@ -433,7 +433,7 @@ func Test_CachedUserRepository_findByIdAndSet_Set_Err(t *testing.T) {
 
 	//
 
-	cacheRepository := NewCachedUserRepository(delegateRepository, cacheManager)
+	cacheRepository := NewCachedUserRepository(delegateRepository, cacheManager, json.Marshal, json.Unmarshal)
 	user2, err := cacheRepository.findByIdAndSet(ctx, user.Id)
 
 	assert.Nil(t, err)
@@ -472,7 +472,7 @@ func Test_CachedUserRepository_findAllAndSet_Ok(t *testing.T) {
 
 	//
 
-	cacheRepository := NewCachedUserRepository(delegateRepository, cacheManager)
+	cacheRepository := NewCachedUserRepository(delegateRepository, cacheManager, json.Marshal, json.Unmarshal)
 	_, err := cacheRepository.findAllAndSet(ctx)
 
 	assert.Nil(t, err)
@@ -495,7 +495,7 @@ func Test_CachedUserRepository_findAllAndSet_Delegate_Err(t *testing.T) {
 
 	//
 
-	cacheRepository := NewCachedUserRepository(delegateRepository, cacheManager)
+	cacheRepository := NewCachedUserRepository(delegateRepository, cacheManager, json.Marshal, json.Unmarshal)
 	_, err := cacheRepository.findAllAndSet(ctx)
 
 	assert.NotNil(t, err)
@@ -530,7 +530,7 @@ func Test_CachedUserRepository_findAllAndSet_Set_Err(t *testing.T) {
 
 	//
 
-	cacheRepository := NewCachedUserRepository(delegateRepository, cacheManager)
+	cacheRepository := NewCachedUserRepository(delegateRepository, cacheManager, json.Marshal, json.Unmarshal)
 	_, err := cacheRepository.findAllAndSet(ctx)
 
 	assert.Nil(t, err)
@@ -563,7 +563,7 @@ func Test_CachedUserRepository_FindById_Ok(t *testing.T) {
 
 	//
 
-	cacheRepository := NewCachedUserRepository(delegateRepository, cacheManager)
+	cacheRepository := NewCachedUserRepository(delegateRepository, cacheManager, json.Marshal, json.Unmarshal)
 	user2, err := cacheRepository.FindById(ctx, user.Id)
 
 	assert.Nil(t, err)
@@ -605,7 +605,7 @@ func Test_CachedUserRepository_Get_Err(t *testing.T) {
 
 	//
 
-	cacheRepository := NewCachedUserRepository(delegateRepository, cacheManager)
+	cacheRepository := NewCachedUserRepository(delegateRepository, cacheManager, json.Marshal, json.Unmarshal)
 	user2, err := cacheRepository.FindById(ctx, user.Id)
 
 	assert.Nil(t, err)
