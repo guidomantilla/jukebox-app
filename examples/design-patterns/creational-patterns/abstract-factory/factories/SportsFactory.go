@@ -7,6 +7,7 @@ import (
 )
 
 var _ SportsFactory = (*AdidasFactory)(nil)
+
 var _ SportsFactory = (*NikeFactory)(nil)
 
 type SportsFactory interface {

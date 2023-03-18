@@ -10,11 +10,6 @@ import (
 	"jukebox-app/pkg/environment"
 )
 
-const (
-	HOST_PORT               = "HOST_PORT"
-	HOST_PORT_DEFAULT_VALUE = ":8080"
-)
-
 func InitGinServer(environment environment.Environment) lifecycle.Server {
 
 	//
@@ -30,7 +25,7 @@ func InitGinServer(environment environment.Environment) lifecycle.Server {
 
 	//
 
-	hostAddress := environment.GetValueOrDefault(HOST_PORT, HOST_PORT_DEFAULT_VALUE).AsString()
+	hostAddress := environment.GetValueOrDefault(HOST_PORT, ENV_VAR_DEFAULT_VALUES_MAP[HOST_PORT]).AsString()
 	httpServer := &http.Server{
 		Addr:              hostAddress,
 		Handler:           router,

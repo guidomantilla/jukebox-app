@@ -5,6 +5,7 @@ import (
 )
 
 var _ Builder = (*IglooBuilder)(nil)
+
 var _ Builder = (*NormalBuilder)(nil)
 
 type Builder interface {

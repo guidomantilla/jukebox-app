@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
-	"jukebox-app/examples/concurrency/module01/01-goroutines/04-add/counting"
 	"time"
+
+	"jukebox-app/examples/concurrency/module01/01-goroutines/04-add/counting"
 )
 
 func main() {

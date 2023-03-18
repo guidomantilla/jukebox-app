@@ -39,6 +39,7 @@ type SongRepository interface {
 	FindByName(ctx context.Context, name string) (*model.Song, error)
 	FindByArtistId(ctx context.Context, id int64) (*[]model.Song, error)
 }
+
 type UserRepository interface {
 	Create(ctx context.Context, user *model.User) error
 	Update(ctx context.Context, user *model.User) error

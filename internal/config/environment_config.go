@@ -5,17 +5,13 @@ import (
 	"os"
 	"time"
 
-	"github.com/getsentry/sentry-go"
+	sentry "github.com/getsentry/sentry-go"
+	feather_sql "github.com/guidomantilla/go-feather-sql/pkg/feather-sql"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 
 	"jukebox-app/pkg/environment"
 	"jukebox-app/pkg/properties"
-)
-
-const (
-	CMD_PROPERTY_SOURCE_NAME = "CMD"
-	OS_PROPERTY_SOURCE_NAME  = "OS"
 )
 
 var (
@@ -78,6 +74,18 @@ func InitConfig(cmdArgs *[]string) environment.Environment {
 			for key, value := range internalMap {
 				zap.L().Debug(fmt.Sprintf("source name: %s, key: %s, value: %s", name, key, value))
 			}
+		}
+	}
+
+	// Mandatory environment variables validation
+
+	for key, message := range ENV_VAR_UNDEFINED_MESSAGES_MAP {
+		value := _singletonEnvironment.GetValue(key).AsString()
+		if value == "" {
+			zap.L().Fatal(message)
+		}
+		if key == DATASOURCE_DRIVER && value != feather_sql.OracleDriverName.String() {
+			zap.L().Fatal("server starting up - error setting up DB connection: invalid driver name")
 		}
 	}
 

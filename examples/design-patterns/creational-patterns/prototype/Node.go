@@ -5,6 +5,7 @@ import (
 )
 
 var _ Node = (*File)(nil)
+
 var _ Node = (*Folder)(nil)
 
 type Node interface {

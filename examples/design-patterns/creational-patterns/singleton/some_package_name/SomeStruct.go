@@ -6,6 +6,7 @@ import (
 )
 
 var _ Single = (*defaultSingle)(nil)
+
 var once sync.Once
 
 type Single interface {

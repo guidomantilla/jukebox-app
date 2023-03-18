@@ -6,36 +6,37 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/golang-migrate/migrate/v4"
+	migrate "github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database"
 	"github.com/golang-migrate/migrate/v4/database/mysql"
 	"github.com/golang-migrate/migrate/v4/database/pgx"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
+	feather_relational_datasource "github.com/guidomantilla/go-feather-sql/pkg/feather-relational-datasource"
+	feather_sql "github.com/guidomantilla/go-feather-sql/pkg/feather-sql"
 	"github.com/spf13/cobra"
 
 	"jukebox-app/internal/config"
-	"jukebox-app/pkg/datasource"
 )
 
 type MigrationFunction func(migration *migrate.Migrate) error
 
-func createMigrateDriver(dataSource datasource.RelationalDataSource) (database.Driver, error) {
+func createMigrateDriver(datasource feather_relational_datasource.RelationalDatasource, datasourceContext feather_relational_datasource.RelationalDatasourceContext) (database.Driver, error) {
 
 	var err error
 	var db *sql.DB
-	if db, err = dataSource.GetDatabase(); err != nil {
+	if db, err = datasource.GetDatabase(); err != nil {
 		return nil, err
 	}
 
 	var driver database.Driver
 
-	if dataSource.GetDriverName() == datasource.MYSQL_DRIVER_NAME {
+	if datasourceContext.GetDriverName() == feather_sql.MysqlDriverName {
 		if driver, err = mysql.WithInstance(db, &mysql.Config{}); err != nil {
 			return nil, err
 		}
 	}
 
-	if dataSource.GetDriverName() == datasource.POSTGRES_DRIVER_NAME {
+	if datasourceContext.GetDriverName() == feather_sql.PostgresDriverName {
 		if driver, err = pgx.WithInstance(db, &pgx.Config{}); err != nil {
 			return nil, err
 		}
@@ -53,21 +54,21 @@ func handleMigration(args []string, fn MigrationFunction) error {
 		_ = config.StopConfig()
 	}()
 
-	dataSource := config.InitDB(env)
+	datasource, datasourceContext := config.InitDB(env)
 	defer func() {
 		_ = config.StopDB()
 	}()
 
 	var driver database.Driver
-	if driver, err = createMigrateDriver(dataSource); err != nil {
+	if driver, err = createMigrateDriver(datasource, datasourceContext); err != nil {
 		return err
 	}
 
 	workingDirectory, _ := os.Getwd()
-	migrationsDirectory := filepath.Join(workingDirectory, "db/migrations/"+dataSource.GetDriverName())
+	migrationsDirectory := filepath.Join(workingDirectory, "db/migrations/"+datasourceContext.GetDriverName().String())
 
 	var migration *migrate.Migrate
-	if migration, err = migrate.NewWithDatabaseInstance("file:///"+migrationsDirectory, dataSource.GetDriverName(), driver); err != nil {
+	if migration, err = migrate.NewWithDatabaseInstance("file:///"+migrationsDirectory, datasourceContext.GetDriverName().String(), driver); err != nil {
 		return err
 	}
 

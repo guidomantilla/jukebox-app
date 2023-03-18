@@ -1,7 +1,9 @@
 package products
 
 var _ Shirt = (*AbstractShirt)(nil)
+
 var _ Shirt = (*AdidasShirt)(nil)
+
 var _ Shirt = (*NikeShirt)(nil)
 
 //

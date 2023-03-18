@@ -4,26 +4,33 @@ import (
 	"context"
 	"database/sql"
 
+	feather_relational_dao "github.com/guidomantilla/go-feather-sql/pkg/feather-relational-dao"
+
 	"jukebox-app/internal/model"
-	repositoryUtils "jukebox-app/pkg/repository"
 )
 
 type RelationalSongRepository struct {
-	statementCreate         string
-	statementUpdate         string
-	statementDelete         string
-	statementFindById       string
-	statementFind           string
+	dao                     feather_relational_dao.CrudDao
 	statementFindByCode     string
 	statementFindByName     string
 	statementFindByArtistId string
+}
+
+/* TYPES CONSTRUCTOR */
+
+func NewRelationalSongRepository() *RelationalSongRepository {
+	return &RelationalSongRepository{
+		statementFindByCode:     "select id, code, name, artistId from songs where code = ?",
+		statementFindByName:     "select id, code, name, artistId from songs where name = ?",
+		statementFindByArtistId: "select id, code, name, artistId from songs where artistId = ?",
+	}
 }
 
 func (repository *RelationalSongRepository) Create(ctx context.Context, song *model.Song) error {
 
 	var err error
 	var id *int64
-	if id, err = repositoryUtils.RelationalWriteContext(ctx, repository.statementCreate, song.Code, song.Name, song.ArtistId); err != nil {
+	if id, err = repository.dao.Save(ctx, song.Code, song.Name, song.ArtistId); err != nil {
 		return err
 	}
 
@@ -35,7 +42,7 @@ func (repository *RelationalSongRepository) Create(ctx context.Context, song *mo
 func (repository *RelationalSongRepository) Update(ctx context.Context, song *model.Song) error {
 
 	var err error
-	if _, err = repositoryUtils.RelationalWriteContext(ctx, repository.statementUpdate, song.Code, song.Name, song.ArtistId, song.Id); err != nil {
+	if err = repository.dao.Update(ctx, song.Code, song.Name, song.ArtistId, song.Id); err != nil {
 		return err
 	}
 
@@ -45,7 +52,7 @@ func (repository *RelationalSongRepository) Update(ctx context.Context, song *mo
 func (repository *RelationalSongRepository) DeleteById(ctx context.Context, id int64) error {
 
 	var err error
-	if _, err = repositoryUtils.RelationalWriteContext(ctx, repository.statementDelete, id); err != nil {
+	if err = repository.dao.Delete(ctx, id); err != nil {
 		return err
 	}
 
@@ -56,7 +63,7 @@ func (repository *RelationalSongRepository) FindById(ctx context.Context, id int
 
 	var err error
 	var song model.Song
-	if err = repositoryUtils.RelationalQueryRowContext(ctx, repository.statementFindById, id, &song.Id, &song.Code, &song.Name, &song.ArtistId); err != nil {
+	if err = repository.dao.FindById(ctx, id, &song.Id, &song.Code, &song.Name, &song.ArtistId); err != nil {
 		return nil, err
 	}
 
@@ -65,14 +72,31 @@ func (repository *RelationalSongRepository) FindById(ctx context.Context, id int
 
 func (repository *RelationalSongRepository) FindAll(ctx context.Context) (*[]model.Song, error) {
 
-	return internalFindAllBy(ctx, repository.statementFind)
+	var err error
+	songs := make([]model.Song, 0)
+	err = repository.dao.FindAll(ctx, func(rows *sql.Rows) error {
+
+		for rows.Next() {
+			var song model.Song
+			if err = rows.Scan(&song.Id, &song.Code, &song.Name, &song.ArtistId); err != nil {
+				return err
+			}
+			songs = append(songs, song)
+		}
+
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	return &songs, nil
 }
 
 func (repository *RelationalSongRepository) FindByCode(ctx context.Context, code int64) (*model.Song, error) {
 
 	var err error
 	var song model.Song
-	if err = repositoryUtils.RelationalQueryRowContext(ctx, repository.statementFindByCode, code, &song.Id, &song.Code, &song.Name, &song.ArtistId); err != nil {
+	if err = feather_relational_dao.ReadRowContext(ctx, repository.statementFindByCode, code, &song.Id, &song.Code, &song.Name, &song.ArtistId); err != nil {
 		return nil, err
 	}
 
@@ -83,7 +107,7 @@ func (repository *RelationalSongRepository) FindByName(ctx context.Context, name
 
 	var err error
 	var song model.Song
-	if err = repositoryUtils.RelationalQueryRowContext(ctx, repository.statementFindByName, name, &song.Id, &song.Code, &song.Name, &song.ArtistId); err != nil {
+	if err = feather_relational_dao.ReadRowContext(ctx, repository.statementFindByName, name, &song.Id, &song.Code, &song.Name, &song.ArtistId); err != nil {
 		return nil, err
 	}
 
@@ -92,29 +116,13 @@ func (repository *RelationalSongRepository) FindByName(ctx context.Context, name
 
 func (repository *RelationalSongRepository) FindByArtistId(ctx context.Context, id int64) (*[]model.Song, error) {
 
-	return internalFindAllBy(ctx, repository.statementFindByArtistId)
+	return repository.internalFindAllBy(ctx, repository.statementFindByArtistId)
 }
 
-/* TYPES CONSTRUCTOR */
-
-func NewRelationalSongRepository() *RelationalSongRepository {
-	return &RelationalSongRepository{
-		statementCreate:   "insert into songs (code, name, artistId) values (?, ?, ?)",
-		statementUpdate:   "update songs set code = ?, name = ?, artistId = ? where id = ?",
-		statementDelete:   "delete from songs where id = ?",
-		statementFindById: "select id, code, name, artistId from songs where id = ?",
-		statementFind:     "select id, code, name, artistId from songs",
-
-		statementFindByCode:     "select id, code, name, artistId from songs where code = ?",
-		statementFindByName:     "select id, code, name, artistId from songs where name = ?",
-		statementFindByArtistId: "select id, code, name, artistId from songs where artistId = ?",
-	}
-}
-
-func internalFindAllBy(ctx context.Context, sqlStatement string) (*[]model.Song, error) {
+func (repository *RelationalSongRepository) internalFindAllBy(ctx context.Context, sqlStatement string) (*[]model.Song, error) {
 	var err error
 	songs := make([]model.Song, 0)
-	err = repositoryUtils.RelationalQueryContext(ctx, sqlStatement, func(rows *sql.Rows) error {
+	err = repository.dao.FindAll(ctx, func(rows *sql.Rows) error {
 
 		for rows.Next() {
 			var song model.Song

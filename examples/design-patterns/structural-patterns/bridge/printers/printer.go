@@ -5,6 +5,7 @@ import (
 )
 
 var _ Printer = (*Epson)(nil)
+
 var _ Printer = (*Hp)(nil)
 
 type Printer interface {
