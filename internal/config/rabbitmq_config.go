@@ -1,12 +1,12 @@
 package config
 
 import (
+	"github.com/guidomantilla/go-feather-commons/pkg/environment"
 	"github.com/qmdx00/lifecycle"
 	"go.uber.org/zap"
 
 	appserver "jukebox-app/pkg/app"
 	"jukebox-app/pkg/app/messaging"
-	"jukebox-app/pkg/environment"
 )
 
 const (

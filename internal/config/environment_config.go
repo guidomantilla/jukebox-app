@@ -5,13 +5,12 @@ import (
 	"os"
 	"time"
 
-	sentry "github.com/getsentry/sentry-go"
-	feather_sql "github.com/guidomantilla/go-feather-sql/pkg/feather-sql"
+	"github.com/getsentry/sentry-go"
+	"github.com/guidomantilla/go-feather-commons/pkg/environment"
+	"github.com/guidomantilla/go-feather-commons/pkg/properties"
+	feather_sql "github.com/guidomantilla/go-feather-sql/pkg/sql"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
-
-	"jukebox-app/pkg/environment"
-	"jukebox-app/pkg/properties"
 )
 
 var (

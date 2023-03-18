@@ -6,8 +6,7 @@ import (
 
 	"github.com/eko/gocache/v2/cache"
 	"github.com/eko/gocache/v2/store"
-
-	"jukebox-app/pkg/encodingjson"
+	"github.com/guidomantilla/go-feather-commons/pkg/encodingjson"
 )
 
 var _ CacheManager = (*DefaultCacheManager)(nil)

@@ -707,8 +707,10 @@ github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0/go.mod h1:8NvIoxWQoOIhqOTXgf
 github.com/grpc-ecosystem/grpc-gateway v1.9.0/go.mod h1:vNeuVxBJEsws4ogUvrchl83t/GYV9WGTSLVdBhOQFDY=
 github.com/grpc-ecosystem/grpc-gateway v1.9.5/go.mod h1:vNeuVxBJEsws4ogUvrchl83t/GYV9WGTSLVdBhOQFDY=
 github.com/grpc-ecosystem/grpc-gateway v1.16.0/go.mod h1:BDjrQk3hbvj6Nolgz8mAMFbcEtjT1g+wF4CSlocrBnw=
-github.com/guidomantilla/go-feather-sql v0.1.1 h1:+zv2hPd+2FccrkQCF0EuNviECGOgYMIH6ikzaCWEdx0=
-github.com/guidomantilla/go-feather-sql v0.1.1/go.mod h1:dRvyG0ShiBJ0wGn9M9TkknsTZwAfwjJzGWmnV6K0dK8=
+github.com/guidomantilla/go-feather-commons v0.1.0 h1:lNDwPQ4PuJTnLM/dJ/Aawt4j1bdr94XEdL/lKr359Yo=
+github.com/guidomantilla/go-feather-commons v0.1.0/go.mod h1:P2PCrgZyzzT54b5C+64MG+VoUiujdt/ztYmOq+jFgok=
+github.com/guidomantilla/go-feather-sql v0.2.2 h1:cZaQr5VXLzH/4fZAt1AuzM4zbbnNcMco7V9gh05AuR8=
+github.com/guidomantilla/go-feather-sql v0.2.2/go.mod h1:Z/mPQUVE+fXFEbT/LdMtquvRY8q3NhWKtpE/n8vJ7Ws=
 github.com/hailocab/go-hostpool v0.0.0-20160125115350-e80d13ce29ed/go.mod h1:tMWxXQ9wFIaZeTI9F+hmhFiGpFmhOHzyShyFUhRm0H4=
 github.com/hamba/avro v1.5.6/go.mod h1:3vNT0RLXXpFm2Tb/5KC71ZRJlOroggq1Rcitb6k4Fr8=
 github.com/hashicorp/consul/api v1.1.0/go.mod h1:VmuI/Lkw1nC05EYQWNKwWGbkg+FbDBtguAZLlVdkD9Q=

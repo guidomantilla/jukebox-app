@@ -6,10 +6,10 @@ import (
 
 	"github.com/eko/gocache/v2/cache"
 	"github.com/eko/gocache/v2/store"
+	"github.com/guidomantilla/go-feather-commons/pkg/environment"
 	"go.uber.org/zap"
 
 	"jukebox-app/pkg/cachemanager"
-	"jukebox-app/pkg/environment"
 )
 
 const (

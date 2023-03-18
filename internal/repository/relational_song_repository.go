@@ -4,13 +4,13 @@ import (
 	"context"
 	"database/sql"
 
-	feather_relational_dao "github.com/guidomantilla/go-feather-sql/pkg/feather-relational-dao"
+	"github.com/guidomantilla/go-feather-sql/pkg/dao"
 
 	"jukebox-app/internal/model"
 )
 
 type RelationalSongRepository struct {
-	dao                     feather_relational_dao.CrudDao
+	dao                     dao.CrudDao
 	statementFindByCode     string
 	statementFindByName     string
 	statementFindByArtistId string
@@ -96,7 +96,7 @@ func (repository *RelationalSongRepository) FindByCode(ctx context.Context, code
 
 	var err error
 	var song model.Song
-	if err = feather_relational_dao.ReadRowContext(ctx, repository.statementFindByCode, code, &song.Id, &song.Code, &song.Name, &song.ArtistId); err != nil {
+	if err = dao.ReadRowContext(ctx, repository.statementFindByCode, code, &song.Id, &song.Code, &song.Name, &song.ArtistId); err != nil {
 		return nil, err
 	}
 
@@ -107,7 +107,7 @@ func (repository *RelationalSongRepository) FindByName(ctx context.Context, name
 
 	var err error
 	var song model.Song
-	if err = feather_relational_dao.ReadRowContext(ctx, repository.statementFindByName, name, &song.Id, &song.Code, &song.Name, &song.ArtistId); err != nil {
+	if err = dao.ReadRowContext(ctx, repository.statementFindByName, name, &song.Id, &song.Code, &song.Name, &song.ArtistId); err != nil {
 		return nil, err
 	}
 

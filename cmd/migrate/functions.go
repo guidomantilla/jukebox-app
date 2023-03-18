@@ -11,8 +11,9 @@ import (
 	"github.com/golang-migrate/migrate/v4/database/mysql"
 	"github.com/golang-migrate/migrate/v4/database/pgx"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
-	feather_relational_datasource "github.com/guidomantilla/go-feather-sql/pkg/feather-relational-datasource"
-	feather_sql "github.com/guidomantilla/go-feather-sql/pkg/feather-sql"
+	feather_config "github.com/guidomantilla/go-feather-sql/pkg/config"
+	"github.com/guidomantilla/go-feather-sql/pkg/datasource"
+	feather_sql "github.com/guidomantilla/go-feather-sql/pkg/sql"
 	"github.com/spf13/cobra"
 
 	"jukebox-app/internal/config"
@@ -20,7 +21,7 @@ import (
 
 type MigrationFunction func(migration *migrate.Migrate) error
 
-func createMigrateDriver(datasource feather_relational_datasource.RelationalDatasource, datasourceContext feather_relational_datasource.RelationalDatasourceContext) (database.Driver, error) {
+func createMigrateDriver(datasource datasource.RelationalDatasource, datasourceContext datasource.RelationalDatasourceContext) (database.Driver, error) {
 
 	var err error
 	var db *sql.DB
@@ -54,9 +55,9 @@ func handleMigration(args []string, fn MigrationFunction) error {
 		_ = config.StopConfig()
 	}()
 
-	datasource, datasourceContext := config.InitDB(env)
+	datasource, datasourceContext := feather_config.Init("", env, feather_sql.QuestionedParamHolder)
 	defer func() {
-		_ = config.StopDB()
+		_ = feather_config.Stop()
 	}()
 
 	var driver database.Driver

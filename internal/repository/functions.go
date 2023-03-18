@@ -6,9 +6,9 @@ import (
 	"errors"
 	"testing"
 
-	sqlmock "github.com/DATA-DOG/go-sqlmock"
-	feather_relational_datasource "github.com/guidomantilla/go-feather-sql/pkg/feather-relational-datasource"
-	feather_relational_tx "github.com/guidomantilla/go-feather-sql/pkg/feather-relational-tx"
+	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/guidomantilla/go-feather-sql/pkg/datasource"
+	"github.com/guidomantilla/go-feather-sql/pkg/transaction"
 
 	"jukebox-app/internal/model"
 )
@@ -52,15 +52,15 @@ func CallRelationalUserRepositoryFindAllFunction(t *testing.T, statementFind str
 		}
 	}
 
-	openFunc := feather_relational_datasource.OpenDatasourceFunc(func(driverName, dataSourceUrl string) (*sql.DB, error) {
+	openFunc := datasource.OpenDatasourceFunc(func(driverName, dataSourceUrl string) (*sql.DB, error) {
 		return db, nil
 	})
-	dataSource := feather_relational_datasource.NewDefaultRelationalDatasource(nil, openFunc)
+	dataSource := datasource.NewDefaultRelationalDatasource(nil, openFunc)
 
 	database, _ := dataSource.GetDatabase()
 	tx, _ := database.Begin()
 
-	txCtx := context.WithValue(context.Background(), feather_relational_tx.RelationalTransactionContext{}, tx)
+	txCtx := context.WithValue(context.Background(), transaction.RelationalTransactionContext{}, tx)
 
 	return findAllFn(txCtx)
 }
@@ -94,15 +94,15 @@ func CallRelationalUserRepositoryFindByInt64Function(t *testing.T, statementFind
 		}
 	}
 
-	openFunc := feather_relational_datasource.OpenDatasourceFunc(func(driverName, dataSourceUrl string) (*sql.DB, error) {
+	openFunc := datasource.OpenDatasourceFunc(func(driverName, dataSourceUrl string) (*sql.DB, error) {
 		return db, nil
 	})
-	dataSource := feather_relational_datasource.NewDefaultRelationalDatasource(nil, openFunc)
+	dataSource := datasource.NewDefaultRelationalDatasource(nil, openFunc)
 
 	database, _ := dataSource.GetDatabase()
 	tx, _ := database.Begin()
 
-	txCtx := context.WithValue(context.Background(), feather_relational_tx.RelationalTransactionContext{}, tx)
+	txCtx := context.WithValue(context.Background(), transaction.RelationalTransactionContext{}, tx)
 
 	return findByInt64Fn(txCtx, n)
 }
@@ -136,15 +136,15 @@ func CallRelationalUserRepositoryFindByStringFnFunction(t *testing.T, statementF
 		}
 	}
 
-	openFunc := feather_relational_datasource.OpenDatasourceFunc(func(driverName, dataSourceUrl string) (*sql.DB, error) {
+	openFunc := datasource.OpenDatasourceFunc(func(driverName, dataSourceUrl string) (*sql.DB, error) {
 		return db, nil
 	})
-	dataSource := feather_relational_datasource.NewDefaultRelationalDatasource(nil, openFunc)
+	dataSource := datasource.NewDefaultRelationalDatasource(nil, openFunc)
 
 	database, _ := dataSource.GetDatabase()
 	tx, _ := database.Begin()
 
-	txCtx := context.WithValue(context.Background(), feather_relational_tx.RelationalTransactionContext{}, tx)
+	txCtx := context.WithValue(context.Background(), transaction.RelationalTransactionContext{}, tx)
 
 	return findByStringFn(txCtx, s)
 }
@@ -172,15 +172,15 @@ func CallRelationalUserRepositorySaveFunction(t *testing.T, statementCreate stri
 		expectExec.WillReturnResult(sqlmock.NewResult(1, 1))
 	}
 
-	openFunc := feather_relational_datasource.OpenDatasourceFunc(func(driverName, dataSourceUrl string) (*sql.DB, error) {
+	openFunc := datasource.OpenDatasourceFunc(func(driverName, dataSourceUrl string) (*sql.DB, error) {
 		return db, nil
 	})
-	dataSource := feather_relational_datasource.NewDefaultRelationalDatasource(nil, openFunc)
+	dataSource := datasource.NewDefaultRelationalDatasource(nil, openFunc)
 
 	database, _ := dataSource.GetDatabase()
 	tx, _ := database.Begin()
 
-	txCtx := context.WithValue(context.Background(), feather_relational_tx.RelationalTransactionContext{}, tx)
+	txCtx := context.WithValue(context.Background(), transaction.RelationalTransactionContext{}, tx)
 
 	return saveFn(txCtx, user)
 }
@@ -204,15 +204,15 @@ func CallRelationalUserRepositoryDeleteFunction(t *testing.T, statementCreate st
 		expectExec.WillReturnResult(sqlmock.NewResult(1, 1))
 	}
 
-	openFunc := feather_relational_datasource.OpenDatasourceFunc(func(driverName, dataSourceUrl string) (*sql.DB, error) {
+	openFunc := datasource.OpenDatasourceFunc(func(driverName, dataSourceUrl string) (*sql.DB, error) {
 		return db, nil
 	})
-	dataSource := feather_relational_datasource.NewDefaultRelationalDatasource(nil, openFunc)
+	dataSource := datasource.NewDefaultRelationalDatasource(nil, openFunc)
 
 	database, _ := dataSource.GetDatabase()
 	tx, _ := database.Begin()
 
-	txCtx := context.WithValue(context.Background(), feather_relational_tx.RelationalTransactionContext{}, tx)
+	txCtx := context.WithValue(context.Background(), transaction.RelationalTransactionContext{}, tx)
 
 	return deleteFn(txCtx, id)
 }
@@ -256,15 +256,15 @@ func CallRelationalSongRepositoryFindAllFunction(t *testing.T, statementFind str
 		}
 	}
 
-	openFunc := feather_relational_datasource.OpenDatasourceFunc(func(driverName, dataSourceUrl string) (*sql.DB, error) {
+	openFunc := datasource.OpenDatasourceFunc(func(driverName, dataSourceUrl string) (*sql.DB, error) {
 		return db, nil
 	})
-	dataSource := feather_relational_datasource.NewDefaultRelationalDatasource(nil, openFunc)
+	dataSource := datasource.NewDefaultRelationalDatasource(nil, openFunc)
 
 	database, _ := dataSource.GetDatabase()
 	tx, _ := database.Begin()
 
-	txCtx := context.WithValue(context.Background(), feather_relational_tx.RelationalTransactionContext{}, tx)
+	txCtx := context.WithValue(context.Background(), transaction.RelationalTransactionContext{}, tx)
 
 	return findAllFn(txCtx)
 }
@@ -298,15 +298,15 @@ func CallRelationalSongRepositoryFindByInt64Function(t *testing.T, statementFind
 		}
 	}
 
-	openFunc := feather_relational_datasource.OpenDatasourceFunc(func(driverName, dataSourceUrl string) (*sql.DB, error) {
+	openFunc := datasource.OpenDatasourceFunc(func(driverName, dataSourceUrl string) (*sql.DB, error) {
 		return db, nil
 	})
-	dataSource := feather_relational_datasource.NewDefaultRelationalDatasource(nil, openFunc)
+	dataSource := datasource.NewDefaultRelationalDatasource(nil, openFunc)
 
 	database, _ := dataSource.GetDatabase()
 	tx, _ := database.Begin()
 
-	txCtx := context.WithValue(context.Background(), feather_relational_tx.RelationalTransactionContext{}, tx)
+	txCtx := context.WithValue(context.Background(), transaction.RelationalTransactionContext{}, tx)
 
 	return findByInt64Fn(txCtx, n)
 }
@@ -340,15 +340,15 @@ func CallRelationalSongRepositoryFindByStringFnFunction(t *testing.T, statementF
 		}
 	}
 
-	openFunc := feather_relational_datasource.OpenDatasourceFunc(func(driverName, dataSourceUrl string) (*sql.DB, error) {
+	openFunc := datasource.OpenDatasourceFunc(func(driverName, dataSourceUrl string) (*sql.DB, error) {
 		return db, nil
 	})
-	dataSource := feather_relational_datasource.NewDefaultRelationalDatasource(nil, openFunc)
+	dataSource := datasource.NewDefaultRelationalDatasource(nil, openFunc)
 
 	database, _ := dataSource.GetDatabase()
 	tx, _ := database.Begin()
 
-	txCtx := context.WithValue(context.Background(), feather_relational_tx.RelationalTransactionContext{}, tx)
+	txCtx := context.WithValue(context.Background(), transaction.RelationalTransactionContext{}, tx)
 
 	return findByStringFn(txCtx, s)
 }
@@ -376,15 +376,15 @@ func CallRelationalSongRepositorySaveFunction(t *testing.T, statementCreate stri
 		expectExec.WillReturnResult(sqlmock.NewResult(1, 1))
 	}
 
-	openFunc := feather_relational_datasource.OpenDatasourceFunc(func(driverName, dataSourceUrl string) (*sql.DB, error) {
+	openFunc := datasource.OpenDatasourceFunc(func(driverName, dataSourceUrl string) (*sql.DB, error) {
 		return db, nil
 	})
-	dataSource := feather_relational_datasource.NewDefaultRelationalDatasource(nil, openFunc)
+	dataSource := datasource.NewDefaultRelationalDatasource(nil, openFunc)
 
 	database, _ := dataSource.GetDatabase()
 	tx, _ := database.Begin()
 
-	txCtx := context.WithValue(context.Background(), feather_relational_tx.RelationalTransactionContext{}, tx)
+	txCtx := context.WithValue(context.Background(), transaction.RelationalTransactionContext{}, tx)
 
 	return saveFn(txCtx, song)
 }
@@ -408,15 +408,15 @@ func CallRelationalSongRepositoryDeleteFunction(t *testing.T, statementCreate st
 		expectExec.WillReturnResult(sqlmock.NewResult(1, 1))
 	}
 
-	openFunc := feather_relational_datasource.OpenDatasourceFunc(func(driverName, dataSourceUrl string) (*sql.DB, error) {
+	openFunc := datasource.OpenDatasourceFunc(func(driverName, dataSourceUrl string) (*sql.DB, error) {
 		return db, nil
 	})
-	dataSource := feather_relational_datasource.NewDefaultRelationalDatasource(nil, openFunc)
+	dataSource := datasource.NewDefaultRelationalDatasource(nil, openFunc)
 
 	database, _ := dataSource.GetDatabase()
 	tx, _ := database.Begin()
 
-	txCtx := context.WithValue(context.Background(), feather_relational_tx.RelationalTransactionContext{}, tx)
+	txCtx := context.WithValue(context.Background(), transaction.RelationalTransactionContext{}, tx)
 
 	return deleteFn(txCtx, id)
 }
@@ -460,15 +460,15 @@ func CallRelationalArtistRepositoryFindAllFunction(t *testing.T, statementFind s
 		}
 	}
 
-	openFunc := feather_relational_datasource.OpenDatasourceFunc(func(driverName, dataSourceUrl string) (*sql.DB, error) {
+	openFunc := datasource.OpenDatasourceFunc(func(driverName, dataSourceUrl string) (*sql.DB, error) {
 		return db, nil
 	})
-	dataSource := feather_relational_datasource.NewDefaultRelationalDatasource(nil, openFunc)
+	dataSource := datasource.NewDefaultRelationalDatasource(nil, openFunc)
 
 	database, _ := dataSource.GetDatabase()
 	tx, _ := database.Begin()
 
-	txCtx := context.WithValue(context.Background(), feather_relational_tx.RelationalTransactionContext{}, tx)
+	txCtx := context.WithValue(context.Background(), transaction.RelationalTransactionContext{}, tx)
 
 	return findAllFn(txCtx)
 }
@@ -502,15 +502,15 @@ func CallRelationalArtistRepositoryFindByInt64Function(t *testing.T, statementFi
 		}
 	}
 
-	openFunc := feather_relational_datasource.OpenDatasourceFunc(func(driverName, dataSourceUrl string) (*sql.DB, error) {
+	openFunc := datasource.OpenDatasourceFunc(func(driverName, dataSourceUrl string) (*sql.DB, error) {
 		return db, nil
 	})
-	dataSource := feather_relational_datasource.NewDefaultRelationalDatasource(nil, openFunc)
+	dataSource := datasource.NewDefaultRelationalDatasource(nil, openFunc)
 
 	database, _ := dataSource.GetDatabase()
 	tx, _ := database.Begin()
 
-	txCtx := context.WithValue(context.Background(), feather_relational_tx.RelationalTransactionContext{}, tx)
+	txCtx := context.WithValue(context.Background(), transaction.RelationalTransactionContext{}, tx)
 
 	return findByInt64Fn(txCtx, n)
 }
@@ -544,15 +544,15 @@ func CallRelationalArtistRepositoryFindByStringFnFunction(t *testing.T, statemen
 		}
 	}
 
-	openFunc := feather_relational_datasource.OpenDatasourceFunc(func(driverName, dataSourceUrl string) (*sql.DB, error) {
+	openFunc := datasource.OpenDatasourceFunc(func(driverName, dataSourceUrl string) (*sql.DB, error) {
 		return db, nil
 	})
-	dataSource := feather_relational_datasource.NewDefaultRelationalDatasource(nil, openFunc)
+	dataSource := datasource.NewDefaultRelationalDatasource(nil, openFunc)
 
 	database, _ := dataSource.GetDatabase()
 	tx, _ := database.Begin()
 
-	txCtx := context.WithValue(context.Background(), feather_relational_tx.RelationalTransactionContext{}, tx)
+	txCtx := context.WithValue(context.Background(), transaction.RelationalTransactionContext{}, tx)
 
 	return findByStringFn(txCtx, s)
 }
@@ -580,15 +580,15 @@ func CallRelationalArtistRepositorySaveFunction(t *testing.T, statementCreate st
 		expectExec.WillReturnResult(sqlmock.NewResult(1, 1))
 	}
 
-	openFunc := feather_relational_datasource.OpenDatasourceFunc(func(driverName, dataSourceUrl string) (*sql.DB, error) {
+	openFunc := datasource.OpenDatasourceFunc(func(driverName, dataSourceUrl string) (*sql.DB, error) {
 		return db, nil
 	})
-	dataSource := feather_relational_datasource.NewDefaultRelationalDatasource(nil, openFunc)
+	dataSource := datasource.NewDefaultRelationalDatasource(nil, openFunc)
 
 	database, _ := dataSource.GetDatabase()
 	tx, _ := database.Begin()
 
-	txCtx := context.WithValue(context.Background(), feather_relational_tx.RelationalTransactionContext{}, tx)
+	txCtx := context.WithValue(context.Background(), transaction.RelationalTransactionContext{}, tx)
 
 	return saveFn(txCtx, song)
 }
@@ -612,15 +612,15 @@ func CallRelationalArtistRepositoryDeleteFunction(t *testing.T, statementCreate 
 		expectExec.WillReturnResult(sqlmock.NewResult(1, 1))
 	}
 
-	openFunc := feather_relational_datasource.OpenDatasourceFunc(func(driverName, dataSourceUrl string) (*sql.DB, error) {
+	openFunc := datasource.OpenDatasourceFunc(func(driverName, dataSourceUrl string) (*sql.DB, error) {
 		return db, nil
 	})
-	dataSource := feather_relational_datasource.NewDefaultRelationalDatasource(nil, openFunc)
+	dataSource := datasource.NewDefaultRelationalDatasource(nil, openFunc)
 
 	database, _ := dataSource.GetDatabase()
 	tx, _ := database.Begin()
 
-	txCtx := context.WithValue(context.Background(), feather_relational_tx.RelationalTransactionContext{}, tx)
+	txCtx := context.WithValue(context.Background(), transaction.RelationalTransactionContext{}, tx)
 
 	return deleteFn(txCtx, id)
 }

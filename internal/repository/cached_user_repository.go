@@ -5,12 +5,12 @@ import (
 	"fmt"
 
 	"github.com/bradfitz/gomemcache/memcache"
+	"github.com/guidomantilla/go-feather-commons/pkg/encodingjson"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 
 	"jukebox-app/internal/model"
 	"jukebox-app/pkg/cachemanager"
-	"jukebox-app/pkg/encodingjson"
 )
 
 type CachedUserRepository struct {

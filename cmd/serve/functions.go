@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"syscall"
 
-	feather_relational_tx "github.com/guidomantilla/go-feather-sql/pkg/feather-relational-tx"
+	feather_config "github.com/guidomantilla/go-feather-sql/pkg/config"
+	feather_sql "github.com/guidomantilla/go-feather-sql/pkg/sql"
+	"github.com/guidomantilla/go-feather-sql/pkg/transaction"
 	"github.com/qmdx00/lifecycle"
 	"github.com/spf13/cobra"
 	"go.uber.org/zap"
@@ -20,17 +22,17 @@ func ExecuteCmdFn(_ *cobra.Command, args []string) {
 		lifecycle.WithVersion("1.0"),
 		lifecycle.WithSignal(syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGINT, syscall.SIGKILL),
 	)
-	jukeboxApp.Cleanup(config.StopDB, config.StopConfig)
+	jukeboxApp.Cleanup(feather_config.Stop, config.StopConfig)
 
 	//
 
 	environment := config.InitConfig(&args)
-	datasource, datasourceContext := config.InitDB(environment)
+	datasource, _ := feather_config.Init("", environment, feather_sql.QuestionedParamHolder)
 	cacheManager := config.InitCache(environment)
 
 	//
 
-	_ = feather_relational_tx.BuildRelationalTransactionHandler(datasource)
+	_ = transaction.BuildRelationalTransactionHandler(datasource)
 
 	userRepository := repository.NewRelationalUserRepository()
 	_ = repository.NewCachedUserRepository(userRepository, cacheManager, json.Marshal, json.Unmarshal)

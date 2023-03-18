@@ -29,7 +29,10 @@ require (
 	google.golang.org/protobuf v1.30.0
 )
 
-require github.com/guidomantilla/go-feather-sql v0.1.1
+require (
+	github.com/guidomantilla/go-feather-commons v0.1.0
+	github.com/guidomantilla/go-feather-sql v0.2.2
+)
 
 exclude (
 	github.com/XiaoMi/pegasus-go-client v0.0.0-20210427083443-f3b6b08bc4c2 // indirect

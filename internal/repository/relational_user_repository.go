@@ -4,13 +4,13 @@ import (
 	"context"
 	"database/sql"
 
-	feather_relational_dao "github.com/guidomantilla/go-feather-sql/pkg/feather-relational-dao"
+	"github.com/guidomantilla/go-feather-sql/pkg/dao"
 
 	"jukebox-app/internal/model"
 )
 
 type RelationalUserRepository struct {
-	dao                  feather_relational_dao.CrudDao
+	dao                  dao.CrudDao
 	statementFindByCode  string
 	statementFindByName  string
 	statementFindByEmail string
@@ -97,7 +97,7 @@ func (repository *RelationalUserRepository) FindByCode(ctx context.Context, code
 
 	var err error
 	var user model.User
-	if err = feather_relational_dao.ReadRowContext(ctx, repository.statementFindByCode, code, &user.Id, &user.Code, &user.Name, &user.Email); err != nil {
+	if err = dao.ReadRowContext(ctx, repository.statementFindByCode, code, &user.Id, &user.Code, &user.Name, &user.Email); err != nil {
 		return nil, err
 	}
 
@@ -108,7 +108,7 @@ func (repository *RelationalUserRepository) FindByName(ctx context.Context, name
 
 	var err error
 	var user model.User
-	if err = feather_relational_dao.ReadRowContext(ctx, repository.statementFindByName, name, &user.Id, &user.Code, &user.Name, &user.Email); err != nil {
+	if err = dao.ReadRowContext(ctx, repository.statementFindByName, name, &user.Id, &user.Code, &user.Name, &user.Email); err != nil {
 		return nil, err
 	}
 
@@ -119,7 +119,7 @@ func (repository *RelationalUserRepository) FindByEmail(ctx context.Context, ema
 
 	var err error
 	var user model.User
-	if err = feather_relational_dao.ReadRowContext(ctx, repository.statementFindByEmail, email, &user.Id, &user.Code, &user.Name, &user.Email); err != nil {
+	if err = dao.ReadRowContext(ctx, repository.statementFindByEmail, email, &user.Id, &user.Code, &user.Name, &user.Email); err != nil {
 		return nil, err
 	}
 
