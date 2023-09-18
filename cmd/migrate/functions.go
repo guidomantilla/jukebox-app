@@ -1,8 +1,11 @@
 package migrate
 
 import (
+	"context"
 	"database/sql"
+	feather_boot "github.com/guidomantilla/go-feather-boot/pkg/boot"
 	"log"
+	"log/slog"
 	"os"
 	"path/filepath"
 
@@ -11,17 +14,14 @@ import (
 	"github.com/golang-migrate/migrate/v4/database/mysql"
 	"github.com/golang-migrate/migrate/v4/database/pgx"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
-	feather_config "github.com/guidomantilla/go-feather-sql/pkg/config"
 	"github.com/guidomantilla/go-feather-sql/pkg/datasource"
 	feather_sql "github.com/guidomantilla/go-feather-sql/pkg/sql"
 	"github.com/spf13/cobra"
-
-	"jukebox-app/internal/config"
 )
 
 type MigrationFunction func(migration *migrate.Migrate) error
 
-func createMigrateDriver(datasource datasource.RelationalDatasource, datasourceContext datasource.RelationalDatasourceContext) (database.Driver, error) {
+func createMigrateDriver(datasource datasource.Datasource, datasourceContext datasource.DatasourceContext) (database.Driver, error) {
 
 	var err error
 	var db *sql.DB
@@ -48,33 +48,35 @@ func createMigrateDriver(datasource datasource.RelationalDatasource, datasourceC
 
 func handleMigration(args []string, fn MigrationFunction) error {
 
-	var err error
+	ctx := context.Background()
+	appName, version := "jukebox-app", "1.0"
+	builder := feather_boot.NewBeanBuilder(ctx)
 
-	env := config.InitConfig(&args)
-	defer func() {
-		_ = config.StopConfig()
-	}()
+	err := feather_boot.Init(appName, version, args, builder, func(appCtx feather_boot.ApplicationContext) error {
 
-	datasource, datasourceContext := feather_config.Init("", env, feather_sql.QuestionedParamHolder)
-	defer func() {
-		_ = feather_config.Stop()
-	}()
+		var err error
+		var driver database.Driver
+		if driver, err = createMigrateDriver(appCtx.Datasource, appCtx.DatasourceContext); err != nil {
+			return err
+		}
 
-	var driver database.Driver
-	if driver, err = createMigrateDriver(datasource, datasourceContext); err != nil {
-		return err
-	}
+		workingDirectory, _ := os.Getwd()
+		migrationsDirectory := filepath.Join(workingDirectory, "db/migrations/"+appCtx.DatasourceContext.GetDriverName().String())
 
-	workingDirectory, _ := os.Getwd()
-	migrationsDirectory := filepath.Join(workingDirectory, "db/migrations/"+datasourceContext.GetDriverName().String())
+		var migration *migrate.Migrate
+		if migration, err = migrate.NewWithDatabaseInstance("file:///"+migrationsDirectory, appCtx.DatasourceContext.GetDriverName().String(), driver); err != nil {
+			return err
+		}
 
-	var migration *migrate.Migrate
-	if migration, err = migrate.NewWithDatabaseInstance("file:///"+migrationsDirectory, datasourceContext.GetDriverName().String(), driver); err != nil {
-		return err
-	}
+		if err = fn(migration); err != nil {
+			return err
+		}
 
-	if err = fn(migration); err != nil {
-		return err
+		return nil
+	})
+	if err != nil {
+		slog.Error(err.Error())
+		os.Exit(1)
 	}
 
 	return nil

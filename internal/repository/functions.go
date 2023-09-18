@@ -55,12 +55,12 @@ func CallRelationalUserRepositoryFindAllFunction(t *testing.T, statementFind str
 	openFunc := datasource.OpenDatasourceFunc(func(driverName, dataSourceUrl string) (*sql.DB, error) {
 		return db, nil
 	})
-	dataSource := datasource.NewDefaultRelationalDatasource(nil, openFunc)
+	dataSource := datasource.NewDefaultDatasource(nil, openFunc)
 
 	database, _ := dataSource.GetDatabase()
 	tx, _ := database.Begin()
 
-	txCtx := context.WithValue(context.Background(), transaction.RelationalTransactionContext{}, tx)
+	txCtx := context.WithValue(context.Background(), transaction.TransactionCtxKey{}, tx)
 
 	return findAllFn(txCtx)
 }
@@ -97,12 +97,12 @@ func CallRelationalUserRepositoryFindByInt64Function(t *testing.T, statementFind
 	openFunc := datasource.OpenDatasourceFunc(func(driverName, dataSourceUrl string) (*sql.DB, error) {
 		return db, nil
 	})
-	dataSource := datasource.NewDefaultRelationalDatasource(nil, openFunc)
+	dataSource := datasource.NewDefaultDatasource(nil, openFunc)
 
 	database, _ := dataSource.GetDatabase()
 	tx, _ := database.Begin()
 
-	txCtx := context.WithValue(context.Background(), transaction.RelationalTransactionContext{}, tx)
+	txCtx := context.WithValue(context.Background(), transaction.TransactionCtxKey{}, tx)
 
 	return findByInt64Fn(txCtx, n)
 }
@@ -139,12 +139,12 @@ func CallRelationalUserRepositoryFindByStringFnFunction(t *testing.T, statementF
 	openFunc := datasource.OpenDatasourceFunc(func(driverName, dataSourceUrl string) (*sql.DB, error) {
 		return db, nil
 	})
-	dataSource := datasource.NewDefaultRelationalDatasource(nil, openFunc)
+	dataSource := datasource.NewDefaultDatasource(nil, openFunc)
 
 	database, _ := dataSource.GetDatabase()
 	tx, _ := database.Begin()
 
-	txCtx := context.WithValue(context.Background(), transaction.RelationalTransactionContext{}, tx)
+	txCtx := context.WithValue(context.Background(), transaction.TransactionCtxKey{}, tx)
 
 	return findByStringFn(txCtx, s)
 }
@@ -175,12 +175,12 @@ func CallRelationalUserRepositorySaveFunction(t *testing.T, statementCreate stri
 	openFunc := datasource.OpenDatasourceFunc(func(driverName, dataSourceUrl string) (*sql.DB, error) {
 		return db, nil
 	})
-	dataSource := datasource.NewDefaultRelationalDatasource(nil, openFunc)
+	dataSource := datasource.NewDefaultDatasource(nil, openFunc)
 
 	database, _ := dataSource.GetDatabase()
 	tx, _ := database.Begin()
 
-	txCtx := context.WithValue(context.Background(), transaction.RelationalTransactionContext{}, tx)
+	txCtx := context.WithValue(context.Background(), transaction.TransactionCtxKey{}, tx)
 
 	return saveFn(txCtx, user)
 }
@@ -207,12 +207,12 @@ func CallRelationalUserRepositoryDeleteFunction(t *testing.T, statementCreate st
 	openFunc := datasource.OpenDatasourceFunc(func(driverName, dataSourceUrl string) (*sql.DB, error) {
 		return db, nil
 	})
-	dataSource := datasource.NewDefaultRelationalDatasource(nil, openFunc)
+	dataSource := datasource.NewDefaultDatasource(nil, openFunc)
 
 	database, _ := dataSource.GetDatabase()
 	tx, _ := database.Begin()
 
-	txCtx := context.WithValue(context.Background(), transaction.RelationalTransactionContext{}, tx)
+	txCtx := context.WithValue(context.Background(), transaction.TransactionCtxKey{}, tx)
 
 	return deleteFn(txCtx, id)
 }
@@ -259,12 +259,12 @@ func CallRelationalSongRepositoryFindAllFunction(t *testing.T, statementFind str
 	openFunc := datasource.OpenDatasourceFunc(func(driverName, dataSourceUrl string) (*sql.DB, error) {
 		return db, nil
 	})
-	dataSource := datasource.NewDefaultRelationalDatasource(nil, openFunc)
+	dataSource := datasource.NewDefaultDatasource(nil, openFunc)
 
 	database, _ := dataSource.GetDatabase()
 	tx, _ := database.Begin()
 
-	txCtx := context.WithValue(context.Background(), transaction.RelationalTransactionContext{}, tx)
+	txCtx := context.WithValue(context.Background(), transaction.TransactionCtxKey{}, tx)
 
 	return findAllFn(txCtx)
 }
@@ -301,12 +301,12 @@ func CallRelationalSongRepositoryFindByInt64Function(t *testing.T, statementFind
 	openFunc := datasource.OpenDatasourceFunc(func(driverName, dataSourceUrl string) (*sql.DB, error) {
 		return db, nil
 	})
-	dataSource := datasource.NewDefaultRelationalDatasource(nil, openFunc)
+	dataSource := datasource.NewDefaultDatasource(nil, openFunc)
 
 	database, _ := dataSource.GetDatabase()
 	tx, _ := database.Begin()
 
-	txCtx := context.WithValue(context.Background(), transaction.RelationalTransactionContext{}, tx)
+	txCtx := context.WithValue(context.Background(), transaction.TransactionCtxKey{}, tx)
 
 	return findByInt64Fn(txCtx, n)
 }
@@ -343,12 +343,12 @@ func CallRelationalSongRepositoryFindByStringFnFunction(t *testing.T, statementF
 	openFunc := datasource.OpenDatasourceFunc(func(driverName, dataSourceUrl string) (*sql.DB, error) {
 		return db, nil
 	})
-	dataSource := datasource.NewDefaultRelationalDatasource(nil, openFunc)
+	dataSource := datasource.NewDefaultDatasource(nil, openFunc)
 
 	database, _ := dataSource.GetDatabase()
 	tx, _ := database.Begin()
 
-	txCtx := context.WithValue(context.Background(), transaction.RelationalTransactionContext{}, tx)
+	txCtx := context.WithValue(context.Background(), transaction.TransactionCtxKey{}, tx)
 
 	return findByStringFn(txCtx, s)
 }
@@ -379,12 +379,12 @@ func CallRelationalSongRepositorySaveFunction(t *testing.T, statementCreate stri
 	openFunc := datasource.OpenDatasourceFunc(func(driverName, dataSourceUrl string) (*sql.DB, error) {
 		return db, nil
 	})
-	dataSource := datasource.NewDefaultRelationalDatasource(nil, openFunc)
+	dataSource := datasource.NewDefaultDatasource(nil, openFunc)
 
 	database, _ := dataSource.GetDatabase()
 	tx, _ := database.Begin()
 
-	txCtx := context.WithValue(context.Background(), transaction.RelationalTransactionContext{}, tx)
+	txCtx := context.WithValue(context.Background(), transaction.TransactionCtxKey{}, tx)
 
 	return saveFn(txCtx, song)
 }
@@ -411,12 +411,12 @@ func CallRelationalSongRepositoryDeleteFunction(t *testing.T, statementCreate st
 	openFunc := datasource.OpenDatasourceFunc(func(driverName, dataSourceUrl string) (*sql.DB, error) {
 		return db, nil
 	})
-	dataSource := datasource.NewDefaultRelationalDatasource(nil, openFunc)
+	dataSource := datasource.NewDefaultDatasource(nil, openFunc)
 
 	database, _ := dataSource.GetDatabase()
 	tx, _ := database.Begin()
 
-	txCtx := context.WithValue(context.Background(), transaction.RelationalTransactionContext{}, tx)
+	txCtx := context.WithValue(context.Background(), transaction.TransactionCtxKey{}, tx)
 
 	return deleteFn(txCtx, id)
 }
@@ -463,12 +463,12 @@ func CallRelationalArtistRepositoryFindAllFunction(t *testing.T, statementFind s
 	openFunc := datasource.OpenDatasourceFunc(func(driverName, dataSourceUrl string) (*sql.DB, error) {
 		return db, nil
 	})
-	dataSource := datasource.NewDefaultRelationalDatasource(nil, openFunc)
+	dataSource := datasource.NewDefaultDatasource(nil, openFunc)
 
 	database, _ := dataSource.GetDatabase()
 	tx, _ := database.Begin()
 
-	txCtx := context.WithValue(context.Background(), transaction.RelationalTransactionContext{}, tx)
+	txCtx := context.WithValue(context.Background(), transaction.TransactionCtxKey{}, tx)
 
 	return findAllFn(txCtx)
 }
@@ -505,12 +505,12 @@ func CallRelationalArtistRepositoryFindByInt64Function(t *testing.T, statementFi
 	openFunc := datasource.OpenDatasourceFunc(func(driverName, dataSourceUrl string) (*sql.DB, error) {
 		return db, nil
 	})
-	dataSource := datasource.NewDefaultRelationalDatasource(nil, openFunc)
+	dataSource := datasource.NewDefaultDatasource(nil, openFunc)
 
 	database, _ := dataSource.GetDatabase()
 	tx, _ := database.Begin()
 
-	txCtx := context.WithValue(context.Background(), transaction.RelationalTransactionContext{}, tx)
+	txCtx := context.WithValue(context.Background(), transaction.TransactionCtxKey{}, tx)
 
 	return findByInt64Fn(txCtx, n)
 }
@@ -547,12 +547,12 @@ func CallRelationalArtistRepositoryFindByStringFnFunction(t *testing.T, statemen
 	openFunc := datasource.OpenDatasourceFunc(func(driverName, dataSourceUrl string) (*sql.DB, error) {
 		return db, nil
 	})
-	dataSource := datasource.NewDefaultRelationalDatasource(nil, openFunc)
+	dataSource := datasource.NewDefaultDatasource(nil, openFunc)
 
 	database, _ := dataSource.GetDatabase()
 	tx, _ := database.Begin()
 
-	txCtx := context.WithValue(context.Background(), transaction.RelationalTransactionContext{}, tx)
+	txCtx := context.WithValue(context.Background(), transaction.TransactionCtxKey{}, tx)
 
 	return findByStringFn(txCtx, s)
 }
@@ -583,12 +583,12 @@ func CallRelationalArtistRepositorySaveFunction(t *testing.T, statementCreate st
 	openFunc := datasource.OpenDatasourceFunc(func(driverName, dataSourceUrl string) (*sql.DB, error) {
 		return db, nil
 	})
-	dataSource := datasource.NewDefaultRelationalDatasource(nil, openFunc)
+	dataSource := datasource.NewDefaultDatasource(nil, openFunc)
 
 	database, _ := dataSource.GetDatabase()
 	tx, _ := database.Begin()
 
-	txCtx := context.WithValue(context.Background(), transaction.RelationalTransactionContext{}, tx)
+	txCtx := context.WithValue(context.Background(), transaction.TransactionCtxKey{}, tx)
 
 	return saveFn(txCtx, song)
 }
@@ -615,12 +615,12 @@ func CallRelationalArtistRepositoryDeleteFunction(t *testing.T, statementCreate 
 	openFunc := datasource.OpenDatasourceFunc(func(driverName, dataSourceUrl string) (*sql.DB, error) {
 		return db, nil
 	})
-	dataSource := datasource.NewDefaultRelationalDatasource(nil, openFunc)
+	dataSource := datasource.NewDefaultDatasource(nil, openFunc)
 
 	database, _ := dataSource.GetDatabase()
 	tx, _ := database.Begin()
 
-	txCtx := context.WithValue(context.Background(), transaction.RelationalTransactionContext{}, tx)
+	txCtx := context.WithValue(context.Background(), transaction.TransactionCtxKey{}, tx)
 
 	return deleteFn(txCtx, id)
 }
