@@ -27,4 +27,5 @@ jobs:
         run: go mod tidy && go mod verify
 
       - name: 'Dependency Review'
+        if: github.ref == 'refs/heads/main'
         uses: actions/dependency-review-action@v2
